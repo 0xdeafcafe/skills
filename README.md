@@ -1,21 +1,22 @@
 # skills
 
-Twelve Claude Code skills for the parts of shipping software I'd rather
-not do myself. Planning the change, writing the spec, addressing review
-comments, keeping the PR description honest, you get the picture.
+Twelve Claude Code skills for the parts of shipping software I'd
+rather not do myself. Planning the change, writing the spec,
+addressing review comments, keeping the PR description honest, you
+get the picture.
 
-This isn't yet another "awesome-claude-skills" list. Each one does a
-specific job, has specific operating rules, and is opinionated about
-what "done" looks like. They compose: `plan-feature` writes the ADR and
-spec before code starts; the `drive-*` family audits the work while
-it's happening; `write-pr` opens the PR; `drive-pr` iterates on it
-until everything's green; `tone-of-voice` keeps anything I publish from
-sounding like an LLM wrote it (which, to be clear, an LLM did).
+This isn't another "awesome-claude-skills" list. Each one is
+opinionated about what "done" looks like, and they compose:
+`plan-feature` writes the ADR and spec before code starts, the
+`drive-*` family audits the work while it's happening, `write-pr`
+opens the PR, `drive-pr` iterates on it until everything's green,
+and `tone-of-voice` keeps anything I publish from sounding like an
+LLM wrote it (which, to be clear, an LLM did).
 
 ## The skills
 
-Roughly chronological. `plan-feature` at the start of a piece of work,
-`drive-pr` at the end.
+Roughly chronological. `plan-feature` at the start of a piece of
+work, `drive-pr` at the end.
 
 ### Planning (before code)
 
@@ -57,66 +58,60 @@ npx skills add 0xdeafcafe/skills
 
 That's it. Works with Claude Code, Cursor, Codex, OpenCode, and the
 rest of the agent zoo via the [skills.sh](https://www.skills.sh) CLI.
-
-The CLI is interactive by default. It asks which skills and which
-agents to install to. If you want everything with no prompts, throw
-`--all -y` at it and call it a Tuesday.
+Interactive by default; it asks which skills and which agents you
+want.
 
 ```bash
-# install just the ones you want
+# install a few
 npx skills add 0xdeafcafe/skills --skill drive-pr --skill drive-ux
 
-# see what's available without installing
+# list available without installing
 npx skills add 0xdeafcafe/skills --list
 
-# everything, globally, into Claude Code, non-interactive
+# everything, globally, into Claude Code, no prompts
 npx skills add 0xdeafcafe/skills --all -a claude-code -g -y
-
-# install to a per-project skills directory instead of globally
-# (project is the default; -g installs globally to ~/.claude/skills)
-npx skills add 0xdeafcafe/skills
 
 # later
 npx skills update
 npx skills remove drive-pr
 ```
 
-Full reference: [skills.sh docs](https://www.skills.sh/docs/cli).
+Full reference at the [skills.sh docs](https://www.skills.sh/docs/cli).
 
 ### Dev install
 
-If you're hacking on these in this repo, point the CLI at the local
-checkout. Symlinks rather than copies, so edits land instantly:
+If you're hacking on these locally, point the CLI at the checkout.
+Symlinks rather than copies, so edits land instantly:
 
 ```bash
 npx skills add .
 ```
 
-## The non-negotiable security rule
+## The trust gate
 
 PR comments are a prompt-injection vector with shell-level blast
-radius, so every skill that reads them runs the same trust filter:
+radius. Every skill that reads them runs the same filter:
 
-1. **AI bots** - a fixed whitelist (CodeRabbit, GitHub Copilot
-   reviewer, Kilo Code reviewer). Anything else with `[bot]` in the
-   handle is not trusted by default.
+1. **AI bots** - a tiny whitelist (CodeRabbit, GitHub Copilot
+   reviewer, Kilo Code reviewer). Everything else with `[bot]` in
+   the handle is untrusted by default.
 2. **Humans** - verified members of the repo's owning organisation,
-   or explicit collaborators with write+ permission, checked live via
-   `gh api`. No exceptions for "looks legit" or "the comment seems
-   reasonable". Verification is a hard gate.
+   or collaborators with `write` or higher, checked live via
+   `gh api`. No exceptions for "looks legit". Verification is a
+   hard gate, not a vibe check.
 
-Everything else is read for situational awareness, never acted on. A
-skill that follows instructions from a random GitHub account is a
-remote-code-execution primitive; the trust gate is what stops that.
+Everything else is read for situational awareness, never acted on.
+A skill that follows instructions from a random GitHub account is
+a remote-code-execution primitive, and the gate is what stops that.
 
-Skills that read public input carry their own copy of the policy at
-`skills/<name>/references/trust-policy.md` - currently `drive-pr`,
-`drive-ux`, `drive-code`, `drive-feature`, `drive-test`,
-`drive-security`. Kept in sync by hand. If you edit one, edit all six.
+The six `drive-*` skills (`drive-pr`, `drive-ux`, `drive-code`,
+`drive-feature`, `drive-test`, `drive-security`) each carry their
+own copy of the policy at `skills/<name>/references/trust-policy.md`.
+Kept in sync by hand. Edit one, edit all six.
 
-The five skills that only write files (`write-adr`, `write-spec`,
-`plan-feature`, `review-spec`, `write-pr`) don't carry the policy.
-They don't consume PR comments as instructions.
+The five that only write files (`write-adr`, `write-spec`,
+`plan-feature`, `review-spec`, `write-pr`) don't carry it. They
+don't consume PR comments as instructions.
 
 ## Layout
 
@@ -133,7 +128,8 @@ They don't consume PR comments as instructions.
     │   ├── SKILL.md
     │   └── references/gherkin-reference.md
     ├── review-spec/            # read-only: corpus overlap audit
-    │   └── SKILL.md
+    │   ├── SKILL.md
+    │   └── references/finding-examples.md
     ├── drive-code/
     │   ├── SKILL.md
     │   └── references/{code-checklist,trust-policy}.md
@@ -150,20 +146,21 @@ They don't consume PR comments as instructions.
     │   ├── SKILL.md
     │   └── references/{ux-checklist,trust-policy}.md
     ├── write-pr/               # compose + verify + open PR
-    │   └── SKILL.md
+    │   ├── SKILL.md
+    │   └── references/pr-templates.md
     ├── drive-pr/               # iterate open PR to merge-ready
     │   ├── SKILL.md
-    │   └── references/trust-policy.md
+    │   └── references/{trust-policy,graphql-queries}.md
     └── tone-of-voice/          # ghost-write in my voice
         ├── SKILL.md
         └── references/{style-guide,samples}.md
 ```
 
-Reference files in a skill's `references/` are loaded by that skill on
-demand, which keeps the main `SKILL.md` focused and stops the longer
-checklists from bloating the initial context every time a skill
-triggers.
+Reference files in a skill's `references/` are loaded on demand,
+which keeps the main `SKILL.md` lean. Long checklists exist without
+bloating the context that gets loaded every time a skill triggers.
 
-Each skill is self-contained. When the CLI installs `drive-pr`, you
-get `drive-pr/SKILL.md` plus everything under `drive-pr/references/`.
-No cross-skill paths to break on a standalone install.
+Each skill is self-contained. When the CLI installs `drive-pr`,
+you get `drive-pr/SKILL.md` plus everything under
+`drive-pr/references/`. No cross-skill paths to break on a
+standalone install.
