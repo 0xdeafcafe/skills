@@ -69,11 +69,12 @@ quoted examples in
 - **British English.** `optimise`, `colour`, `behaviour`, `realise`,
   `analyse`, `centre`. Contractions fine. Colloquialisms (`mate`,
   `lame-o`, `ghastly`, `tldr`) only when they fit naturally.
-- **"Quite some"** in place of "a lot" or "a few". A Dutch-ism Alex
-  has picked up living in the Netherlands ("we process quite some
-  traces", "quite some late nights"). Slightly off-spec English that
-  nobody else uses; lean into it where it fits. Don't translate it
-  out.
+- **"Quite some"** in place of "a lot" or "a few". An ironic
+  Dutch-ism Alex has picked up living in the Netherlands ("we
+  process quite some traces", "quite some late nights"). The
+  off-ness is the joke; he knows the English reads slightly wrong
+  and uses it anyway. Lean into it where it fits; don't translate
+  it out.
 - **Open with the actual point.** No throat-clearing. Lead with the
   claim, the stat, or the punchline.
 - **Parenthetical asides** carry the humour. Main sentence is the

@@ -423,8 +423,9 @@ like him. Use them where they fit, not as a checklist.
 A Dutch-ism Alex has picked up living in the Netherlands. In English
 "quite some" is technically grammatical but sounds slightly off
 unless you're translating from Dutch ("nogal wat", "best veel"),
-which is what's happening. He uses it unironically and it's become
-a recognisable beat.
+which is what's happening. He uses it **ironically** - the off-ness
+is the point, not a slip he'd correct - and it's become a
+recognisable beat.
 
 Examples in context:
 
