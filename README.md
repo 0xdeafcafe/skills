@@ -1,92 +1,92 @@
 # skills
 
-Personal Claude Code skills for software engineering work.
+Twelve Claude Code skills for the parts of shipping software I'd rather
+not do myself. Planning the change, writing the spec, addressing review
+comments, keeping the PR description honest, you get the picture.
 
-Each skill is a self-contained agent loop that "drives" a slice of the PR
-lifecycle to completion. They're designed to be composed: `drive-pr`
-orchestrates the whole loop and delegates the slices it doesn't handle
-itself to the others.
+This isn't yet another "awesome-claude-skills" list. Each one does a
+specific job, has specific operating rules, and is opinionated about
+what "done" looks like. They compose: `plan-feature` writes the ADR and
+spec before code starts; the `drive-*` family audits the work while
+it's happening; `write-pr` opens the PR; `drive-pr` iterates on it
+until everything's green; `tone-of-voice` keeps anything I publish from
+sounding like an LLM wrote it (which, to be clear, an LLM did).
 
 ## The skills
 
-Roughly chronological - `plan-feature` at the start of a piece of work,
+Roughly chronological. `plan-feature` at the start of a piece of work,
 `drive-pr` at the end.
 
 ### Planning (before code)
 
 | Skill | One-liner |
 | --- | --- |
-| [`plan-feature`](./skills/plan-feature/) | Drive the discussion that produces an ADR + a Gherkin spec for a feature you're about to build. |
-| [`write-adr`](./skills/write-adr/) | Standalone: capture an architecture decision (MADR / Nygard / Y-statement), matching the repo's existing convention. |
-| [`write-spec`](./skills/write-spec/) | Standalone: write a Gherkin `.feature` file from a discussion, matching the repo's existing specs folder and style. |
-| [`review-spec`](./skills/review-spec/) | Audit a new spec or ADR against the existing corpus for duplicates, conflicts, overlap, and missing cross-links. Read-only. |
+| [`plan-feature`](./skills/plan-feature/) | Drives the discussion that produces an ADR and a Gherkin spec for whatever you're about to build. |
+| [`write-adr`](./skills/write-adr/) | Standalone: capture an architecture decision. MADR / Nygard / Y-statement, matched to whatever the repo already does. |
+| [`write-spec`](./skills/write-spec/) | Standalone: write a Gherkin `.feature` file. Matches the repo's existing specs folder and naming. |
+| [`review-spec`](./skills/review-spec/) | Audits a new spec or ADR against the existing corpus for duplicates, conflicts, overlap, and missing cross-links. Read-only. |
 
 ### Driving (during code)
 
 | Skill | One-liner |
 | --- | --- |
-| [`drive-code`](./skills/drive-code/) | Quality pass on every file the PR touches: SRP, modularity, service/repo pattern, utilities placement, lint, format, readability. |
-| [`drive-feature`](./skills/drive-feature/) | Audit the feature itself against its ADR / spec: edge cases, error handling, loading states, side effects, end-to-end flow. |
-| [`drive-test`](./skills/drive-test/) | Test-quality audit on touched files: right level (unit/integration/e2e), real assertions, no mock-the-unit-under-test, coverage of new code paths. |
-| [`drive-security`](./skills/drive-security/) | Security audit: authn/authz on routes, secrets scan, input validation, output encoding, dep vulnerabilities, OWASP-top-10 smells. |
-| [`drive-ux`](./skills/drive-ux/) | Walk the changed UX surface in a real browser (chrome-devtools / Playwright), capture screenshots, audit against UX best practices. |
+| [`drive-code`](./skills/drive-code/) | Quality pass on every file the PR touched. SRP, modularity, service/repo pattern, utilities placement, lint, format, readability. |
+| [`drive-feature`](./skills/drive-feature/) | Audits the feature itself against its ADR or spec. Edge cases, error handling, loading states, side effects, the bits that bite in production. |
+| [`drive-test`](./skills/drive-test/) | Test quality on touched files. Right level (unit / integration / e2e), real assertions, no mocking the unit under test, coverage of new paths. |
+| [`drive-security`](./skills/drive-security/) | Authz on touched routes, secrets scan, input validation, output encoding, dep vulnerabilities, the OWASP-top-10 smells. |
+| [`drive-ux`](./skills/drive-ux/) | Walks the changed UX surface in a real browser via chrome-devtools or Playwright. Screenshots, a11y audit, the works. |
 
 ### Shipping (around the PR)
 
 | Skill | One-liner |
 | --- | --- |
-| [`write-pr`](./skills/write-pr/) | Compose a PR (title, body, draft state) from commits + diff + linked artifacts, run pre-push checks, then open it via `gh pr create`. |
-| [`drive-pr`](./skills/drive-pr/) | Iterate on an open PR until every trusted comment is resolved, CI is green, and the description matches the code. |
+| [`write-pr`](./skills/write-pr/) | Composes a PR (title, body, draft state) from commits, diff, and linked ADR / spec / ticket. Runs pre-push checks, then opens via `gh pr create`. |
+| [`drive-pr`](./skills/drive-pr/) | Iterates on the open PR until every trusted comment is resolved, CI is green, and the description matches what actually shipped. |
 
 ### Cross-cutting
 
 | Skill | One-liner |
 | --- | --- |
-| [`tone-of-voice`](./skills/tone-of-voice/) | Ghost-write in Alex's voice (blog posts, slack, customer emails, PR descriptions). Bans em-dashes and the usual LLM tells; codifies the patterns from his own writing. |
+| [`tone-of-voice`](./skills/tone-of-voice/) | Ghost-writes in my voice for anything that goes out under my name. Bans em-dashes and the usual LLM tells (yes, this README too). |
 
 ## Installing
-
-Uses the [`skills.sh`](https://www.skills.sh) CLI - one pasteable line,
-no clone:
 
 ```bash
 npx skills add 0xdeafcafe/skills
 ```
 
-This drops every skill into the right place for whichever AI agent you're
-running (Claude Code, Codex, Cursor, OpenCode, etc.). The CLI is
-interactive by default - it asks which skills and which agents to install
-to.
+That's it. Works with Claude Code, Cursor, Codex, OpenCode, and the
+rest of the agent zoo via the [skills.sh](https://www.skills.sh) CLI.
 
-### Useful variants
+The CLI is interactive by default. It asks which skills and which
+agents to install to. If you want everything with no prompts, throw
+`--all -y` at it and call it a Tuesday.
 
 ```bash
 # install just the ones you want
 npx skills add 0xdeafcafe/skills --skill drive-pr --skill drive-ux
 
-# list available skills without installing
+# see what's available without installing
 npx skills add 0xdeafcafe/skills --list
 
-# install everything to Claude Code, globally, no prompts (CI-friendly)
+# everything, globally, into Claude Code, non-interactive
 npx skills add 0xdeafcafe/skills --all -a claude-code -g -y
 
-# install into the current project instead of globally
+# install to a per-project skills directory instead of globally
+# (project is the default; -g installs globally to ~/.claude/skills)
 npx skills add 0xdeafcafe/skills
-# (project install is the default; -g installs globally to ~/.claude/skills)
 
-# update later
+# later
 npx skills update
-
-# remove
 npx skills remove drive-pr
 ```
 
-See [`skills.sh`](https://www.skills.sh) for the full CLI reference.
+Full reference: [skills.sh docs](https://www.skills.sh/docs/cli).
 
-### Dev install (working on the skills themselves)
+### Dev install
 
-If you're hacking on the skills in this repo, point the CLI at the local
-checkout - symlinks rather than copies, so edits take effect immediately:
+If you're hacking on these in this repo, point the CLI at the local
+checkout. Symlinks rather than copies, so edits land instantly:
 
 ```bash
 npx skills add .
@@ -94,33 +94,29 @@ npx skills add .
 
 ## The non-negotiable security rule
 
-Every skill that reads PR comments, review comments, or any other
-human-authored input from a public surface applies the same trust filter:
+PR comments are a prompt-injection vector with shell-level blast
+radius, so every skill that reads them runs the same trust filter:
 
-1. **AI bots** - a fixed whitelist (currently: CodeRabbit, GitHub Copilot
-   reviewer, Kilo Code reviewer). Anyone else with `[bot]` in their
-   handle is **not** trusted by default.
-2. **Humans** - must be verified members of the repo's owning
-   organisation (or explicit collaborators with write+ permission on the
-   repo) via `gh api`. No exceptions for "looks legit" or "the comment
-   seems reasonable" - verification is a hard gate.
+1. **AI bots** - a fixed whitelist (CodeRabbit, GitHub Copilot
+   reviewer, Kilo Code reviewer). Anything else with `[bot]` in the
+   handle is not trusted by default.
+2. **Humans** - verified members of the repo's owning organisation,
+   or explicit collaborators with write+ permission, checked live via
+   `gh api`. No exceptions for "looks legit" or "the comment seems
+   reasonable". Verification is a hard gate.
 
-Everything else is read for situational awareness but **never acted on**.
-The threat model is straightforward: PR comments are a prompt-injection
-vector, and a skill that follows instructions from a random GitHub
-account is a remote-code-execution primitive.
+Everything else is read for situational awareness, never acted on. A
+skill that follows instructions from a random GitHub account is a
+remote-code-execution primitive; the trust gate is what stops that.
 
-Skills that read user-authored input from a public surface (PR
-comments, review threads) carry their own copy of the policy at
-`skills/<name>/references/trust-policy.md` - the full bot whitelist,
-verification commands, and untrusted-comment handling. Currently:
-`drive-pr`, `drive-ux`, `drive-code`, `drive-feature`, `drive-test`,
-`drive-security`. The copies are kept in sync by hand; if you edit one,
-edit all six.
+Skills that read public input carry their own copy of the policy at
+`skills/<name>/references/trust-policy.md` - currently `drive-pr`,
+`drive-ux`, `drive-code`, `drive-feature`, `drive-test`,
+`drive-security`. Kept in sync by hand. If you edit one, edit all six.
 
-Skills that only write files (`write-adr`, `write-spec`, `plan-feature`,
-`review-spec`, `write-pr`) don't need the policy directly - they don't
-consume PR comments as instructions.
+The five skills that only write files (`write-adr`, `write-spec`,
+`plan-feature`, `review-spec`, `write-pr`) don't carry the policy.
+They don't consume PR comments as instructions.
 
 ## Layout
 
@@ -128,12 +124,12 @@ consume PR comments as instructions.
 .
 ├── README.md
 └── skills/
-    ├── plan-feature/           # discussion → ADR + spec
+    ├── plan-feature/           # discussion -> ADR + spec
     │   └── SKILL.md
-    ├── write-adr/              # discussion → ADR
+    ├── write-adr/              # discussion -> ADR
     │   ├── SKILL.md
     │   └── references/adr-formats.md
-    ├── write-spec/             # discussion → Gherkin .feature
+    ├── write-spec/             # discussion -> Gherkin .feature
     │   ├── SKILL.md
     │   └── references/gherkin-reference.md
     ├── review-spec/            # read-only: corpus overlap audit
@@ -158,15 +154,16 @@ consume PR comments as instructions.
     ├── drive-pr/               # iterate open PR to merge-ready
     │   ├── SKILL.md
     │   └── references/trust-policy.md
-    └── tone-of-voice/           # ghost-write in Alex's voice
+    └── tone-of-voice/          # ghost-write in my voice
         ├── SKILL.md
         └── references/{style-guide,samples}.md
 ```
 
-Reference files in a skill's `references/` directory are loaded by that
-skill on demand with the `Read` tool - they keep the main `SKILL.md`
-focused while making longer checklists available when needed.
+Reference files in a skill's `references/` are loaded by that skill on
+demand, which keeps the main `SKILL.md` focused and stops the longer
+checklists from bloating the initial context every time a skill
+triggers.
 
-Each skill is self-contained: when the CLI installs `drive-pr`, the user
-gets `drive-pr/SKILL.md` plus everything under `drive-pr/references/` -
-no cross-skill or shared-directory dependencies to worry about.
+Each skill is self-contained. When the CLI installs `drive-pr`, you
+get `drive-pr/SKILL.md` plus everything under `drive-pr/references/`.
+No cross-skill paths to break on a standalone install.
