@@ -1,4 +1,4 @@
-# Code-quality checklist — long form
+# Code-quality checklist - long form
 
 Load when you want the structured prompt. drive-code's SKILL.md has the
 short version inline; this is the deep-dive when you need a reminder of
@@ -21,9 +21,9 @@ without using "and", that's a good sign.
 **Function-level smells:**
 
 - A function that handles multiple levels of abstraction in the same body
-  — e.g., does HTTP, then JSON parsing, then business logic, then DOM
+  - e.g., does HTTP, then JSON parsing, then business logic, then DOM
   manipulation.
-- A function with many flags / booleans as parameters — usually each
+- A function with many flags / booleans as parameters - usually each
   branch wants to be its own function.
 - A function whose name contains "and" or a vague suffix
   (`processAndSave`, `handleAll`, `doStuff`).
@@ -69,10 +69,10 @@ If the codebase uses this pattern (you'll see `core/`, `domain/`,
 
 ### Feature-sliced
 
-Files organized by feature (`features/orders/`, `features/users/`).
+Files organised by feature (`features/orders/`, `features/users/`).
 Common rules:
 
-- A feature doesn't import directly from another feature's internals —
+- A feature doesn't import directly from another feature's internals -
   only its public API (an index file).
 - Shared code lives in `shared/` or `common/`, not in some specific
   feature.
@@ -81,12 +81,12 @@ Common rules:
 
 Don't impose one in a single PR. Note in the report: "this codebase
 doesn't have a clear service/repository boundary, and this PR doesn't
-need to be the place to introduce one — but X file is mixing HTTP and DB
+need to be the place to introduce one - but X file is mixing HTTP and DB
 in a way that will be painful at scale."
 
 ## Utility placement
 
-A utility is code with **no domain knowledge** — generic string handling,
+A utility is code with **no domain knowledge** - generic string handling,
 date math, array helpers, etc. Domain-aware functions are not utilities;
 they're domain code that happens to be reused.
 
@@ -129,7 +129,7 @@ fine.
 - Verb-phrase: `getUser`, `validateEmail`, `renderHeader`.
 - Boolean-returning: question-phrase: `isAdmin`, `hasAccess`,
   `canEdit`, `shouldRetry`.
-- Async functions: avoid `getUserAsync` — every async function is async,
+- Async functions: avoid `getUserAsync` - every async function is async,
   the suffix is redundant.
 - Don't smuggle return-shape into the name: `getUserList` is worse than
   `getUsers` (the type already says it's a list).
@@ -139,7 +139,7 @@ fine.
 - Singular vs. plural matters: `user` is one, `users` is many.
 - Avoid abbreviations except for canonical ones (`id`, `url`, `http`,
   `db`). `usr`, `ord`, `prd` make code unsearchable.
-- Avoid Hungarian notation: `strName`, `iCount` — modern type systems
+- Avoid Hungarian notation: `strName`, `iCount` - modern type systems
   do this better.
 
 ### Types
@@ -186,7 +186,7 @@ fine.
 - TODOs without a ticket reference or owner have a half-life of
   "forever".
 - If you write a TODO, link it: `TODO(#1234)` or `TODO(@username)`.
-- Old TODOs (months+) — delete or address. Old TODOs are archaeology.
+- Old TODOs (months+) - delete or address. Old TODOs are archaeology.
 
 ## Tests
 
@@ -213,11 +213,11 @@ fine.
 - Mocking the function under test.
 - Asserting on implementation details (e.g., "this method was called
   internally").
-- Tests that pass for the wrong reason — e.g., the assertion never
+- Tests that pass for the wrong reason - e.g., the assertion never
   runs because the test silently returns early.
 - "Smoke tests" with no real assertions (`expect(true).toBe(true)`).
 - Snapshot tests for things that change every release (timestamps, IDs,
-  generated CSS class names) — these are noise generators.
+  generated CSS class names) - these are noise generators.
 
 ## Common code smells (language-agnostic)
 
@@ -247,7 +247,7 @@ property.
 
 > 4 parameters is a sign to consolidate into an options object or split
 the function. Especially bad: many parameters of the same type
-(`function move(x, y, z, dx, dy, dz)` — easy to swap, hard to spot).
+(`function move(x, y, z, dx, dy, dz)` - easy to swap, hard to spot).
 
 ### Stringly-typed APIs
 
@@ -255,7 +255,7 @@ the function. Especially bad: many parameters of the same type
 getStatus("active")
 ```
 
-Where "active" must be one of a known set — use a type / enum so the
+Where "active" must be one of a known set - use a type / enum so the
 compiler catches typos.
 
 ### Functions returning multiple shapes

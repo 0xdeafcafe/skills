@@ -1,4 +1,4 @@
-# Security audit checklist — long form
+# Security audit checklist - long form
 
 Load when you want the full prompt. drive-security's SKILL.md has the
 short version inline.
@@ -9,7 +9,7 @@ short version inline.
 | --- | --- | --- |
 | Is authentication required? | Middleware, decorator, or explicit check at the start of the handler | Endpoint with no `requireAuth` / `@login_required` / equivalent |
 | Is the token actually verified? | Signature check, expiry check, issuer check | `jwt.decode()` without `jwt.verify()` |
-| Is the algorithm pinned? | `verify(token, key, {algorithms: ['HS256']})` | `jwt.verify(token, key)` with default — allows `alg: none` |
+| Is the algorithm pinned? | `verify(token, key, {algorithms: ['HS256']})` | `jwt.verify(token, key)` with default - allows `alg: none` |
 | Is brute-force throttled? | Rate limiting, account lockout | Login endpoint with no throttle |
 | Is password storage right? | bcrypt / argon2 / scrypt with proper cost | SHA-256(password + salt), MD5, plain hashes |
 | Is "forgot password" safe? | Single-use, time-limited token; rotated on use | Reused tokens, long-lived (>1h) tokens |
@@ -86,7 +86,7 @@ webhook configuration, "preview this link" features), validate:
 - **Block private CIDRs**: 127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12,
   192.168.0.0/16, 169.254.0.0/16 (cloud metadata), 0.0.0.0/8.
 - **Block non-http(s) schemes**: file://, gopher://, dict://, ldap://.
-- **Resolve DNS yourself** and validate the resolved IP — don't trust
+- **Resolve DNS yourself** and validate the resolved IP - don't trust
   the hostname check (DNS rebinding attacks).
 - **Set a reasonable timeout** (5s) so SSRF can't hang the server.
 
@@ -141,14 +141,14 @@ data-from-the-wire.
 ## Logging and Monitoring
 
 - **Log security-relevant events**: failed logins, authz failures,
-  admin actions, rate-limit hits, anomalous behaviors.
+  admin actions, rate-limit hits, anomalous behaviours.
 - **Don't log secrets**: tokens, passwords, full Authorization headers.
 - **Don't log full PII**: redact emails to `a***@example.com`, mask
   card numbers, etc.
-- **Make logs structured**: JSON, not raw text — easier to query for
+- **Make logs structured**: JSON, not raw text - easier to query for
   anomalies.
 - **Logs are not security controls**: don't put security decisions
-  inside a `try { logger.log() }` — if the log call throws, the
+  inside a `try { logger.log() }` - if the log call throws, the
   decision shouldn't be skipped.
 - **Don't log to stdout in serverless / container envs that ship to
   third parties** without redacting first.
@@ -220,7 +220,7 @@ if (target && target.startsWith('/') && !target.startsWith('//')) {
 - **Bounded async work per request**: don't make a request that
   spawns 100 sub-requests.
 - **Rate limit auth endpoints** harder than other endpoints.
-- **Rate limit by IP _and_ by user** — IP alone is insufficient
+- **Rate limit by IP _and_ by user** - IP alone is insufficient
   against authenticated attacks.
 
 ## Headers worth setting
@@ -273,14 +273,14 @@ risk, not pattern-match alone.
 
 ## Things that look fine but aren't
 
-- "We're behind a VPN" — VPNs fail open or have stolen credentials.
+- "We're behind a VPN" - VPNs fail open or have stolen credentials.
   Defense in depth means assume the VPN doesn't help.
-- "The endpoint is internal" — every "internal" endpoint that doesn't
+- "The endpoint is internal" - every "internal" endpoint that doesn't
   authenticate becomes a problem the moment someone proxies it
   externally or compromises one host.
-- "The user must be logged in" — okay, are they the *right* logged-in
+- "The user must be logged in" - okay, are they the *right* logged-in
   user? Authn ≠ authz.
-- "It's a feature flag, we'll secure it before launch" — flagged
+- "It's a feature flag, we'll secure it before launch" - flagged
   endpoints get hit; if the flag bypasses auth, that's the bug.
-- "We sanitize on input" — output encoding belongs at output, not
+- "We sanitize on input" - output encoding belongs at output, not
   input. Input sanitization fails the moment you forget one place.

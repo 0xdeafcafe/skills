@@ -4,7 +4,7 @@ description: Use when the user says "drive the tests", "/drive-test", "review th
 allowed-tools: Bash(gh:*), Bash(git:*), Bash(npm:*), Bash(yarn:*), Bash(pnpm:*), Bash(bun:*), Bash(npx:*), Bash(vitest:*), Bash(jest:*), Bash(playwright:*), Bash(pytest:*), Bash(go:*), Bash(cargo:*), Bash(just:*), Bash(make:*), Bash(rg:*), Read, Edit, Write, Grep, Glob, Skill
 ---
 
-# drive-test — audit test quality on touched files
+# drive-test - audit test quality on touched files
 
 drive-test doesn't ask "is there a test"; lots of repos have lots of
 tests that don't catch bugs. It asks the questions that matter:
@@ -12,12 +12,12 @@ tests that don't catch bugs. It asks the questions that matter:
 - Is the test at the **right level**? Unit tests for pure logic,
   integration tests for things that talk to a network/DB, e2e tests
   for user flows.
-- Does the test **actually assert** the behavior under test, or does
+- Does the test **actually assert** the behaviour under test, or does
   it just exercise the function and check it didn't throw?
-- Does the test mock something that **shouldn't be mocked** — like the
+- Does the test mock something that **shouldn't be mocked** - like the
   function under test, or a dependency that exists locally?
-- Will the test **fail when the behavior breaks**, and only then?
-- Is the test **independent** — can it run alone, in any order, in
+- Will the test **fail when the behaviour breaks**, and only then?
+- Is the test **independent** - can it run alone, in any order, in
   parallel?
 
 It also flags missing coverage on **newly added code paths**, runs the
@@ -25,7 +25,7 @@ suite to confirm green, applies mechanical fixes (test names, broken
 imports, missing assertions for new code), and surfaces judgment calls
 for the user.
 
-## Phase 0 — Scope
+## Phase 0 - Scope
 
 Decide which files are in scope, in priority order:
 
@@ -40,31 +40,31 @@ For each source file in scope, find its tests:
 fd --type f "<basename>\\.(test|spec)\\.(ts|tsx|js|jsx)" .
 fd --type f "<basename>\\.test\\.tsx?" .
 
-# Python — common conventions
+# Python - common conventions
 fd --type f "test_<basename>\\.py" tests/ test/
 fd --type f "<basename>_test\\.py" tests/ test/
 
 # Go
 fd --type f "<basename>_test\\.go" .
 
-# Rust — tests are often inline; check the file itself for #[cfg(test)]
+# Rust - tests are often inline; check the file itself for #[cfg(test)]
 rg -l '#\[cfg\(test\)\]' <file>
 ```
 
 If a touched source file has **no test file**, flag it for Phase 3.
 
-Also include any **test files the PR modifies directly** — they're in
+Also include any **test files the PR modifies directly** - they're in
 scope even if no source file changed.
 
 Exclude from the audit:
 
-- Snapshot files (`__snapshots__/`, `*.snap`) — these aren't tests, they're
+- Snapshot files (`__snapshots__/`, `*.snap`) - these aren't tests, they're
   recorded outputs of tests.
 - Generated test scaffolding (`*.generated.test.ts`).
 - Tests in `vendor/`, `third_party/`, `node_modules/`.
 - Test fixtures (`fixtures/`, `testdata/`, `__fixtures__/`).
 
-## Phase 1 — Detect the test toolchain
+## Phase 1 - Detect the test toolchain
 
 | Tool | Detection |
 | --- | --- |
@@ -79,9 +79,9 @@ Exclude from the audit:
 | **rspec** | `.rspec`, `spec/spec_helper.rb` |
 
 Check the project's `package.json` scripts / `Justfile` / `Makefile` for
-the canonical "run tests" command — match it instead of guessing flags.
+the canonical "run tests" command - match it instead of guessing flags.
 
-## Phase 2 — Run the suite
+## Phase 2 - Run the suite
 
 Before auditing test *quality*, confirm the suite *passes*. A test
 file that's red is its own problem.
@@ -126,13 +126,13 @@ pytest --cov=<package>
 go test -cover ./...
 ```
 
-Coverage numbers are not the goal — they're a signal. Look at the
+Coverage numbers are not the goal - they're a signal. Look at the
 **newly added lines** and check whether tests cover them.
 
-## Phase 3 — Per-file test audit
+## Phase 3 - Per-file test audit
 
 For each test file in scope, read it and walk the categories below.
-Long-form versions of each are in `references/test-checklist.md` — load
+Long-form versions of each are in `references/test-checklist.md` - load
 it on demand.
 
 ### 3a. Level: unit vs integration vs e2e
@@ -148,14 +148,14 @@ for what it's testing.
 
 Common mismatches to flag:
 
-- **Unit test for code that's really integration code** — e.g., a "unit
+- **Unit test for code that's really integration code** - e.g., a "unit
   test" of a controller that mocks the database, the validator, the
   service, and the response builder. You're testing the mocks, not the
   code.
-- **Integration test for pure logic** — e.g., spinning up Postgres to
+- **Integration test for pure logic** - e.g., spinning up Postgres to
   test a date-formatting function. Slow and overkill; a unit test
   catches the bug faster.
-- **E2E test for a backend invariant** — e.g., driving the browser to
+- **E2E test for a backend invariant** - e.g., driving the browser to
   test that the API rejects invalid input. An integration test does the
   same thing in 1% of the time.
 
@@ -168,10 +168,10 @@ Read each test. For each:
   is rarely the assertion you want when you mean
   `expect(result).toEqual({ id: 1, ...})`.
 - Is the assertion **specific enough to fail**? A test that asserts
-  `expect(result).toBeTruthy()` passes for any non-falsy value — it
+  `expect(result).toBeTruthy()` passes for any non-falsy value - it
   catches bugs only when the function returns `null` / `false` /
   `undefined`.
-- Are there tests with **no assertions at all** — just "exercise the
+- Are there tests with **no assertions at all** - just "exercise the
   function and assume no exception means success"? Those are
   smoke tests at best; mark them up.
 
@@ -204,7 +204,7 @@ For each newly added function or branch in the PR's source files,
 check whether a test exercises it.
 
 Coverage tools tell you which lines ran. They do NOT tell you which
-**behaviors** are tested. A test that exercises a function without
+**behaviours** are tested. A test that exercises a function without
 asserting on its output gives 100% coverage and 0% confidence.
 
 Walk newly added code paths manually:
@@ -252,7 +252,7 @@ Smells:
 
 If the project uses snapshots:
 
-- A snapshot test that updates every PR is noise — it's not testing
+- A snapshot test that updates every PR is noise - it's not testing
   anything stable; it's recording the latest output.
 - Snapshots with timestamps, generated IDs, or other non-deterministic
   fields embedded are guaranteed to churn. Sanitize before snapshotting.
@@ -261,7 +261,7 @@ If the project uses snapshots:
   snapshots.
 
 When you see a snapshot diff in the PR, ask: *did the underlying
-behavior change, or did formatting / random output change*? If the
+behaviour change, or did formatting / random output change*? If the
 latter, the snapshot is teaching you nothing.
 
 ### 3h. Speed
@@ -273,10 +273,10 @@ If the suite for the touched files takes >30 seconds, that's a smell:
   test, when a single `before-all` would do?
 - Are tests using `sleep` instead of polling for a condition?
 
-Don't optimize without measuring — but if a single test takes >5s
+Don't optimise without measuring - but if a single test takes >5s
 without good reason, flag it.
 
-## Phase 4 — Apply mechanical fixes
+## Phase 4 - Apply mechanical fixes
 
 Safe to apply inline:
 
@@ -300,21 +300,21 @@ deserve their own:
 git commit -m "test: <one sentence on what was added/fixed>"
 ```
 
-## Phase 5 — Surface judgment calls
+## Phase 5 - Surface judgment calls
 
 Things to flag but not fix automatically:
 
 - A test at the wrong level (unit testing what should be integration).
 - A test that overspecifies mock interactions.
-- A test file growing past readability — recommend splitting.
-- A snapshot test that's been "updated" 5+ times in recent history —
+- A test file growing past readability - recommend splitting.
+- A snapshot test that's been "updated" 5+ times in recent history -
   recommend replacing with an explicit assertion.
 - A test suite missing entire categories (no error-path tests, no
   edge-case tests, no concurrency tests).
 
 For each, write a one-line recommendation in the final report.
 
-## Phase 6 — Report
+## Phase 6 - Report
 
 ```
 drive-test audited N files in <pr>/<working tree>.
@@ -323,7 +323,7 @@ Test suite: ✅ green | ❌ <N failing>
 
 Coverage on newly added code:
   ✅ src/services/cancelOrder.ts (3/3 new branches covered)
-  ⚠️ src/api/orders.ts (4/6 branches covered — error paths missing)
+  ⚠️ src/api/orders.ts (4/6 branches covered - error paths missing)
   ❌ src/utils/formatRefund.ts (no test file at all)
 
 Mechanical fixes applied (committed):
@@ -331,7 +331,7 @@ Mechanical fixes applied (committed):
   - Added missing assertion in formatPrice.test.ts:18
   - Added tests for new error paths in cancelOrder.test.ts (3 cases)
 
-Judgment calls — flagged for you to decide:
+Judgment calls - flagged for you to decide:
   - cancelOrder.test.ts mocks the database; could be an integration
     test against a real DB for higher confidence. Currently mock-heavy.
   - orders.test.ts uses snapshot tests for HTML output; 4 of 6
@@ -343,7 +343,7 @@ Judgment calls — flagged for you to decide:
 
 Tests that don't really assert anything (caught and fixed inline where
 clear, flagged where it's not):
-  - flagged: orders.test.ts:42 — "exercises the function but only
+  - flagged: orders.test.ts:42 - "exercises the function but only
     asserts truthy". Recommend asserting on the response shape.
 
 Coverage signals:
@@ -351,7 +351,7 @@ Coverage signals:
   Untouched-file regression: none
 
 Did not audit:
-  - e2e/ — out of scope for this run; would need Playwright running
+  - e2e/ - out of scope for this run; would need Playwright running
     and the dev server up. Ask /drive-ux if e2e coverage matters here.
 ```
 
@@ -362,7 +362,7 @@ Did not audit:
   because the assertion is too strict, the right fix is sometimes
   *strengthening* the assertion (the code is wrong) or sometimes
   loosening (the assertion was overspecified). Decide based on what
-  the behavior *should* be, not on what makes the test pass.
+  the behaviour *should* be, not on what makes the test pass.
 - **Coverage is a signal, not a goal.** A 100%-covered codebase with
   bad assertions is worse than a 70%-covered codebase with good ones.
 - **Don't fight the project's test patterns.** If the project uses
@@ -380,21 +380,21 @@ Did not audit:
 
 ## Composing with other skills
 
-- **`/drive-code`** — code shape. drive-code says "this function is
+- **`/drive-code`** - code shape. drive-code says "this function is
   too long"; drive-test says "this function has no error-path test."
   Run drive-code first; it cleans up the code, which often makes
   obvious where tests are missing.
-- **`/drive-feature`** — logic correctness. drive-feature surfaces
+- **`/drive-feature`** - logic correctness. drive-feature surfaces
   "the error path isn't handled"; drive-test surfaces "the error path
   isn't tested." Both point at the same gap from different angles.
-- **`/drive-ux`** — the e2e side. drive-test stops at integration.
+- **`/drive-ux`** - the e2e side. drive-test stops at integration.
   Browser-level user flow tests are drive-ux's territory.
-- **`/drive-pr`** — the orchestrator may suggest /drive-test when
+- **`/drive-pr`** - the orchestrator may suggest /drive-test when
   reviewers flag missing or weak tests.
 
 ## What's in `references/`
 
-- `test-checklist.md` — long-form audit checklist with examples,
+- `test-checklist.md` - long-form audit checklist with examples,
   loaded on demand.
-- `trust-policy.md` — the full trust gate, for when this skill is
+- `trust-policy.md` - the full trust gate, for when this skill is
   invoked in a PR-comment-driven context.

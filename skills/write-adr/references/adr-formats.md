@@ -3,7 +3,7 @@
 The three common conventions. Match what's already in the repo; if
 nothing is, default to MADR.
 
-## MADR (Markdown Architecture Decision Records) — default
+## MADR (Markdown Architecture Decision Records) - default
 
 The most common modern format. Used by ~70% of teams that use ADRs at
 all. Spec: <https://adr.github.io/madr/>.
@@ -41,7 +41,7 @@ an outage), name it.
 ## Decision Outcome
 
 Chosen option: "Option B", because <one sentence on why it beat the
-others — not a recap of every pro, just the deciding factor>.
+others - not a recap of every pro, just the deciding factor>.
 
 ### Consequences
 
@@ -133,7 +133,7 @@ What is the change that we're actually proposing or doing?
 What becomes easier or more difficult to do because of this change?
 ```
 
-That's it — just four sections. The brevity is the point.
+That's it - just four sections. The brevity is the point.
 
 ## Y-statement format
 
@@ -186,7 +186,7 @@ Match the existing convention; don't introduce a new one.
 
 ## Common mistakes
 
-- **No alternatives.** A decision without alternatives isn't a decision —
+- **No alternatives.** A decision without alternatives isn't a decision -
   it's a constraint. If only one option was viable, say so explicitly
   and document why (the alternatives were tried in another team, killed
   by procurement, ruled out by regulator, etc.).

@@ -1,10 +1,10 @@
 ---
 name: drive-code
-description: Use when the user says "drive the code", "/drive-code", "clean up the code in this PR", "make sure the touched files follow best practices", or asks Claude to do a code-quality pass on the files a PR (or working tree) touches. Evaluates each touched file for single-responsibility, modularity, service/repository pattern compliance, utility placement, naming, length, and runs the project's linter + formatter. Applies mechanical fixes automatically; proposes (with diff) any structural refactor before changing it. Does NOT verify the feature's behavior (use /drive-feature) or its UX (use /drive-ux).
+description: Use when the user says "drive the code", "/drive-code", "clean up the code in this PR", "make sure the touched files follow best practices", or asks Claude to do a code-quality pass on the files a PR (or working tree) touches. Evaluates each touched file for single-responsibility, modularity, service/repository pattern compliance, utility placement, naming, length, and runs the project's linter + formatter. Applies mechanical fixes automatically; proposes (with diff) any structural refactor before changing it. Does NOT verify the feature's behaviour (use /drive-feature) or its UX (use /drive-ux).
 allowed-tools: Bash(gh:*), Bash(git:*), Bash(npm:*), Bash(yarn:*), Bash(pnpm:*), Bash(bun:*), Bash(npx:*), Bash(eslint:*), Bash(prettier:*), Bash(biome:*), Bash(ruff:*), Bash(black:*), Bash(gofmt:*), Bash(go:*), Bash(cargo:*), Bash(rustfmt:*), Bash(just:*), Bash(make:*), Read, Edit, Write, Grep, Glob, Skill
 ---
 
-# drive-code — per-file code-quality pass on every touched file
+# drive-code - per-file code-quality pass on every touched file
 
 drive-code looks at every file the PR changed and asks: does this file
 still earn its keep after this change? Specifically:
@@ -22,7 +22,7 @@ For **structural changes** (splitting a file, extracting a function, moving
 a util) it shows a diff first, applies it, and flags it in the report so a
 human can review what changed and why.
 
-## Phase 0 — Scope
+## Phase 0 - Scope
 
 Decide which files are in scope, in this priority order:
 
@@ -33,7 +33,7 @@ Decide which files are in scope, in this priority order:
 Exclude from the audit:
 
 - Lockfiles (`package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `Cargo.lock`,
-  `go.sum`, `poetry.lock`, etc.) — these aren't code-shaped.
+  `go.sum`, `poetry.lock`, etc.) - these aren't code-shaped.
 - Generated files: anything matched by the repo's `.gitattributes` with
   `linguist-generated=true`, or anything under `dist/`, `build/`, `generated/`,
   `__generated__/`, `*.pb.go`, `*.pb.ts`.
@@ -44,7 +44,7 @@ Exclude from the audit:
 
 For everything else, run the full pass.
 
-## Phase 1 — Discover the toolchain
+## Phase 1 - Discover the toolchain
 
 Detect what the project uses, in priority order. Stop at the first hit per
 category.
@@ -56,10 +56,10 @@ category.
 | **TS/JS symbol intel** | `tsconfig.json` present → use the `tslsp` skill (do NOT fall back to grep/Edit for symbol-level work) |
 | **Test runner** | `vitest.config.*` → vitest · `jest.config.*` → jest · `playwright.config.*` → playwright · `pytest.ini`/`pyproject.toml[tool.pytest]` → pytest · `go test` for Go · `cargo test` for Rust |
 
-Read `CLAUDE.md` and the relevant `README.md` first — the project may
+Read `CLAUDE.md` and the relevant `README.md` first - the project may
 document its own conventions that override the defaults above.
 
-## Phase 2 — Mechanical fixes (always safe to apply)
+## Phase 2 - Mechanical fixes (always safe to apply)
 
 Run these in parallel where possible:
 
@@ -77,10 +77,10 @@ tslsp code-action --file <path> --kind source.organizeImports --apply 0
 After running:
 
 - Diff what changed. Mechanical fixes are commit-worthy on their own.
-- If lint still has unfixable issues, capture them — they go into the
+- If lint still has unfixable issues, capture them - they go into the
   Phase 4 report.
 
-Commit mechanical fixes separately from structural ones — keeps PR history
+Commit mechanical fixes separately from structural ones - keeps PR history
 readable:
 
 ```bash
@@ -88,12 +88,12 @@ git add -- <only the mechanically-changed files>
 git commit -m "lint + format on touched files"
 ```
 
-## Phase 3 — Per-file quality review
+## Phase 3 - Per-file quality review
 
 For each file in scope, read it (use `tslsp outline` first for TS/JS to
 get structure cheaply, then `Read` only the interesting parts) and evaluate
 the categories below. The full long-form checklist is in
-`references/code-checklist.md` — load it on demand.
+`references/code-checklist.md` - load it on demand.
 
 ### 3a. Single responsibility (file + function level)
 
@@ -102,7 +102,7 @@ the categories below. The full long-form checklist is in
   formats user names for display has four reasons to change.
 - A function should do **one thing at one level of abstraction**.
   `handleSubmit` that validates, transforms, calls the API, writes to
-  analytics, and updates state is doing five things — pull out the steps.
+  analytics, and updates state is doing five things - pull out the steps.
 - Concrete signal: if you can't name the file or function without using
   "and" or a vague suffix like `Manager` / `Helper` / `Utils`, that's a
   smell.
@@ -155,7 +155,7 @@ Rough caps. These are signals to investigate, not hard rules:
 | Function cyclomatic complexity | > 10 (eyeball nested `if`/`switch`/`for`) |
 | Component (React/Vue/Svelte) props | > 8 |
 | Component JSX depth | > 6 levels of nesting |
-| Test file | Larger than the file it tests — sometimes fine, often a sign of over-mocking |
+| Test file | Larger than the file it tests - sometimes fine, often a sign of over-mocking |
 
 When a file blows past one of these: ask "could a reader find what they
 need quickly?" If the file is one cohesive feature that genuinely needs
@@ -165,10 +165,10 @@ split.
 ### 3e. Naming
 
 - Names match the level of abstraction. `getUser` reads at the same level
-  as `getOrder` — `extractUserFromAuthHeaderAndValidate` does not.
+  as `getOrder` - `extractUserFromAuthHeaderAndValidate` does not.
 - Booleans answer a question: `isAdmin`, `hasAccess`, `shouldRetry`. Not
   `admin: bool`.
-- Avoid `Manager`, `Helper`, `Util`, `Handler`, `Service<Name>Service` —
+- Avoid `Manager`, `Helper`, `Util`, `Handler`, `Service<Name>Service` -
   they're noise. Replace with what the thing actually does.
 - Pluralization is consistent: `users` is a collection, `user` is one.
 - File names match their primary export.
@@ -177,7 +177,7 @@ split.
 
 - Comments explain **why**, never **what**. If a comment paraphrases the
   next line of code, delete it.
-- No dead code — commented-out blocks, unused exports, unused imports.
+- No dead code - commented-out blocks, unused exports, unused imports.
 - No `console.log` / `print` / `dbg!` left from development.
 - No `TODO`s without a date or ticket reference. A `TODO` from 2019 is
   archaeology, not a task.
@@ -192,17 +192,17 @@ split.
   flow work".
 - Tests don't mock the thing they're testing. ("Mocking the function
   under test" is a frequent rookie smell.)
-- Tests fail with a useful message — assert on the specific thing, not on
+- Tests fail with a useful message - assert on the specific thing, not on
   `JSON.stringify(everything)`.
 - Don't test the framework. `expect(useState).toBeDefined()` is not a test.
 
-## Phase 4 — Structural changes (propose, then apply)
+## Phase 4 - Structural changes (propose, then apply)
 
-For any structural change identified in Phase 3 — splitting a file,
-extracting a function, moving a util, renaming a symbol — do this:
+For any structural change identified in Phase 3 - splitting a file,
+extracting a function, moving a util, renaming a symbol - do this:
 
 1. **State the change in one sentence**: "Move `formatUserName` from
-   `src/profile/UserCard.tsx` to `src/utils/users.ts` — used by 4 other
+   `src/profile/UserCard.tsx` to `src/utils/users.ts` - used by 4 other
    files."
 2. **Show the diff** (don't apply yet). For TS/JS use `tslsp` so imports
    are rewritten automatically:
@@ -215,14 +215,14 @@ extracting a function, moving a util, renaming a symbol — do this:
    ```bash
    git commit -m "extract formatUserName to src/utils/users.ts"
    ```
-4. **Flag in the report** — the user should see, on a single line, every
+4. **Flag in the report** - the user should see, on a single line, every
    structural change that landed.
 
 If a structural change is borderline (could go either way, depends on
 where the codebase is heading), don't apply it. Note it in the report as
 "considered but not applied: <change>, because <reason>".
 
-## Phase 5 — Verify nothing broke
+## Phase 5 - Verify nothing broke
 
 After Phase 2 + Phase 4:
 
@@ -240,10 +240,10 @@ go build ./... | cargo check | npx tsc --noEmit | pyright
 
 If anything fails, stop, surface the failure, and undo the structural
 change that caused it. Mechanical fixes (lint/format) almost never
-introduce failures — if they do, the project's tooling is misconfigured;
+introduce failures - if they do, the project's tooling is misconfigured;
 flag that to the user.
 
-## Phase 6 — Report
+## Phase 6 - Report
 
 ```
 drive-code reviewed N files in <pr>/<working tree>.
@@ -251,22 +251,22 @@ drive-code reviewed N files in <pr>/<working tree>.
 Mechanical fixes applied:
   - lint: <K> issues auto-fixed across <M> files
   - format: <K> files reformatted
-  - imports organized: <K> files
+  - imports organised: <K> files
 
 Structural changes applied (each its own commit):
   - <sha> extract formatUserName to src/utils/users.ts (4 callers)
   - <sha> split src/api/users.ts (387 LOC) into users/{queries,mutations,types}.ts
 
 Considered but not applied:
-  - merge userValidator + orderValidator into a shared Validator — not
-    clearly better; the two share little behavior
+  - merge userValidator + orderValidator into a shared Validator - not
+    clearly better; the two share little behaviour
 
 Unresolved lint issues (X):
   - src/foo.ts:42  no-explicit-any  consider typing this
   - src/bar.ts:18  prefer-const     mutation looks intentional, leave to author
 
 Files I'd flag for a human re-read:
-  - src/api/orders.ts — 540 LOC, doing 3 jobs; recommend splitting in a
+  - src/api/orders.ts - 540 LOC, doing 3 jobs; recommend splitting in a
     follow-up PR (out of scope for the current change)
 
 CI-equivalent gates run locally:
@@ -275,7 +275,7 @@ CI-equivalent gates run locally:
 ```
 
 Be specific. "src/foo.ts is too long" is not actionable; "split
-`src/foo.ts` into `foo/queries.ts` + `foo/mutations.ts` — the two share
+`src/foo.ts` into `foo/queries.ts` + `foo/mutations.ts` - the two share
 no state" is.
 
 ## Operating rules
@@ -294,7 +294,7 @@ no state" is.
   Match the local style; raise a separate concern if it's actively
   harmful.
 - **Use tslsp for TS/JS symbol-level work.** Never grep-and-edit a rename.
-  The `tslsp` skill is mandatory in TS projects — see its SKILL.md.
+  The `tslsp` skill is mandatory in TS projects - see its SKILL.md.
 - **Never `--no-verify` or `--no-edit`.** If pre-commit fails, fix the
   cause.
 - **The trust gate still applies** if drive-code is used to address a
@@ -306,12 +306,12 @@ no state" is.
   flagging the same kind of code-quality issue repeatedly.
 - After `/drive-code`, `/drive-feature` is a good follow-up: code that
   *reads* well still has to *behave* well across edge cases.
-- `/drive-ux` is orthogonal — it cares about the user-facing surface,
+- `/drive-ux` is orthogonal - it cares about the user-facing surface,
   not the code shape.
 
 ## What's in `references/`
 
-- `code-checklist.md` — long-form, language-agnostic checklist with
+- `code-checklist.md` - long-form, language-agnostic checklist with
   examples. Load it when you want a structured prompt.
-- `trust-policy.md` — the full trust gate: bot whitelist, human
+- `trust-policy.md` - the full trust gate: bot whitelist, human
   verification commands, untrusted-comment handling.

@@ -6,20 +6,20 @@ rules feel abstract.
 
 The three sources:
 
-1. **"Eat Sleep Append Repeat…"** (Apr 2026) — LangWatch event
+1. **"Eat Sleep Append Repeat…"** (Apr 2026) - LangWatch event
    sourcing announcement. Marketing-flavoured blog post.
-2. **Snapchat API interview** — older Q&A about reverse-engineering
+2. **Snapchat API interview** - older Q&A about reverse-engineering
    Snapchat's API. Conversational technical piece.
-3. **"A warm welcome to LangWatch"** — onboarding-style blog about
+3. **"A warm welcome to LangWatch"** - onboarding-style blog about
    joining LangWatch and the OpenTelemetry SDK rewrite. First-person.
 
-The samples cover three different registers — broad blog, technical
+The samples cover three different registers - broad blog, technical
 interview, personal onboarding. The voice is consistent across all
 three.
 
 ---
 
-## Sample 1 — Opening hook (Eat Sleep Append Repeat)
+## Sample 1 - Opening hook (Eat Sleep Append Repeat)
 
 > For the past couple of months we have been busy shovelling coal in
 > the LangWatch engine room. Late last year - perhaps during a foul
@@ -39,7 +39,7 @@ three.
   judgement -" is the dry joke. The main sentence stays intact; the
   joke lives in the bracketed clause.
 - **Dry hyperbole**: "increasing the market cap of Red Bull by several
-  percentage points" — works because it's sandwiched between concrete
+  percentage points" - works because it's sandwiched between concrete
   things ("many late nights", "a few sweaty migrations").
 - **The earned emoji**: the 🚀 lands because the paragraph has
   earned the energy.
@@ -56,7 +56,7 @@ Same facts. No voice.
 
 ---
 
-## Sample 2 — The throwaway "not a typo" (Eat Sleep Append Repeat)
+## Sample 2 - The throwaway "not a typo" (Eat Sleep Append Repeat)
 
 > Before this re-architecture, our platform could process 10-20 events
 > per second. That's not a typo, but it got us to where we are today.
@@ -66,9 +66,9 @@ Same facts. No voice.
 **What's working:**
 
 - **Confess the embarrassing number first.** Not 10,000 per second,
-  not 1,000 — 10 to 20. The brag (300x improvement) only works
+  not 1,000 - 10 to 20. The brag (300x improvement) only works
   because the starting point is honest.
-- **"That's not a typo, but it got us to where we are today."** — a
+- **"That's not a typo, but it got us to where we are today."** - a
   one-liner that defuses the "10-20?? really??" reaction the reader
   would have had anyway. Acknowledges and moves on.
 - **No transition word.** No "Furthermore". No "Now,". Just the next
@@ -79,7 +79,7 @@ words than they'd expect.**
 
 ---
 
-## Sample 3 — The "almost suspiciously good fit" brag (Eat Sleep Append Repeat)
+## Sample 3 - The "almost suspiciously good fit" brag (Eat Sleep Append Repeat)
 
 > We did swap out the database, moving from ElasticSearch to
 > ClickHouse, which turned out to be an almost suspiciously good fit
@@ -89,21 +89,21 @@ words than they'd expect.**
 
 **What's working:**
 
-- **"We did swap out"** — the "did" carries a hint of "yeah, that
+- **"We did swap out"** - the "did" carries a hint of "yeah, that
   happened" without going full "we made the decision to..."
-- **"Almost suspiciously good fit"** — characterising the technical
+- **"Almost suspiciously good fit"** - characterising the technical
   choice with personality. An LLM would say "well-suited" or
   "particularly effective".
 - **Three-noun list**: "Append-only writes, columnar storage,
   absurdly fast aggregations." No "such as", no "namely". Just the
   three things.
 - **The pivot**: "But the real difference wasn't the database, but
-  rather the architecture on top of it." — sets up the next
+  rather the architecture on top of it." - sets up the next
   paragraph, makes the reader want to keep reading.
 
 ---
 
-## Sample 4 — The afternoon-of-work brag (Eat Sleep Append Repeat)
+## Sample 4 - The afternoon-of-work brag (Eat Sleep Append Repeat)
 
 > Our billing usage tracking (counting every billable event per
 > project per day across the entire platform) was an afternoon of
@@ -113,7 +113,7 @@ words than they'd expect.**
 
 - **Specific scope in parens**: "(counting every billable event per
   project per day across the entire platform)". The parenthetical
-  qualifies the claim — without it, "billing tracking" would be
+  qualifies the claim - without it, "billing tracking" would be
   vague.
 - **The three-word punch**: "An afternoon." It's the third repetition
   of the same word, and it lands.
@@ -122,7 +122,7 @@ words than they'd expect.**
 
 ---
 
-## Sample 5 — Daft Punk closer (Eat Sleep Append Repeat)
+## Sample 5 - Daft Punk closer (Eat Sleep Append Repeat)
 
 > Say we improve our trace processing pipeline. Better cost
 > calculation, smarter input/output extraction, whatever (or even fix
@@ -139,14 +139,14 @@ words than they'd expect.**
 
 **What's working:**
 
-- **"whatever (or even fix a bug, shocking)"** — parenthetical with
+- **"whatever (or even fix a bug, shocking)"** - parenthetical with
   self-aware aside. The "shocking" is the dry voice.
-- **"Tough luck mate."** — British colloquialism doing the work that
+- **"Tough luck mate."** - British colloquialism doing the work that
   a longer sentence would do worse.
-- **"oopsie, just wait for new data"** — quoting the response that
+- **"oopsie, just wait for new data"** - quoting the response that
   customers usually get, in mock-tone. No "many vendors say...";
   just the imagined quote.
-- **Closing with the lyric**: "Harder. Better. Faster. Stronger." —
+- **Closing with the lyric**: "Harder. Better. Faster. Stronger." -
   Daft Punk reference that fits the rhythm of the paragraph (which
   is itself about iterative improvement). Not announced, just
   dropped.
@@ -158,7 +158,7 @@ have landed. References work when they map.
 
 ---
 
-## Sample 6 — The "Already live" list (Eat Sleep Append Repeat)
+## Sample 6 - The "Already live" list (Eat Sleep Append Repeat)
 
 > We have some quick wins already live on production just as a side
 > effect of the new system. These aren't roadmapped or a loosey
@@ -178,12 +178,12 @@ have landed. References work when they map.
 
 **What's working:**
 
-- **The opening line uses "loosey goosey"**, which sets the register —
+- **The opening line uses "loosey goosey"**, which sets the register -
   this is a list, but it's not a corporate roadmap.
 - **Each bullet has a small aside or characterisation**, not just a
   feature name. "No more excuses to get a coffee here, sorry." adds
   voice to what would otherwise be a sterile bullet.
-- **"Fast is the only mode"** as a bullet label — Apple-style product
+- **"Fast is the only mode"** as a bullet label - Apple-style product
   framing without the corporate stiffness.
 
 **Note:** lists in Alex's writing usually have personality in the bullets
@@ -191,7 +191,7 @@ themselves, not just in the surrounding paragraph.
 
 ---
 
-## Sample 7 — The closing (Eat Sleep Append Repeat)
+## Sample 7 - The closing (Eat Sleep Append Repeat)
 
 > If you want to know how the sausage is made, stay tuned. We've got
 > a proper technical deep-dive coming next, going into the guts of
@@ -204,17 +204,17 @@ themselves, not just in the surrounding paragraph.
 
 **What's working:**
 
-- **"how the sausage is made"** — earned colloquialism.
-- **"(and regrets)"** — the parenthetical that's the actual reason a
+- **"how the sausage is made"** - earned colloquialism.
+- **"(and regrets)"** - the parenthetical that's the actual reason a
   reader will click through. Honesty about the messy parts is the
   draw.
-- **"its own kind of sadistic adventure"** — the closer is also a
+- **"its own kind of sadistic adventure"** - the closer is also a
   setup for the next piece. The phrase characterises without
   complaining.
 
 ---
 
-## Sample 8 — Confident understatement (Snapchat interview)
+## Sample 8 - Confident understatement (Snapchat interview)
 
 > What protections does Snapchat have in place to prevent that?
 >
@@ -223,44 +223,34 @@ themselves, not just in the surrounding paragraph.
 > exploit it via a single http endpoint), but they have a binary
 > pattern that is used to generate a unique key for every request.
 > The issue is this binary pattern is stored in the application, and
-> is always the same for every user — also someone had already
+> is always the same for every user - also someone had already
 > posted it online so I didn't even need to look into the iOS
-> executable to extract the key — so at this point, I was able to
+> executable to extract the key - so at this point, I was able to
 > just start sending requests to snapchat and it had no idea the
 > requests were not coming from the official clients.
 
-**What's working** (despite this being an older piece with some
-em-dashes from the source — modern Alex-voice uses hyphens-with-spaces
-instead):
+**What's working** (the original used em-dashes for the asides; this
+extract has them converted to hyphens-with-spaces, which is the
+modern Alex-voice convention. Same content, ban-compliant
+punctuation):
 
-- **"already better than Instagram"** — a side-jab made via a
+- **"already better than Instagram"** is a side-jab made via a
   factual aside, with attribution to a specific friend's work. Stays
   factual; doesn't editorialise.
 - **"someone had already posted it online so I didn't even need to..."**
-  — confesses the easy path. The story is more compelling for the
+  confesses the easy path. The story is more compelling for the
   honesty.
 - **"it had no idea the requests were not coming from the official
-  clients"** — flat statement of result. No "I was able to
-  successfully" — just "it had no idea".
+  clients"** is a flat statement of result. No "I was able to
+  successfully", just "it had no idea".
 
-**Updated for the current em-dash ban** (what Alex would write today):
-
-> Like I previously said, all traffic is https - already better than
-> Instagram, where a friend of mine Stevie Graham found a way to
-> exploit it via a single http endpoint - but they have a binary
-> pattern that is used to generate a unique key for every request.
-> The issue is this binary pattern is stored in the application, and
-> is always the same for every user (also someone had already posted
-> it online so I didn't even need to look into the iOS executable
-> to extract the key), so at this point, I was able to just start
-> sending requests to snapchat and it had no idea the requests were
-> not coming from the official clients.
-
-The change: replace `—` with ` - ` for asides, or with parens.
+If you see an em-dash in a piece of Alex's older writing while
+calibrating, treat it as a historical artefact, not a licence to use
+one yourself. Replace with ` - ` or restructure into parens.
 
 ---
 
-## Sample 9 — "Hardly punishment at all" (Snapchat interview)
+## Sample 9 - "Hardly punishment at all" (Snapchat interview)
 
 > With third-party apps, breaking the terms of service isn't risky at
 > all. I could publish an app to the App Store that breaks my own
@@ -270,14 +260,14 @@ The change: replace `—` with ` - ` for asides, or with parens.
 
 **What's working:**
 
-- **"Hardly punishment at all."** — three-word punch closing a longer
+- **"Hardly punishment at all."** - three-word punch closing a longer
   paragraph. Carries the dry tone.
-- **"(depending on severity)"** — parenthetical qualifier that
+- **"(depending on severity)"** - parenthetical qualifier that
   acknowledges the rule's nuance without derailing the point.
 
 ---
 
-## Sample 10 — Self-introduction (Warm welcome to LangWatch)
+## Sample 10 - Self-introduction (Warm welcome to LangWatch)
 
 > Hey there 👋, I'm Alex - an Engineer at LangWatch. OpenTelemetry
 > fetishist, and in a proud love/hate relationship with Python,
@@ -290,22 +280,22 @@ The change: replace `—` with ` - ` for asides, or with parens.
 
 **What's working:**
 
-- **"Hey there 👋"** — emoji used as punctuation. Sets the tone for an
+- **"Hey there 👋"** - emoji used as punctuation. Sets the tone for an
   introduction without being twee.
-- **"OpenTelemetry fetishist"** — characterising self in three words.
+- **"OpenTelemetry fetishist"** - characterising self in three words.
   Beats "passionate observability advocate" 100 times out of 100.
-- **"proud love/hate relationship with Python"** — admission of
+- **"proud love/hate relationship with Python"** - admission of
   ambivalence. An LLM would say "deep expertise in".
-- **"finding where all the bodies are buried"** — colloquialism for
+- **"finding where all the bodies are buried"** - colloquialism for
   "reading the codebase to understand the dark corners". Specific
   and useful.
 - **"why Python won't install using the exact same command your
-  colleague just used"** — a universally-relatable shared frustration.
+  colleague just used"** - a universally-relatable shared frustration.
   Makes the writer human.
 
 ---
 
-## Sample 11 — Tech metaphor that earns it (Warm welcome to LangWatch)
+## Sample 11 - Tech metaphor that earns it (Warm welcome to LangWatch)
 
 > Think of OpenTelemetry as the USB-C of observability: one open,
 > language & vendor-agnostic standard that works the first time, no
@@ -317,22 +307,22 @@ The change: replace `—` with ` - ` for asides, or with parens.
 - **The metaphor maps**: USB-C is a standard, multi-vendor,
   multi-platform, works-without-fiddling. So is OpenTelemetry. The
   comparison earns its place.
-- **"no flipping it round 3 times"** — the small extra detail that
+- **"no flipping it round 3 times"** - the small extra detail that
   shows the writer knows what they're invoking. USB-C is universal,
   but more importantly it goes in the first time. That's the actual
   parallel.
-- **"…"** — ellipsis used for a small narrative pause, not as a
+- **"…"** - ellipsis used for a small narrative pause, not as a
   trailing-off cop-out.
-- **"Plug ... watch the spans flow."** — direct second-person.
+- **"Plug ... watch the spans flow."** - direct second-person.
 
 **Why this works as a tech metaphor**: it's a concrete, well-known
 *thing* (USB-C) compared to another concrete *thing* (OpenTelemetry),
 with the comparison rooted in a specific shared property (universal,
-plug-and-play). Not "X is like a Swiss Army knife" — which is meaningless.
+plug-and-play). Not "X is like a Swiss Army knife" - which is meaningless.
 
 ---
 
-## Sample 12 — "Tired / Wired" framing (Warm welcome to LangWatch)
+## Sample 12 - "Tired / Wired" framing (Warm welcome to LangWatch)
 
 > Tired: Our existing Python SDK used a custom interpretation of the
 > trace and span pluming that OpenTelemetry standardises. This felt
@@ -354,16 +344,16 @@ plug-and-play). Not "X is like a Swiss Army knife" — which is meaningless.
   magazine column), used as a structural device. It works because
   it's a clean before/after structure that doesn't require the
   writer to say "before/after".
-- **"This felt like a good option at the start"** — honest about why
+- **"This felt like a good option at the start"** - honest about why
   the old choice existed. Doesn't paint the previous-self as foolish.
-- **"a full exporter-collector we had to babysit"** — characterises
+- **"a full exporter-collector we had to babysit"** - characterises
   the old pain in five words.
-- **"pulling up to the function"** — slang. "Function" as a place
+- **"pulling up to the function"** - slang. "Function" as a place
   you arrive at, not a thing you call. Sets the tone.
 
 ---
 
-## Sample 13 — Honest about the awkward (Warm welcome to LangWatch)
+## Sample 13 - Honest about the awkward (Warm welcome to LangWatch)
 
 > As someone we all have weird feelings about now used to say "The
 > best part is no part". Being able to strip out all the additional
@@ -373,7 +363,7 @@ plug-and-play). Not "X is like a Swiss Army knife" — which is meaningless.
 
 **What's working:**
 
-- **"someone we all have weird feelings about now"** — refers to a
+- **"someone we all have weird feelings about now"** - refers to a
   contentious public figure (Elon Musk, in this case) without
   naming them, while acknowledging the awkwardness of the
   reference. Lets the reader fill in the blank and chuckle. An LLM
@@ -389,7 +379,7 @@ quote came from nowhere.
 
 ---
 
-## Sample 14 — Looking forward (Warm welcome to LangWatch)
+## Sample 14 - Looking forward (Warm welcome to LangWatch)
 
 > As I mentioned briefly at the start of this blog post that I hope
 > found you well, the longer-term win of this project is the new
@@ -400,17 +390,17 @@ quote came from nowhere.
 
 **What's working:**
 
-- **"this blog post that I hope found you well"** — a small joke that
+- **"this blog post that I hope found you well"** - a small joke that
   also gestures at the standard email opener ("I hope this email
   finds you well"). Self-aware about the genre.
-- **"goodies"** — informal noun that does work. "Initiatives" would
+- **"goodies"** - informal noun that does work. "Initiatives" would
   be the LLM choice. "Goodies" implies wrapped, slightly fun, gifts.
-- **"sooner than you might think"** — earned because the rest of the
+- **"sooner than you might think"** - earned because the rest of the
   paragraph is concrete enough that the tease feels honest.
 
 ---
 
-## Distilled — the moves that show up across all three pieces
+## Distilled - the moves that show up across all three pieces
 
 Read across the samples and the same handful of techniques keep
 appearing:
@@ -439,4 +429,4 @@ appearing:
 When ghost-writing for Alex, the question to ask paragraph by
 paragraph: *which of these moves is appropriate here?* If none are,
 the paragraph might still be fine. But across a piece, several of
-them should be present — that's what makes it sound like him.
+them should be present - that's what makes it sound like him.

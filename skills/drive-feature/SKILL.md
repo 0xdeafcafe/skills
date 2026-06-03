@@ -1,10 +1,10 @@
 ---
 name: drive-feature
-description: Use when the user says "drive the feature", "/drive-feature", "audit the feature logic", "is this feature complete", "check edge cases", or asks Claude to verify that a feature (typically the one in the current PR) is well built end-to-end. Reads any ADRs and specs that exist for the feature, traces the data flow from entry to exit, and checks edge cases, error handling, loading states, and side effects against the spec. Does NOT pass judgment on code style (use /drive-code) or click through the UX (use /drive-ux) — focuses on logic and completeness.
+description: Use when the user says "drive the feature", "/drive-feature", "audit the feature logic", "is this feature complete", "check edge cases", or asks Claude to verify that a feature (typically the one in the current PR) is well built end-to-end. Reads any ADRs and specs that exist for the feature, traces the data flow from entry to exit, and checks edge cases, error handling, loading states, and side effects against the spec. Does NOT pass judgment on code style (use /drive-code) or click through the UX (use /drive-ux) - focuses on logic and completeness.
 allowed-tools: Bash(gh:*), Bash(git:*), Bash(rg:*), Read, Edit, Grep, Glob, Skill
 ---
 
-# drive-feature — audit the feature end-to-end against its spec
+# drive-feature - audit the feature end-to-end against its spec
 
 drive-feature asks: **"does this feature actually work, for every case
 someone might hit, in a way that matches what we said we were building?"**
@@ -14,23 +14,23 @@ walkthrough. It traces the data flow from the user-facing trigger through
 every layer (UI → API → service → repository → side effects) and checks
 each step for:
 
-- **Edge cases** — empty, null, very large, very small, concurrent,
+- **Edge cases** - empty, null, very large, very small, concurrent,
   out-of-order, rate-limited, partial.
-- **Error handling** — every failure has a defined response; errors are
+- **Error handling** - every failure has a defined response; errors are
   surfaced where the user can do something about them.
-- **Loading / pending states** — every async operation has explicit
+- **Loading / pending states** - every async operation has explicit
   states (idle, loading, success, error); no implicit "trust the
   network" assumptions.
-- **Side effects** — analytics events, telemetry, audit logs, DB writes,
-  cache invalidation, queued jobs, emails, webhooks — are they
+- **Side effects** - analytics events, telemetry, audit logs, DB writes,
+  cache invalidation, queued jobs, emails, webhooks - are they
   intentional, documented, and idempotent where they need to be?
-- **Spec match** — what the ADR/spec says the feature should do vs. what
+- **Spec match** - what the ADR/spec says the feature should do vs. what
   the code actually does.
 
 The skill produces a **gap list**. It applies obvious fixes inline but
 leaves judgment calls to the user.
 
-## Phase 0 — Find the spec
+## Phase 0 - Find the spec
 
 The spec is the source of truth. Look for one before reading any code.
 Search in this order; collect all hits, don't stop at the first:
@@ -56,19 +56,19 @@ Also check for:
 - A `<feature>.md` in the same directory as the code.
 - A "design" or "spec" link in the PR description.
 - Comments in the code itself referencing a document (`// see docs/...`).
-- Confluence / Notion / Linear references in the PR body — surface these
+- Confluence / Notion / Linear references in the PR body - surface these
   to the user; you can't read them directly but they may explain context.
 
 **If no spec exists**, say so explicitly in the final report:
 
 > No ADR / spec found for this feature. drive-feature audited against
-> common-sense expectations only — not against documented intent.
+> common-sense expectations only - not against documented intent.
 
 Don't make up a spec. Don't assume what the feature "probably" should
 do. Specs are load-bearing for this audit; their absence is itself a
 finding.
 
-## Phase 1 — Map the feature surface
+## Phase 1 - Map the feature surface
 
 Identify everything that's part of the feature, not just the files the
 PR happens to touch. The PR diff is a starting point, not the boundary.
@@ -100,10 +100,10 @@ Entry: POST /api/orders/:id/cancel
 ```
 
 The map is the skeleton the rest of the audit hangs from. Without it,
-you'll miss things — especially side effects, which tend to hide one
+you'll miss things - especially side effects, which tend to hide one
 layer below the obvious flow.
 
-## Phase 2 — Trace each path through the feature
+## Phase 2 - Trace each path through the feature
 
 For every distinct path from entry to exit, walk it and validate:
 
@@ -113,14 +113,14 @@ For every parameter the entry point accepts:
 
 - What does the spec say about valid input?
 - What does the code accept? (Trust the type only as far as it's enforced
-  at runtime — a TS type alone doesn't validate an API payload.)
+  at runtime - a TS type alone doesn't validate an API payload.)
 - What happens for each of these inputs:
 
-  | Input | Expected behavior |
+  | Input | Expected behaviour |
   | --- | --- |
   | `null` | Documented? Rejected with a useful error? Or coerced? |
   | `undefined` | Same |
-  | Empty string / empty array / empty object | Documented behavior |
+  | Empty string / empty array / empty object | Documented behaviour |
   | Very long string (1MB+) | Rejected before it hits the DB? |
   | Very large number / negative / zero / float-where-int-expected | Bounded? |
   | Unicode / emoji / RTL / null-byte | Survives storage and display? |
@@ -145,41 +145,41 @@ For every parameter the entry point accepts:
 
 For every external call (HTTP, DB, queue, cache, file system):
 
-- **Timeouts** — is one set? Default timeouts are often "forever" and
+- **Timeouts** - is one set? Default timeouts are often "forever" and
   that's never what you want in production.
-- **Retries** — bounded? Backoff? Idempotent on the remote side?
-- **Failure mode** — what happens when the call fails? Surface to user,
+- **Retries** - bounded? Backoff? Idempotent on the remote side?
+- **Failure mode** - what happens when the call fails? Surface to user,
   swallow, retry, fall back, fail-closed, fail-open? Is this documented?
-- **Circuit breaker** — for high-volume external deps, is there one?
-  (Often overkill for low-traffic features — note as future work, don't
+- **Circuit breaker** - for high-volume external deps, is there one?
+  (Often overkill for low-traffic features - note as future work, don't
   block.)
-- **Dependency on data freshness** — if a cache is stale, what's the
-  worst-case behavior?
+- **Dependency on data freshness** - if a cache is stale, what's the
+  worst-case behaviour?
 
 ### 2d. Side effects
 
 For every side effect identified in the map:
 
-- **Order** — does the side effect happen before, during, or after the
+- **Order** - does the side effect happen before, during, or after the
   primary operation? Out-of-order matters: emitting "user created" before
   the user is actually in the DB creates a class of bug where downstream
   consumers can't find what just got announced.
-- **Atomicity** — if the primary operation succeeds and the side effect
+- **Atomicity** - if the primary operation succeeds and the side effect
   fails (or vice versa), what's the recovery story? Outbox pattern?
   Compensating transaction?
-- **Idempotency** — if the side effect fires twice, does the user get
+- **Idempotency** - if the side effect fires twice, does the user get
   two emails? Two analytics events? Two refunds?
-- **Cleanup** — when the primary operation is undone (cancel, delete,
+- **Cleanup** - when the primary operation is undone (cancel, delete,
   refund), are the side effects undone too?
 
 ### 2e. Responses / outputs
 
 - Does the response shape match the spec exactly?
 - Does the response shape match the **type definition** the client is
-  using (look for the client-side type — drift between server and
+  using (look for the client-side type - drift between server and
   client types is a classic source of bugs)?
-- Status codes: 200 vs. 201 vs. 204 — used correctly?
-- Errors include enough info for the client to surface usefully — error
+- Status codes: 200 vs. 201 vs. 204 - used correctly?
+- Errors include enough info for the client to surface usefully - error
   code, message, sometimes a recoverable suggestion.
 - Errors do **not** leak internal info (stack traces, DB errors, file
   paths).
@@ -188,7 +188,7 @@ For every side effect identified in the map:
 
 For each async operation that the user triggers from the UI:
 
-- Is there an explicit `loading` flag (or equivalent — pending state
+- Is there an explicit `loading` flag (or equivalent - pending state
   from React Query, etc.)?
 - Is the UI's loading state mounted *before* the request fires, not
   after?
@@ -198,10 +198,10 @@ For each async operation that the user triggers from the UI:
   the UI flash to a skeleton?
 
 (This overlaps with what `/drive-ux` looks at, but drive-feature checks
-that the **code** has the states wired up — drive-ux checks that the
+that the **code** has the states wired up - drive-ux checks that the
 **user can see** them working.)
 
-## Phase 3 — Check against the spec, line by line
+## Phase 3 - Check against the spec, line by line
 
 For each requirement in the spec, find it in the code:
 
@@ -220,14 +220,14 @@ disagrees with what was specified, is a gap. List them all.
 Conversely, anything the code does that the spec doesn't mention is
 either:
 
-- **Reasonable inference** — the spec didn't need to say, this is
+- **Reasonable inference** - the spec didn't need to say, this is
   obvious (skip).
-- **Scope creep** — the code does something the spec doesn't ask for.
+- **Scope creep** - the code does something the spec doesn't ask for.
   Note it, ask the user whether to drop it.
-- **Hidden behavior** — the code does something material that nobody
+- **Hidden behaviour** - the code does something material that nobody
   documented. Flag for the spec to be updated.
 
-## Phase 4 — Apply obvious fixes; surface judgment calls
+## Phase 4 - Apply obvious fixes; surface judgment calls
 
 Some gaps are mechanical to fix:
 
@@ -237,17 +237,17 @@ Some gaps are mechanical to fix:
 - "Side effect fires before transaction commits": move it to after.
 
 For these, edit inline (the trust-policy and operating rules still
-apply — see below). For each fix, leave a short commit:
+apply - see below). For each fix, leave a short commit:
 
 ```bash
 git commit -m "drive-feature: handle 404 on missing order ID"
 ```
 
-For judgment calls — splitting a feature differently, changing the spec,
-introducing a new pattern — write them up in the report. The user
+For judgment calls - splitting a feature differently, changing the spec,
+introducing a new pattern - write them up in the report. The user
 decides.
 
-## Phase 5 — Verify
+## Phase 5 - Verify
 
 ```bash
 # Tests run
@@ -259,7 +259,7 @@ tslsp diagnostics --files <touched paths>  # or tsc / cargo check / etc.
 
 If a fix breaks something, surface it. Don't push broken code.
 
-## Phase 6 — Report
+## Phase 6 - Report
 
 ```
 drive-feature audited <feature name>.
@@ -277,34 +277,34 @@ Fixed inline (each its own commit):
   - <sha> add loading state to CancelOrderButton
 
 Gaps (spec vs. code):
-  P0 — blocks correctness
+  P0 - blocks correctness
     - Spec: "Cancellation by admin requires audit log entry"
       Code: no audit log call. src/services/orders/cancelOrder.ts:42
-  P1 — incomplete
+  P1 - incomplete
     - Spec: "Refunds may take up to 5 business days"
       Code: success message says "Cancelled" but doesn't mention refund
       timing. src/ui/CancelOrder.tsx:88
-  P2 — polish
+  P2 - polish
     - Spec doesn't specify what happens on already-cancelled order;
       code currently 200s with a noop. Probably want 409.
 
 Edge cases NOT handled in code:
   - Concurrent cancellation requests (no idempotency key, no row lock).
   - Refund call has no timeout.
-  - Cancellation email fires before refund completes — if refund fails,
+  - Cancellation email fires before refund completes - if refund fails,
     email is misleading.
 
 Side effects review:
-  ✅ analytics OrderCancelled — fires after commit, idempotent
-  ⚠️ email — fires before refund confirms, could mislead
-  ❌ audit log — not present
+  ✅ analytics OrderCancelled - fires after commit, idempotent
+  ⚠️ email - fires before refund confirms, could mislead
+  ❌ audit log - not present
 
 Scope creep (code does, spec doesn't ask):
   - Sets a `cancelled_by_ip` field. Probably fine, but worth confirming
     with the spec owner.
 
-Hidden behavior (code does, spec doesn't mention):
-  - On cancellation, the order's line items are also soft-deleted —
+Hidden behaviour (code does, spec doesn't mention):
+  - On cancellation, the order's line items are also soft-deleted -
     spec didn't say, may want to document.
 
 Spec missing or thin in these areas:
@@ -318,7 +318,7 @@ Recommended next steps for the user:
 ```
 
 Be honest about gaps. If the spec is silent on something important, say
-"spec is silent — needs an answer" rather than guessing.
+"spec is silent - needs an answer" rather than guessing.
 
 ## Operating rules
 
@@ -328,11 +328,11 @@ Be honest about gaps. If the spec is silent on something important, say
   about feature X, drive-feature is not the place to add X. Flag the
   silence, let the user decide.
 - **Don't relitigate the spec.** If the spec is wrong, say so as a
-  finding, but don't change the implementation away from the spec —
+  finding, but don't change the implementation away from the spec -
   the spec and the user's intent are linked.
 - **Surface side effects.** This is the highest-value thing this skill
   does. Side effects are where features go wrong silently.
-- **Idempotency, ordering, atomicity** — the three concurrency
+- **Idempotency, ordering, atomicity** - the three concurrency
   considerations to check on every multi-step operation. They are
   almost always missed.
 - **Use the `tslsp` skill** for TS/JS symbol-level exploration. Walking
@@ -345,13 +345,13 @@ Be honest about gaps. If the spec is silent on something important, say
 
 drive-feature complements:
 
-- `/drive-pr` — comments + CI + description. Often, an AI bot comment
+- `/drive-pr` - comments + CI + description. Often, an AI bot comment
   saying "consider edge case X" should be addressed by running
   drive-feature, not by changing one line of code.
-- `/drive-ux` — verifies that loading/error states actually look right.
+- `/drive-ux` - verifies that loading/error states actually look right.
   drive-feature checks the code wired them up; drive-ux checks the user
   can see them.
-- `/drive-code` — orthogonal. A feature can be logically complete and
+- `/drive-code` - orthogonal. A feature can be logically complete and
   still be coded badly (or vice versa).
 
 A natural order on a fresh PR: `/drive-code` → `/drive-feature` →
@@ -360,7 +360,7 @@ cheaper to fix earlier in the chain.
 
 ## What's in `references/`
 
-- `feature-audit-checklist.md` — long-form audit categories with
+- `feature-audit-checklist.md` - long-form audit categories with
   examples, loaded on demand.
-- `trust-policy.md` — the full trust gate: bot whitelist, human
+- `trust-policy.md` - the full trust gate: bot whitelist, human
   verification commands, untrusted-comment handling.

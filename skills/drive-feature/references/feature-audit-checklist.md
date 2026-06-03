@@ -1,4 +1,4 @@
-# Feature audit checklist — long form
+# Feature audit checklist - long form
 
 Load when you want a structured prompt for the audit. drive-feature's
 SKILL.md has the short version; this expands every category with
@@ -23,31 +23,31 @@ The classic input space. For every entry point, run through:
 | Concurrent | Same resource, simultaneous writers | Lost updates |
 
 For each, decide whether the code handles it. "Handle" includes
-"explicitly reject with a clear error" — silent rejection isn't handling.
+"explicitly reject with a clear error" - silent rejection isn't handling.
 
 ## Failure modes
 
 The places code fails, ranked by frequency in real outages:
 
-1. **External call timeout / hang** — no timeout set, request hangs
+1. **External call timeout / hang** - no timeout set, request hangs
    forever, holds connection pool open, cascades.
-2. **Database constraint violation** — INSERT fails on a unique
+2. **Database constraint violation** - INSERT fails on a unique
    constraint mid-flow; was the rest of the operation transactional?
-3. **Out-of-order events** — message queue redelivery, webhook retry
+3. **Out-of-order events** - message queue redelivery, webhook retry
    from upstream, event A arrives after event B that depended on A.
-4. **Authn/authz drift** — token valid but stale (user was deleted, role
+4. **Authn/authz drift** - token valid but stale (user was deleted, role
    was removed); resource accessed under different identity than
    expected.
-5. **Resource exhaustion** — disk full, memory limit hit, file
+5. **Resource exhaustion** - disk full, memory limit hit, file
    descriptors exhausted, rate-limited by upstream.
-6. **Deserialization errors** — unexpected schema, version drift,
+6. **Deserialization errors** - unexpected schema, version drift,
    missing field that "could never be missing."
-7. **Floating-point** — `0.1 + 0.2`, money in floats, currency rounding.
-8. **Time zones** — server in UTC, user in local, DB stored as naive
+7. **Floating-point** - `0.1 + 0.2`, money in floats, currency rounding.
+8. **Time zones** - server in UTC, user in local, DB stored as naive
    datetime.
-9. **Daylight saving** — duplicate hour, missing hour, scheduled jobs
+9. **Daylight saving** - duplicate hour, missing hour, scheduled jobs
    firing twice or zero times.
-10. **Leap seconds, leap days** — calendar arithmetic on Feb 29 or
+10. **Leap seconds, leap days** - calendar arithmetic on Feb 29 or
     Dec 31 → Jan 1.
 
 For every multi-step flow, ask: if step N of M fails, what's the state of
@@ -68,7 +68,7 @@ For every async operation surfaced to a user, the UI should distinguish:
 | `success-stale` | Data exists but is older than threshold | Old data + "last updated" + refresh |
 
 Code should explicitly model these states. The common bug is collapsing
-`loading` and `idle` into one falsy `data` check — works until it
+`loading` and `idle` into one falsy `data` check - works until it
 doesn't, especially after a refresh.
 
 ## Side effects taxonomy
@@ -112,7 +112,7 @@ quietly. Check each side effect for:
 ### Reversal
 
 - When the primary operation is undone (cancel, delete, refund), are
-  the effects undone too? Usually no — sent emails can't be unsent.
+  the effects undone too? Usually no - sent emails can't be unsent.
 - For effects that *can* be reversed (counter increments, role grants),
   is there an explicit reversal path?
 
@@ -177,7 +177,7 @@ For every entry point:
 - Is there a backout plan if the migration goes wrong?
 - Does the migration preserve data already in the table?
 
-## "Worked locally" vs. "works in prod" — production-only failure modes
+## "Worked locally" vs. "works in prod" - production-only failure modes
 
 - Concurrency: prod has parallel writers; dev usually doesn't.
 - Data volume: prod has millions of rows; dev has tens. Queries that
@@ -197,7 +197,7 @@ local condition?" That's where the bug will be.
 - Are the metrics needed to operate this feature in place?
   Throughput, latency, error rate at minimum.
 - Are the metrics dimensioned usefully? (Per route, per status, per
-  customer tier — not just a single global counter.)
+  customer tier - not just a single global counter.)
 - Are SLOs defined? Is this feature in scope of an existing SLO?
 - Is there a dashboard? An alert?
 - Are logs structured (JSON) or raw text?
@@ -207,7 +207,7 @@ local condition?" That's where the bug will be.
 - If multiple specs disagree, surface the disagreement; don't pick a
   winner unilaterally.
 - If the spec is missing, default to common-sense defaults but call out
-  every place you applied a default — those are the lines someone needs
+  every place you applied a default - those are the lines someone needs
   to write a spec for.
 - If the code makes a non-obvious choice and the spec is silent, flag
   the choice. Even if it's the right one, it should be documented.

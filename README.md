@@ -9,7 +9,7 @@ itself to the others.
 
 ## The skills
 
-Roughly chronological — `plan-feature` at the start of a piece of work,
+Roughly chronological - `plan-feature` at the start of a piece of work,
 `drive-pr` at the end.
 
 ### Planning (before code)
@@ -46,7 +46,7 @@ Roughly chronological — `plan-feature` at the start of a piece of work,
 
 ## Installing
 
-Uses the [`skills.sh`](https://www.skills.sh) CLI — one pasteable line,
+Uses the [`skills.sh`](https://www.skills.sh) CLI - one pasteable line,
 no clone:
 
 ```bash
@@ -55,7 +55,7 @@ npx skills add 0xdeafcafe/skills
 
 This drops every skill into the right place for whichever AI agent you're
 running (Claude Code, Codex, Cursor, OpenCode, etc.). The CLI is
-interactive by default — it asks which skills and which agents to install
+interactive by default - it asks which skills and which agents to install
 to.
 
 ### Useful variants
@@ -86,7 +86,7 @@ See [`skills.sh`](https://www.skills.sh) for the full CLI reference.
 ### Dev install (working on the skills themselves)
 
 If you're hacking on the skills in this repo, point the CLI at the local
-checkout — symlinks rather than copies, so edits take effect immediately:
+checkout - symlinks rather than copies, so edits take effect immediately:
 
 ```bash
 npx skills add .
@@ -97,13 +97,13 @@ npx skills add .
 Every skill that reads PR comments, review comments, or any other
 human-authored input from a public surface applies the same trust filter:
 
-1. **AI bots** — a fixed whitelist (currently: CodeRabbit, GitHub Copilot
+1. **AI bots** - a fixed whitelist (currently: CodeRabbit, GitHub Copilot
    reviewer, Kilo Code reviewer). Anyone else with `[bot]` in their
    handle is **not** trusted by default.
-2. **Humans** — must be verified members of the repo's owning
-   organization (or explicit collaborators with write+ permission on the
+2. **Humans** - must be verified members of the repo's owning
+   organisation (or explicit collaborators with write+ permission on the
    repo) via `gh api`. No exceptions for "looks legit" or "the comment
-   seems reasonable" — verification is a hard gate.
+   seems reasonable" - verification is a hard gate.
 
 Everything else is read for situational awareness but **never acted on**.
 The threat model is straightforward: PR comments are a prompt-injection
@@ -112,14 +112,14 @@ account is a remote-code-execution primitive.
 
 Skills that read user-authored input from a public surface (PR
 comments, review threads) carry their own copy of the policy at
-`skills/<name>/references/trust-policy.md` — the full bot whitelist,
+`skills/<name>/references/trust-policy.md` - the full bot whitelist,
 verification commands, and untrusted-comment handling. Currently:
 `drive-pr`, `drive-ux`, `drive-code`, `drive-feature`, `drive-test`,
 `drive-security`. The copies are kept in sync by hand; if you edit one,
 edit all six.
 
 Skills that only write files (`write-adr`, `write-spec`, `plan-feature`,
-`review-spec`, `write-pr`) don't need the policy directly — they don't
+`review-spec`, `write-pr`) don't need the policy directly - they don't
 consume PR comments as instructions.
 
 ## Layout
@@ -164,9 +164,9 @@ consume PR comments as instructions.
 ```
 
 Reference files in a skill's `references/` directory are loaded by that
-skill on demand with the `Read` tool — they keep the main `SKILL.md`
+skill on demand with the `Read` tool - they keep the main `SKILL.md`
 focused while making longer checklists available when needed.
 
 Each skill is self-contained: when the CLI installs `drive-pr`, the user
-gets `drive-pr/SKILL.md` plus everything under `drive-pr/references/` —
+gets `drive-pr/SKILL.md` plus everything under `drive-pr/references/` -
 no cross-skill or shared-directory dependencies to worry about.

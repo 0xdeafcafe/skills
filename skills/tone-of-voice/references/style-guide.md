@@ -1,16 +1,16 @@
-# Long-form style guide — before / after
+# Long-form style guide - before / after
 
 Load this when you've drafted something and need to audit it, or when
 the rules in SKILL.md feel abstract and you want worked examples.
 
 The before-and-after pairs below take a generic LLM-default draft and
 show what it looks like rewritten in Alex's voice. The point isn't
-that the "before" is *bad* English — it's that it's invisible. The
+that the "before" is *bad* English - it's that it's invisible. The
 "after" sounds like someone wrote it.
 
 ## Opening a blog post
 
-### Before — LLM throat-clearing
+### Before - LLM throat-clearing
 
 > In today's rapidly evolving landscape of GenAI observability, the
 > ability to process events at scale has become more critical than
@@ -39,11 +39,11 @@ The moves:
   a foul lapse in judgement").
 - **Hyphens with spaces**, not em-dashes.
 - **Numbers and timelines stay flat**: "couple of months", "late last
-  year" — neither of these gets dressed up as "the past few quarters".
+  year" - neither of these gets dressed up as "the past few quarters".
 
 ## Product announcement
 
-### Before — hyperbole with no support
+### Before - hyperbole with no support
 
 > Our groundbreaking new event sourcing architecture is a game-changer
 > for AI observability, unlocking unprecedented scale and enabling our
@@ -64,7 +64,7 @@ the third (`superpower`). The reader's eyes have already glazed.
 
 Same claim, evidenced. The numbers carry the weight; you don't need
 adjectives. Notice "That's not a typo, but it got us to where we are
-today" — a small, dry acknowledgement that makes the brag credible.
+today" - a small, dry acknowledgement that makes the brag credible.
 
 The moves:
 
@@ -75,7 +75,7 @@ The moves:
 
 ## Explaining a technical decision
 
-### Before — over-explaining
+### Before - over-explaining
 
 > We made the strategic decision to migrate from ElasticSearch to
 > ClickHouse because ClickHouse's columnar storage architecture and
@@ -102,16 +102,16 @@ The moves:
 
 - "**We did**" instead of "We made the strategic decision to". The
   contraction-style "did" carries the same meaning with less weight.
-- "**Almost suspiciously good fit**" — characterisation that's also
+- "**Almost suspiciously good fit**" - characterisation that's also
   honest about the surprise.
 - **Three nouns in a row** ("Append-only writes, columnar storage,
   absurdly fast aggregations.") instead of a single ponderous clause.
 - **Pivot at the end** ("But the real difference wasn't the database
   ...") that sets up the next section.
 
-## Customer email — apologising for an outage
+## Customer email - apologising for an outage
 
-### Before — corporate-stiff
+### Before - corporate-stiff
 
 > Dear customer,
 >
@@ -131,7 +131,7 @@ Templated, defensive, signed by no one.
 
 > Hi,
 >
-> Quick note — we had a database failover misbehave between 14:00 and
+> Quick note - we had a database failover misbehave between 14:00 and
 > 16:00 UTC yesterday, which knocked traces offline for about 90
 > minutes for a chunk of you. Apologies, that's not great.
 >
@@ -161,9 +161,9 @@ The moves:
 - **Direct invitation** to follow up.
 - **Signed by a person.**
 
-## Slack message — asking for help
+## Slack message - asking for help
 
-### Before — over-formal
+### Before - over-formal
 
 > Hello team, I hope this message finds you well. I'm currently
 > encountering an issue with the deployment pipeline where the CI
@@ -180,7 +180,7 @@ Reads like a memo. Slack messages aren't memos.
 > <link>. I'll keep poking but a second pair of eyes would help.
 
 Direct, specific, low ceremony. "I'll keep poking but..." carries the
-right energy — the asker isn't just throwing the problem over the
+right energy - the asker isn't just throwing the problem over the
 wall.
 
 The moves:
@@ -190,11 +190,11 @@ The moves:
   commit, stack here").
 - **Show you tried first** ("I'll keep poking").
 - **Direct ask** ("a second pair of eyes would help").
-- **No "thanks in advance"** — corporate slack noise.
+- **No "thanks in advance"** - corporate slack noise.
 
 ## PR description
 
-### Before — bullet-everything
+### Before - bullet-everything
 
 > ## Summary
 > This PR introduces several improvements to enhance the order
@@ -240,7 +240,7 @@ The moves:
 - **Specific scope statement**: 24h, admin path mentioned, refund
   timing called out.
 - **One reason given** ("so customers aren't refreshing their card
-  statement for a week") — humanises the choice.
+  statement for a week") - humanises the choice.
 - **Concrete checklist** with edge cases.
 - **Links** at the bottom, not buried.
 
@@ -264,7 +264,7 @@ LLMs love connective tissue. Alex doesn't.
 
 - A full stop.
 - A new paragraph.
-- Or nothing — read the draft aloud; if the transition reads fine
+- Or nothing - read the draft aloud; if the transition reads fine
   without the word, the word is filler.
 
 ### Before
@@ -278,7 +278,7 @@ LLMs love connective tissue. Alex doesn't.
 
 > The new architecture is faster, updates in real time, and ships
 > features faster. The data also gets retroactively better as we
-> refine the pipeline — old traces benefit from every improvement.
+> refine the pipeline - old traces benefit from every improvement.
 
 Same four ideas. Five sentences down to two. Connective tissue cut.
 
@@ -298,14 +298,14 @@ with no qualification.
 
 ## Closing a piece
 
-### Before — vague call to action
+### Before - vague call to action
 
 > Thank you for reading! If you have any questions or feedback, please
 > don't hesitate to reach out. We're always happy to chat.
 
 Cut. All of this is noise.
 
-### After — earned closing
+### After - earned closing
 
 > If you want to know how the sausage is made, stay tuned. We've got
 > a proper technical deep-dive coming next, going into the guts of
@@ -329,17 +329,17 @@ Other workable closings:
 ## When the register is more formal
 
 Not everything Alex writes is informal. Conference abstracts,
-security disclosure emails, contract negotiations — these need a more
+security disclosure emails, contract negotiations - these need a more
 buttoned register. The voice still applies, just dialled:
 
 - Em-dash ban still on.
 - Banned LLM vocabulary still on.
 - British spelling still on.
-- Hyperbole and asides — dial down or remove.
-- Self-aware genre callouts — usually keep one, just one, and only if
+- Hyperbole and asides - dial down or remove.
+- Self-aware genre callouts - usually keep one, just one, and only if
   it lands.
 
-### Before — too informal for the context
+### Before - too informal for the context
 
 > Hey just wanted to flag, lol, we found a small auth bug in
 > production yesterday, our bad. Patched it within the hour
@@ -348,7 +348,7 @@ buttoned register. The voice still applies, just dialled:
 
 Too jokey for a security disclosure to a customer.
 
-### After — formal register, still in voice
+### After - formal register, still in voice
 
 > We identified an authentication issue in production yesterday and
 > rolled out a fix within the hour. The bug allowed a session token
@@ -365,14 +365,14 @@ Too jokey for a security disclosure to a customer.
 Direct, specific, sober. Still no em-dashes, still British, still
 plain. The voice hasn't gone; it's just dressed appropriately.
 
-## Long-form pieces — the rhythm
+## Long-form pieces - the rhythm
 
 For anything longer than ~500 words, the rhythm matters as much as
 any individual sentence. Aim for:
 
 1. **Hook paragraph**: lead with the point, set the metaphor.
-2. **First body section**: the "what changed" — concrete, specific.
-3. **Second body section**: the "why it matters" — usually the
+2. **First body section**: the "what changed" - concrete, specific.
+3. **Second body section**: the "why it matters" - usually the
    reader-facing payoff. This is where you can earn the brag.
 4. **Mid-piece detour**: a story, a specific example, a number. Keeps
    the piece from reading like a press release.

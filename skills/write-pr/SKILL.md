@@ -1,26 +1,26 @@
 ---
 name: write-pr
-description: Use when the user says "open a PR", "/write-pr", "draft a PR", "create the PR", "write a PR description", or wants Claude to compose a pull request from the current branch and open it on GitHub. Drafts the title and body from commits + diffstat + linked ADR/spec/ticket, runs the repo's pre-push checks (tests, lint, type-check, build), shows the user the proposed PR for confirmation, then pushes and creates via `gh pr create`. Bookend to /drive-pr — write-pr opens, drive-pr iterates.
+description: Use when the user says "open a PR", "/write-pr", "draft a PR", "create the PR", "write a PR description", or wants Claude to compose a pull request from the current branch and open it on GitHub. Drafts the title and body from commits + diffstat + linked ADR/spec/ticket, runs the repo's pre-push checks (tests, lint, type-check, build), shows the user the proposed PR for confirmation, then pushes and creates via `gh pr create`. Bookend to /drive-pr - write-pr opens, drive-pr iterates.
 allowed-tools: Bash(gh:*), Bash(git:*), Bash(npm:*), Bash(yarn:*), Bash(pnpm:*), Bash(bun:*), Bash(npx:*), Bash(just:*), Bash(make:*), Bash(go:*), Bash(cargo:*), Bash(eslint:*), Bash(biome:*), Bash(prettier:*), Bash(ruff:*), Bash(black:*), Bash(rg:*), Read, Grep, Glob, Skill
 ---
 
-# write-pr — compose, verify, and open a PR
+# write-pr - compose, verify, and open a PR
 
 write-pr is the moment between "I think this is done" and "the PR is
 open". It does three things, in order:
 
-1. **Compose** the PR — title, body, draft-or-ready, target branch —
+1. **Compose** the PR - title, body, draft-or-ready, target branch -
    from the commits on the current branch, the diff against the base,
    any related ADR / spec / ticket, and the repo's PR template.
-2. **Verify** the branch is in a state worth showing reviewers — tests
+2. **Verify** the branch is in a state worth showing reviewers - tests
    pass, lint passes, types compile, build succeeds (where cheap),
    commit messages aren't gibberish.
 3. **Open** the PR via `gh pr create`, but only after the user confirms
    what's about to happen. Pushing a branch and creating a PR is
-   visible to other people — never run this step without explicit user
+   visible to other people - never run this step without explicit user
    approval (even in auto mode).
 
-## Phase 0 — Sanity checks
+## Phase 0 - Sanity checks
 
 Before doing anything:
 
@@ -40,16 +40,16 @@ Hard gates:
 - **There are commits ahead of base.** A branch with no commits ahead
   has nothing to PR.
 - **A PR doesn't already exist for this branch.** If `gh pr view` finds
-  one, stop and tell the user — they probably want `/drive-pr` instead.
+  one, stop and tell the user - they probably want `/drive-pr` instead.
 - **No uncommitted changes** (or, if any, ask whether to commit them
   first, stash, or proceed regardless).
 
 If the branch is **behind base** (`git rev-list --count origin/<main> ^HEAD > 0`),
 flag it: the PR will be evaluated against an older base. Offer to
-rebase / merge in `main`, but don't do it without permission — that's
+rebase / merge in `main`, but don't do it without permission - that's
 history-modifying.
 
-## Phase 1 — Find context for the description
+## Phase 1 - Find context for the description
 
 The PR description should explain **what** the PR does, **why**, and
 **how to test it**. Pull that material from:
@@ -92,7 +92,7 @@ git rev-parse --abbrev-ref HEAD | rg -o '\b(LIN-|PROJ-|#)\d+\b'
 
 If a Linear/Jira ticket ID is in the branch name (common conventions:
 `alice/LIN-1234-cancel-order`, `feat/PROJ-42-x`), pull it into the
-body — most PR templates have a "ticket" field.
+body - most PR templates have a "ticket" field.
 
 ### 1d. PR template
 
@@ -120,14 +120,14 @@ CODEOWNERS tells you who *will* be auto-assigned, not who *should* be:
 cat .github/CODEOWNERS 2>/dev/null || cat CODEOWNERS 2>/dev/null
 ```
 
-Don't manually request reviewers unless the user asks — let CODEOWNERS
+Don't manually request reviewers unless the user asks - let CODEOWNERS
 do its job. If the PR touches code with no CODEOWNERS rule, mention it
 in the report; the user may want to tag someone.
 
-## Phase 2 — Verify the branch is review-ready
+## Phase 2 - Verify the branch is review-ready
 
 Run the project's pre-push checks. If a `Justfile` / `Makefile` /
-`package.json` script exists for "pre-push" or "check", use that — it's
+`package.json` script exists for "pre-push" or "check", use that - it's
 the project's own definition of "ready". Otherwise run the toolchain
 directly:
 
@@ -144,7 +144,7 @@ tslsp diagnostics --files <touched paths>   # or `npx tsc --noEmit`
 # Tests for affected packages
 <test-runner> <touched paths or affected packages>
 
-# Build (if cheap — skip if it takes >2 minutes)
+# Build (if cheap - skip if it takes >2 minutes)
 npm run build 2>/dev/null || true
 ```
 
@@ -157,14 +157,14 @@ Three outcomes:
   or the tests are; both are worth knowing before reviewers see the
   PR.
 
-The user can override with "open anyway, I know about that failure" —
+The user can override with "open anyway, I know about that failure" -
 which becomes a draft PR or one with a `Known issues:` section.
 
-## Phase 3 — Draft the title and body
+## Phase 3 - Draft the title and body
 
 ### Title
 
-Conventions (in priority order — match the repo's style):
+Conventions (in priority order - match the repo's style):
 
 ```bash
 # Look at recent merged PR titles to extract convention
@@ -194,7 +194,7 @@ there's no template:
 ## Summary
 
 <2-4 sentences explaining what changed and why. The "why" is more
-important than the "what" — reviewers can see the what from the diff.>
+important than the "what" - reviewers can see the what from the diff.>
 
 ## Changes
 
@@ -225,14 +225,14 @@ Drafting rules:
 - **Use checkboxes in the test plan.** Reviewers tick them as they
   verify; the PR doubles as a checklist.
 - **Be honest about scope.** If something is intentionally not
-  included, say so — "this PR doesn't cover bulk cancellation; that's
+  included, say so - "this PR doesn't cover bulk cancellation; that's
   in LIN-1235."
-- **Don't apologize / hedge / pad.** "This is a small change but..." —
+- **Don't apologize / hedge / pad.** "This is a small change but..." -
   reviewers don't need apologies. Just describe what landed.
 - **Don't sign.** The author is in the PR metadata. No "AFR / Claude"
   signatures in the body.
 
-## Phase 4 — Draft or ready
+## Phase 4 - Draft or ready
 
 Decide based on signals:
 
@@ -244,7 +244,7 @@ Decide based on signals:
 
 When in doubt, ask the user.
 
-## Phase 5 — Confirm with the user
+## Phase 5 - Confirm with the user
 
 **Always confirm before pushing and opening.** Even in auto mode. PR
 creation is visible to others; the user gets to approve the title,
@@ -263,7 +263,7 @@ Ready to open PR:
     ✅ types
     ✅ lint
     ✅ tests (142 passed)
-    ⚠️ format — 3 files reformatted; included in this commit
+    ⚠️ format - 3 files reformatted; included in this commit
 
 Body:
   <full proposed body>
@@ -274,7 +274,7 @@ Proceed?  [y/N]
 If the user says no, ask what to change. Iterate the draft. Don't push
 until they're satisfied.
 
-## Phase 6 — Push and open
+## Phase 6 - Push and open
 
 When confirmed:
 
@@ -306,7 +306,7 @@ history, **stop**. Don't `--force` push. Tell the user the remote has
 moved and they need to decide (rebase, force-push, or open a different
 branch).
 
-## Phase 7 — Final report
+## Phase 7 - Final report
 
 ```
 PR opened: <url>
@@ -325,8 +325,8 @@ Next steps:
 ## Operating rules
 
 - **Never push or create the PR without user confirmation.** Even in
-  auto mode. PR creation is shared-state — see the harness rule about
-  "actions visible to others." This is the canonical example.
+  auto mode. PR creation is shared-state, which is the canonical case
+  of "actions visible to others" the harness flags as needing approval.
 - **Never `git push --force`.** Even when the branch has diverged. The
   user resolves divergence; the skill doesn't.
 - **Never `--no-verify` to skip pre-commit hooks.** If a hook fails,
@@ -339,23 +339,23 @@ Next steps:
 - **Don't auto-request reviewers.** CODEOWNERS does it. Manual requests
   are the user's call.
 - **Match the repo's conventions.** Title style, commit style, body
-  template — all from the existing repo, not from a generic template.
+  template - all from the existing repo, not from a generic template.
 - **Don't post the PR body in chat as a wall of markdown** unless the
   user asks. Show the structure and key bullets; full markdown can be
   reviewed once the PR is open.
 
 ## Composing with other skills
 
-- **`/drive-code`** — run before `/write-pr` if lint/format/structure
+- **`/drive-code`** - run before `/write-pr` if lint/format/structure
   is messy. write-pr should not be the place where lint failures get
   fixed; drive-code is.
-- **`/drive-test`** — run before `/write-pr` if test coverage / quality
+- **`/drive-test`** - run before `/write-pr` if test coverage / quality
   is shaky. Don't open a PR knowing the tests are weak.
-- **`/drive-feature`** — run before `/write-pr` for non-trivial
+- **`/drive-feature`** - run before `/write-pr` for non-trivial
   features. Audits the implementation against the spec; gaps surfaced
   here belong in the PR description or as TODOs in the code, not as
   surprises in review.
-- **`/drive-ux`** — run after `/write-pr` if the change is
+- **`/drive-ux`** - run after `/write-pr` if the change is
   UI-visible. Generates screenshots that can be pasted into the PR.
-- **`/drive-pr`** — the after-PR loop. Once write-pr opens it, drive-pr
+- **`/drive-pr`** - the after-PR loop. Once write-pr opens it, drive-pr
   drives it to merge-ready.

@@ -18,8 +18,8 @@ repo.
 | `When` | Performs the action under test. |
 | `Then` | Asserts the outcome. |
 | `And` | Chains multiple `Given` / `When` / `Then` steps. |
-| `But` | Negative chain — same semantic as `And` but reads better for "but not X". |
-| `*` | Bullet-style step keyword — same semantic as `Given`/`When`/`Then` depending on context. |
+| `But` | Negative chain - same semantic as `And` but reads better for "but not X". |
+| `*` | Bullet-style step keyword - same semantic as `Given`/`When`/`Then` depending on context. |
 
 ## Minimal file
 
@@ -106,7 +106,7 @@ Common conventions:
 
 | Tag | Meaning |
 | --- | --- |
-| `@wip` | Work in progress — skip in CI |
+| `@wip` | Work in progress - skip in CI |
 | `@smoke` | Run on every commit; the minimum bar for "works at all" |
 | `@regression` | Run on release branches; full coverage |
 | `@p0` / `@critical` | Must always pass; failure blocks deploy |
@@ -164,7 +164,7 @@ Scenario: Webhook posts a JSON payload
 
 The triple quotes (`"""`) define a doc string. Indentation is preserved.
 
-## `Scenario Outline` — parameterized scenarios
+## `Scenario Outline` - parameterized scenarios
 
 Use when the same scenario structure repeats with different values:
 
@@ -196,11 +196,11 @@ When NOT to use `Scenario Outline`:
 - There are only 2-3 examples and they read more clearly as separate
   scenarios with explicit titles.
 
-## `Rule:` — grouping scenarios under a business rule
+## `Rule:` - grouping scenarios under a business rule
 
 Gherkin 6+ (Cucumber 6+, etc.) supports grouping scenarios under a
 named business rule. Useful when one feature file has multiple distinct
-behaviors:
+behaviours:
 
 ```gherkin
 Feature: Subscription billing
@@ -233,7 +233,7 @@ And I type "alice@example.com" into the input with id="email"
 And I type "secret" into the input with id="password"
 And I click the button with text="Sign in"
 
-# Good: declarative, robust, reads like English
+# Good: declarative, survives UI churn, reads like English
 When alice logs in with valid credentials
 ```
 
@@ -243,17 +243,17 @@ and clicks. The spec stays readable as the UI evolves.
 ### Be specific about data
 
 ```gherkin
-# Bad — what does "items" mean? How many?
+# Bad - what does "items" mean? How many?
 Given the cart has items
 
-# Better — concrete and observable
+# Better - concrete and observable
 Given the cart contains 3 items totalling 47.47 USD
 ```
 
 ### Avoid coupling scenarios
 
 ```gherkin
-# Bad — Scenario 2 depends on Scenario 1 having run
+# Bad - Scenario 2 depends on Scenario 1 having run
 Scenario: User adds an item
   When alice adds a T-shirt to her cart
 
@@ -261,7 +261,7 @@ Scenario: User checks out  ← depends on the above
   When alice clicks Checkout
   Then she sees the T-shirt in the order summary
 
-# Good — each scenario starts from its own Given
+# Good - each scenario starts from its own Given
 Scenario: User checks out
   Given alice has a T-shirt in her cart
   When alice clicks Checkout
@@ -281,7 +281,7 @@ Scenario: User adds an item and checks out
   And alice clicks Checkout
   Then she sees the order summary
 
-# Split into two scenarios — each tests one action.
+# Split into two scenarios - each tests one action.
 ```
 
 ### Past vs. present tense
@@ -298,7 +298,7 @@ the action being narrated.
 | `Expected: 'Feature: '` | Missing or misspelled `Feature:` |
 | `Expected: 'EOF'` | Step outside a Scenario (e.g. orphan `Given` after the last scenario) |
 | `Inconsistent cell count` | Mismatched columns in a data table |
-| `Multiple Examples for outline` | Each Outline needs exactly one `Examples:` block — split into multiple Outlines if you want different example sets |
+| `Multiple Examples for outline` | Each Outline needs exactly one `Examples:` block - split into multiple Outlines if you want different example sets |
 
 Run a dry-run on the file before committing:
 
@@ -317,5 +317,5 @@ behave --dry-run <file>
   use Gherkin for the contracts, but native test frameworks are usually
   more ergonomic.
 
-Gherkin shines for **user-visible behavior** that involves multiple
+Gherkin shines for **user-visible behaviour** that involves multiple
 steps and observable outcomes. Use it where it earns its keep.

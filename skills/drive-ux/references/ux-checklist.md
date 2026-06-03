@@ -1,4 +1,4 @@
-# UX audit checklist — long form
+# UX audit checklist - long form
 
 Load this when you need a structured reminder of what to look at. Most
 audits only touch a subset; the goal is not to mechanically tick every box,
@@ -26,43 +26,43 @@ it's to make sure you didn't miss a category because you didn't think of it.
 For any screen that renders dynamic data, check that **all five** of these
 states are designed:
 
-1. **Loading** — shown while data is fetching. Skeleton for content; spinner
+1. **Loading** - shown while data is fetching. Skeleton for content; spinner
    for actions. No raw "Loading…" text on a critical screen.
-2. **Empty** — no data yet. Designed empty state with a clear CTA, not
+2. **Empty** - no data yet. Designed empty state with a clear CTA, not
    a blank screen.
-3. **Partial / pending** — some data, more coming, or some pending writes.
-4. **Populated** — the main happy state. Verify layout with realistic
+3. **Partial / pending** - some data, more coming, or some pending writes.
+4. **Populated** - the main happy state. Verify layout with realistic
    amounts of data.
-5. **Error** — fetch failed, validation failed, permission denied. Each
+5. **Error** - fetch failed, validation failed, permission denied. Each
    error message should be specific, recoverable, and not a stack trace.
 
-Bonus: **Stale / offline** — what does the UI do when the network is gone
+Bonus: **Stale / offline** - what does the UI do when the network is gone
 and there's cached data?
 
 ## Forms
 
 - Required vs. optional fields are clearly marked.
 - Inline validation appears next to the field, not just in a toast.
-- Errors clear when the user fixes them — don't make the user resubmit to
+- Errors clear when the user fixes them - don't make the user resubmit to
   find out.
 - The first invalid field gets focused on submit.
 - Submit button is disabled or shows a spinner while submitting; doesn't
   allow double-submission.
 - Long forms have section headers or a progress indicator.
-- Auto-focus the first field on load (only when appropriate — not on a
+- Auto-focus the first field on load (only when appropriate - not on a
   form below the fold).
 - Use the right input types (`email`, `tel`, `number`, `url`) so mobile
   keyboards are sensible.
 - Sensible `autocomplete` values on every input that takes user identity
   data.
-- Don't put cancel and submit in the same visual weight — submit is
+- Don't put cancel and submit in the same visual weight - submit is
   primary, cancel is text-link or ghost.
 
 ## Destructive actions
 
-- Confirmation dialog with explicit, specific text — not "Are you sure?"
+- Confirmation dialog with explicit, specific text - not "Are you sure?"
   but "Delete the project 'Q3 launch'? This cannot be undone."
-- Confirmation button is destructive-colored (red) and the default-focused
+- Confirmation button is destructive-coloured (red) and the default-focused
   button is the *non*-destructive one.
 - Where possible, undo is offered instead of (or in addition to)
   confirmation. Undo is better UX than confirmation, when feasible.
@@ -74,7 +74,7 @@ and there's cached data?
 - Operations longer than 1s show a progress indicator.
 - Operations longer than 10s show progress *and* an estimate or cancel
   affordance.
-- Success states are visible and dismissable — toast, inline confirmation,
+- Success states are visible and dismissable - toast, inline confirmation,
   state transition.
 - Failures are explicit. Silent failures are the worst UX.
 
@@ -105,16 +105,16 @@ and there's cached data?
 - 375px (iPhone SE-class): primary actions accessible without scrolling.
 - 768px (tablet portrait): layout adapts, doesn't just stretch the phone
   layout.
-- 1024px+ (desktop): doesn't feel sparse on big screens — content has a
+- 1024px+ (desktop): doesn't feel sparse on big screens - content has a
   max-width but the surrounding area isn't visually broken.
 
 ## Color & contrast
 
 - Text contrast ≥ 4.5:1 against background (WCAG AA for normal text).
 - Large text (18pt+ or 14pt bold) ≥ 3:1.
-- Don't convey meaning by color alone. A red dot is "error" + an icon /
+- Don't convey meaning by colour alone. A red dot is "error" + an icon /
   label, not just red.
-- Charts and graphs work in greyscale (use shape + color, not color alone).
+- Charts and graphs work in greyscale (use shape + colour, not colour alone).
 - Dark mode (if supported): no hard-coded `#fff`/`#000`; component shadows
   visible without being harsh.
 
@@ -129,8 +129,8 @@ and there's cached data?
 
 ## Content
 
-- Empty states have helpful, specific copy — not "No data."
-- Error messages are specific — "Couldn't save: title is required" beats
+- Empty states have helpful, specific copy - not "No data."
+- Error messages are specific - "Couldn't save: title is required" beats
   "Error."
 - Don't use jargon or internal terminology in user-facing strings.
 - Numbers, dates, and currency are localized (or at least format-aware).
@@ -160,13 +160,13 @@ and there's cached data?
 
 ## Confirmation patterns (escalation ladder)
 
-In order of intrusiveness — use the lightest one that fits the risk:
+In order of intrusiveness - use the lightest one that fits the risk:
 
-1. **No confirmation, with undo** — for reversible actions.
-2. **Inline confirmation** — "Click again to confirm" for moderate-risk
+1. **No confirmation, with undo** - for reversible actions.
+2. **Inline confirmation** - "Click again to confirm" for moderate-risk
    actions.
-3. **Modal confirmation** — for destructive or expensive actions.
-4. **Modal with typed confirmation** — typing the resource name — for
+3. **Modal confirmation** - for destructive or expensive actions.
+4. **Modal with typed confirmation** - typing the resource name - for
    irreversible, high-blast-radius actions (deleting a project, dropping
    a database).
 
@@ -183,5 +183,5 @@ In order of intrusiveness — use the lightest one that fits the risk:
 - Buttons with no text and no `aria-label`.
 - Form fields with placeholder text instead of a label.
 - Click handlers on `<div>`s without keyboard support.
-- Hard-coded colors for status — red for "live data feed", green for
-  "stopped" (always check with someone color-blind in mind).
+- Hard-coded colours for status - red for "live data feed", green for
+  "stopped" (always check with someone colour-blind in mind).

@@ -1,10 +1,10 @@
 ---
 name: tone-of-voice
-description: Use when writing prose that will go out under Alex Forbes-Reed's name — blog posts, marketing copy, launch announcements, release notes, PR descriptions, internal slack messages, customer emails, X/LinkedIn posts, conference abstracts, anything ghost-written. Triggers on "write a blog post", "draft this for me", "in my voice", "polish this", "make this sound like me", "rewrite as me", "/tone-of-voice", or any explicit request to produce text Alex will publish. Does NOT apply to Claude's own conversational replies, code comments, neutral technical docs, or PR comments Claude posts as itself.
+description: Use when writing prose that will go out under Alex Forbes-Reed's name - blog posts, marketing copy, launch announcements, release notes, PR descriptions, internal slack messages, customer emails, X/LinkedIn posts, conference abstracts, anything ghost-written. Triggers on "write a blog post", "draft this for me", "in my voice", "polish this", "make this sound like me", "rewrite as me", "/tone-of-voice", or any explicit request to produce text Alex will publish. Does NOT apply to Claude's own conversational replies, code comments, neutral technical docs, or PR comments Claude posts as itself.
 allowed-tools: Read, Edit, Write, Grep, Glob
 ---
 
-# tone-of-voice — write like Alex, not like an LLM
+# tone-of-voice - write like Alex, not like an LLM
 
 This skill applies whenever Claude is **ghost-writing**: producing prose
 that Alex will publish under his own name. Blog posts, marketing copy,
@@ -23,7 +23,7 @@ writing, see [`references/style-guide.md`](references/style-guide.md)
 and [`references/samples.md`](references/samples.md). Read both at
 the start of any non-trivial ghost-writing task.
 
-## Hard bans — phrases and habits that get cut on sight
+## Hard bans - phrases and habits that get cut on sight
 
 These are the unambiguous tells. Any of them in a draft means the
 draft needs another pass.
@@ -41,7 +41,7 @@ draft needs another pass.
 ### LLM-cliché vocabulary
 
 Cut these on sight. If a phrase below shows up in a draft, replace it
-or restructure. The point isn't to ban the underlying *idea* — it's
+or restructure. The point isn't to ban the underlying *idea* - it's
 that these specific words are how AI-generated text identifies itself.
 
 | Banned | Why |
@@ -50,7 +50,7 @@ that these specific words are how AI-generated text identifies itself.
 | `navigate the landscape of` | Almost always meaningless. Cut. |
 | `in today's fast-paced world` / `in the rapidly evolving X` | Skip the throat-clearing; open with the actual point. |
 | `leverage` (as a verb) | "Use." Almost always "use". |
-| `robust` | Usually filler. Say what it actually is — "fault-tolerant", "well-tested", "stable under load". |
+| `robust` | Usually filler. Say what it actually is - "fault-tolerant", "well-tested", "stable under load". |
 | `elevate`, `unlock`, `harness`, `tapestry`, `vibrant`, `seamless` | LLM filler vocabulary. |
 | `groundbreaking`, `revolutionary`, `next-level`, `game-changer`, `game-changing` | Hyperbole that has to be earned. Usually it isn't. |
 | `superpower` (when describing a feature or capability) | Use literally never. The user explicitly banned this one. |
@@ -85,9 +85,9 @@ that these specific words are how AI-generated text identifies itself.
 - **No "It wasn't the skill"** / `"the X wasn't the Y"` mock-deep
   pattern. Get to the point.
 - **No three-sentence paragraphs that each open with "And then..."**
-  — fine occasionally for rhythm, terrible as a default.
+  - fine occasionally for rhythm, terrible as a default.
 
-## The voice — patterns Alex actually uses
+## The voice - patterns Alex actually uses
 
 These are the structural and stylistic moves that make a piece sound
 like him. Use them where they fit, not as a checklist.
@@ -98,7 +98,7 @@ like him. Use them where they fit, not as a checklist.
   `analyse`, `centre`, `flavour`, `licence`, `practise` (verb), etc.
 - British colloquialisms when they fit, never forced: `mate`, `lame-o`,
   `ghastly`, `loosey goosey`, `yuge`, `tldr`.
-- "haven't", "wasn't", "couldn't" — contractions are fine and common.
+- "haven't", "wasn't", "couldn't" - contractions are fine and common.
 
 ### Open with the actual point
 
@@ -200,7 +200,7 @@ When they fit, drop them. Don't force them.
 - "Super Sonic" (Sonic, in a section header about a roadmap)
 - "type shit, as our gen-z intern would say" (self-aware about being
   millennial-aged)
-- "The best part is no part" (Elon — the post acknowledges the
+- "The best part is no part" (Elon - the post acknowledges the
   awkwardness rather than ignoring it: "as someone we all have weird
   feelings about now used to say")
 
@@ -265,11 +265,11 @@ Example, broken down:
 Notice:
 
 - Numbers first, not a setup sentence.
-- "Same servers, same team." — three-word punch.
-- "almost suspiciously good fit" — the dry humour, no commentary on
+- "Same servers, same team." - three-word punch.
+- "almost suspiciously good fit" - the dry humour, no commentary on
   the joke.
 - "But the real difference wasn't the database, but rather the
-  architecture on top of it." — the pivot that earns the next section.
+  architecture on top of it." - the pivot that earns the next section.
 
 ## Workflow
 
@@ -277,18 +277,18 @@ When asked to ghost-write:
 
 1. **Read what was asked.** Is it a blog post, an internal slack
    message, a customer email, a PR description? The register shifts
-   slightly — slack is shorter, blogs have headers, customer emails
+   slightly - slack is shorter, blogs have headers, customer emails
    are less colloquial.
 2. **Draft normally first**, then audit.
-3. **Audit pass 1 — banned vocabulary**: search the draft for any of
+3. **Audit pass 1 - banned vocabulary**: search the draft for any of
    the banned phrases above. Replace or restructure each.
-4. **Audit pass 2 — em-dashes**: replace every `—` with a
+4. **Audit pass 2 - em-dashes**: replace every `—` with a
    hyphen-with-spaces, parens, comma, or sentence break.
-5. **Audit pass 3 — voice**: does it sound like Alex? Check for at
+5. **Audit pass 3 - voice**: does it sound like Alex? Check for at
    least one parenthetical aside (in non-trivial pieces), at least one
    concrete number where possible, and the "confident understatement"
    tone in any claim.
-6. **Audit pass 4 — fluff**: cut "very", "really", "actually",
+6. **Audit pass 4 - fluff**: cut "very", "really", "actually",
    "basically", "literally" unless they're earning their place.
 7. **Show the user**. They'll usually want one more pass.
 
@@ -307,7 +307,7 @@ extended rules and the before/after examples.
   per paragraph isn't funny; it's exhausting. One natural aside per
   ~200 words is usually plenty.
 - **Hyperbole only works when surrounded by precision.** Don't
-  exaggerate generally — exaggerate one specific thing in a sentence
+  exaggerate generally - exaggerate one specific thing in a sentence
   full of real numbers.
 - **Don't sign with "Best, Alex" or similar form-letter closings.**
   Closing lines either land or get cut. "Signing off." works. "Let
@@ -321,9 +321,9 @@ extended rules and the before/after examples.
 
 ## What's in `references/`
 
-- `style-guide.md` — the long-form rules, with before/after pairs
+- `style-guide.md` - the long-form rules, with before/after pairs
   showing LLM-default vs. Alex-voice. Load this for any non-trivial
   ghost-writing task.
-- `samples.md` — characteristic excerpts from three pieces of Alex's
+- `samples.md` - characteristic excerpts from three pieces of Alex's
   own writing, with annotations. Use these to calibrate cadence when
   the SKILL.md rules feel abstract.

@@ -1,4 +1,4 @@
-# Test-quality checklist — long form
+# Test-quality checklist - long form
 
 Load when you want the full audit prompt. drive-test's SKILL.md has the
 short version inline.
@@ -26,7 +26,7 @@ tests for the seams, a few e2e tests for the highest-value user flows.
 ### Unit tests
 
 - **Cheap to write, cheap to run.** Should execute in <10ms each.
-- **Pure functions are the easiest** — same input, same output, no side
+- **Pure functions are the easiest** - same input, same output, no side
   effects.
 - **For impure functions, inject dependencies.** A function that calls
   `Date.now()` is hard to test deterministically; pass in a clock.
@@ -44,7 +44,7 @@ tests for the seams, a few e2e tests for the highest-value user flows.
 - **Run them on a faster cadence than e2e but slower than unit.** A
   pre-merge gate is reasonable; a per-keystroke gate is not.
 - **Don't mock your own code.** If a service has a repository, don't
-  mock the repository when testing the service — that's a unit test in
+  mock the repository when testing the service - that's a unit test in
   disguise.
 
 ### E2E tests
@@ -74,7 +74,7 @@ it('formats prices', () => {
 });
 ```
 
-Don't laugh — this happens. Usually when someone auto-mocks an entire
+Don't laugh - this happens. Usually when someone auto-mocks an entire
 module and forgets the function-under-test is in there.
 
 ### Sin 2: Mocks that drift from reality
@@ -104,7 +104,7 @@ expect(api.post).toHaveBeenCalledWith('/audit', { event: 'view' });
 ```
 
 Fine in moderation. Past a few of these per test, you're testing
-implementation, not behavior. The refactor that swaps `api.get` for
+implementation, not behaviour. The refactor that swaps `api.get` for
 `fetch` breaks every one of those assertions without changing what the
 code *does*.
 
@@ -135,7 +135,7 @@ The snapshot is a 500-line dump of HTML including generated class names
 (`css-1a2b3c4`), timestamps, and randomly-ordered props. Every PR
 "updates" the snapshot; nobody reads the diff.
 
-The fix: snapshot specific, stable things — the DOM structure, the
+The fix: snapshot specific, stable things - the DOM structure, the
 text content, the user-visible state. Not the whole rendered tree.
 
 ### Sin 6: Time-based tests that aren't deterministic
@@ -203,7 +203,7 @@ confidence you haven't earned.
 
 ## What good test names look like
 
-Test names should answer: **what behavior is being verified?**
+Test names should answer: **what behaviour is being verified?**
 
 | Bad | Good |
 | --- | --- |
@@ -230,7 +230,7 @@ expect(result).toEqual({ id: 'ord_123', status: 'cancelled' });
 ### Self-documenting
 
 ```ts
-// Vague — what's the magic number?
+// Vague - what's the magic number?
 expect(orders).toHaveLength(3);
 
 // Self-documenting
@@ -240,7 +240,7 @@ expect(orders.filter(o => o.status === 'cancelled')).toHaveLength(3);
 ### Stable
 
 ```ts
-// Brittle — depends on key ordering, whitespace
+// Brittle - depends on key ordering, whitespace
 expect(JSON.stringify(result)).toBe('{"id":1,"name":"Alice"}');
 
 // Stable
@@ -288,10 +288,10 @@ Three visual sections; each has one job.
 
 ### Single subject per test
 
-A test asserts one thing — though "one thing" may need multiple
+A test asserts one thing - though "one thing" may need multiple
 `expect` calls to fully express. What you want to avoid is a test
-that asserts the cancel behavior AND the refund behavior AND the email
-behavior in one body. Those are three tests.
+that asserts the cancel behaviour AND the refund behaviour AND the email
+behaviour in one body. Those are three tests.
 
 ## Language-specific notes
 
@@ -301,13 +301,13 @@ behavior in one body. Those are three tests.
 - Mock with `vi.mock` / `jest.mock` at the top of the file.
 - Use `expect.objectContaining` for partial matches when you don't care
   about every field.
-- Don't `await` `expect(promise).resolves.toBe(x)` — `await` is wrong
+- Don't `await` `expect(promise).resolves.toBe(x)` - `await` is wrong
   there; the matcher handles it.
 
 ### Python (pytest)
 
 - Use fixtures (`@pytest.fixture`) for shared setup.
-- `parametrize` is the equivalent of `Scenario Outline` — table-driven
+- `parametrize` is the equivalent of `Scenario Outline` - table-driven
   tests.
 - `assert` is the assertion (no separate library needed).
 
@@ -324,5 +324,5 @@ behavior in one body. Those are three tests.
 - Tests live in `#[cfg(test)] mod tests` blocks at the bottom of the
   file, or in `tests/` directory for integration tests.
 - `#[should_panic]` for testing panics.
-- Avoid `unwrap()` in tests when you mean "expect this Ok" — use
+- Avoid `unwrap()` in tests when you mean "expect this Ok" - use
   `expect("with a message")` so failures explain themselves.
