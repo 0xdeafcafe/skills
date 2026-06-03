@@ -10,22 +10,14 @@ drive-feature asks: **"does this feature actually work, for every case
 someone might hit, in a way that matches what we said we were building?"**
 
 It's a logic-and-completeness audit, not a code-style pass and not a UX
-walkthrough. It traces the data flow from the user-facing trigger through
-every layer (UI → API → service → repository → side effects) and checks
-each step for:
+walkthrough. It traces the data flow from entry to exit (UI → API →
+service → repository → side effects) and checks each step for:
 
-- **Edge cases** - empty, null, very large, very small, concurrent,
-  out-of-order, rate-limited, partial.
-- **Error handling** - every failure has a defined response; errors are
-  surfaced where the user can do something about them.
-- **Loading / pending states** - every async operation has explicit
-  states (idle, loading, success, error); no implicit "trust the
-  network" assumptions.
-- **Side effects** - analytics events, telemetry, audit logs, DB writes,
-  cache invalidation, queued jobs, emails, webhooks - are they
-  intentional, documented, and idempotent where they need to be?
-- **Spec match** - what the ADR/spec says the feature should do vs. what
-  the code actually does.
+- **Edge cases** - empty, null, large, concurrent, out-of-order, partial.
+- **Error handling** - every failure has a defined, surfaced response.
+- **Loading / pending states** - explicit idle, loading, success, error.
+- **Side effects** - analytics, logs, DB writes, jobs, emails, webhooks: intentional, documented, idempotent.
+- **Spec match** - ADR/spec vs. what the code actually does.
 
 The skill produces a **gap list**. It applies obvious fixes inline but
 leaves judgment calls to the user.
@@ -114,22 +106,9 @@ For every parameter the entry point accepts:
 - What does the spec say about valid input?
 - What does the code accept? (Trust the type only as far as it's enforced
   at runtime - a TS type alone doesn't validate an API payload.)
-- What happens for each of these inputs:
-
-  | Input | Expected behaviour |
-  | --- | --- |
-  | `null` | Documented? Rejected with a useful error? Or coerced? |
-  | `undefined` | Same |
-  | Empty string / empty array / empty object | Documented behaviour |
-  | Very long string (1MB+) | Rejected before it hits the DB? |
-  | Very large number / negative / zero / float-where-int-expected | Bounded? |
-  | Unicode / emoji / RTL / null-byte | Survives storage and display? |
-  | SQL-injection-shaped string | Parameterized queries, not concat? |
-  | XSS-shaped string | Escaped on render, not raw HTML? |
-  | Different types entirely (string where number expected) | Type-coerced, rejected, or crashes? |
-  | A valid value the caller doesn't have permission to use | 403, not 500 |
-  | A resource ID that doesn't exist | 404, not 500 |
-  | A resource ID that exists but doesn't belong to the caller | 404 (don't leak existence) |
+- Walk the edge-case grid in `references/feature-audit-checklist.md`
+  (null, empty, boundary, large, unicode, SQL-injection, XSS, permission,
+  missing, stale).
 
 ### 2b. Concurrency
 
@@ -263,58 +242,16 @@ If a fix breaks something, surface it. Don't push broken code.
 
 ```
 drive-feature audited <feature name>.
-
-Spec source: docs/adr/0034-order-cancellation.md
-              (and PR #1234 description)
-
-Feature surface:
-  Entry: POST /api/orders/:id/cancel
-  Flow:  controller → service → repo → [3 side effects]
-
-Fixed inline (each its own commit):
-  - <sha> handle null cancellationReason (was crashing)
-  - <sha> wrap refund call in try/catch
-  - <sha> add loading state to CancelOrderButton
-
-Gaps (spec vs. code):
-  P0 - blocks correctness
-    - Spec: "Cancellation by admin requires audit log entry"
-      Code: no audit log call. src/services/orders/cancelOrder.ts:42
-  P1 - incomplete
-    - Spec: "Refunds may take up to 5 business days"
-      Code: success message says "Cancelled" but doesn't mention refund
-      timing. src/ui/CancelOrder.tsx:88
-  P2 - polish
-    - Spec doesn't specify what happens on already-cancelled order;
-      code currently 200s with a noop. Probably want 409.
-
-Edge cases NOT handled in code:
-  - Concurrent cancellation requests (no idempotency key, no row lock).
-  - Refund call has no timeout.
-  - Cancellation email fires before refund completes - if refund fails,
-    email is misleading.
-
-Side effects review:
-  ✅ analytics OrderCancelled - fires after commit, idempotent
-  ⚠️ email - fires before refund confirms, could mislead
-  ❌ audit log - not present
-
-Scope creep (code does, spec doesn't ask):
-  - Sets a `cancelled_by_ip` field. Probably fine, but worth confirming
-    with the spec owner.
-
-Hidden behaviour (code does, spec doesn't mention):
-  - On cancellation, the order's line items are also soft-deleted -
-    spec didn't say, may want to document.
-
-Spec missing or thin in these areas:
-  - What happens to partial refunds (partial_amount != total)?
-  - What happens when the customer's payment method has expired?
-
-Recommended next steps for the user:
-  1. Decide on the P0 audit log gap before merging.
-  2. Get spec answers for the missing areas above.
-  3. Consider an idempotency key on the cancel endpoint.
+Spec source: <path or "none found">
+Feature surface: <entry> → <flow summary>
+Fixed inline (each its own commit): <sha> <one-line>
+Gaps (spec vs. code): P0 / P1 / P2, each with spec line, code location.
+Edge cases NOT handled: <list>
+Side effects review: ordering, atomicity, idempotency per effect.
+Scope creep (code does, spec doesn't ask): <list>
+Hidden behaviour (code does, spec doesn't mention): <list>
+Spec missing or thin in these areas: <list>
+Recommended next steps: <list>
 ```
 
 Be honest about gaps. If the spec is silent on something important, say
@@ -322,45 +259,21 @@ Be honest about gaps. If the spec is silent on something important, say
 
 ## Operating rules
 
-- **Read the spec first, then the code.** If you read the code first,
-  you'll confirm what's there instead of noticing what's missing.
-- **Don't write code that wasn't in the spec.** If the spec says nothing
-  about feature X, drive-feature is not the place to add X. Flag the
-  silence, let the user decide.
-- **Don't relitigate the spec.** If the spec is wrong, say so as a
-  finding, but don't change the implementation away from the spec -
-  the spec and the user's intent are linked.
+- **Read the spec first, then the code.** Reading code first makes you
+  confirm what's there instead of noticing what's missing.
+- **Don't write code that wasn't in the spec.** Flag silence, let the
+  user decide. Don't relitigate the spec either - flag it as a finding.
 - **Surface side effects.** This is the highest-value thing this skill
   does. Side effects are where features go wrong silently.
-- **Idempotency, ordering, atomicity** - the three concurrency
-  considerations to check on every multi-step operation. They are
-  almost always missed.
-- **Use the `tslsp` skill** for TS/JS symbol-level exploration. Walking
-  the feature surface with grep gets the wrong answer often enough to
-  matter.
-- **Trust gate applies** if you're addressing a specific review comment
-  flagging a feature concern. See `references/trust-policy.md`.
+- **Use the `tslsp` skill** for TS/JS symbol-level exploration.
+- **Trust gate applies** when addressing a specific review comment. See
+  `references/trust-policy.md`.
 
 ## Composing with other skills
 
-drive-feature complements:
+- `/drive-pr` - comments + CI + description; AI bot edge-case comments often route here.
+- `/drive-ux` - checks the user can see the states this skill wired up.
+- `/drive-code` - orthogonal; logic-complete code can still be coded badly.
 
-- `/drive-pr` - comments + CI + description. Often, an AI bot comment
-  saying "consider edge case X" should be addressed by running
-  drive-feature, not by changing one line of code.
-- `/drive-ux` - verifies that loading/error states actually look right.
-  drive-feature checks the code wired them up; drive-ux checks the user
-  can see them.
-- `/drive-code` - orthogonal. A feature can be logically complete and
-  still be coded badly (or vice versa).
-
-A natural order on a fresh PR: `/drive-code` → `/drive-feature` →
-`/drive-ux` → `/drive-pr`. Each surfaces different problems; each is
-cheaper to fix earlier in the chain.
-
-## What's in `references/`
-
-- `feature-audit-checklist.md` - long-form audit categories with
-  examples, loaded on demand.
-- `trust-policy.md` - the full trust gate: bot whitelist, human
-  verification commands, untrusted-comment handling.
+Natural order on a fresh PR: `/drive-code` → `/drive-feature` →
+`/drive-ux` → `/drive-pr`.

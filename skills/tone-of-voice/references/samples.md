@@ -79,27 +79,35 @@ words than they'd expect.**
 
 ---
 
-## Sample 3 - The "almost suspiciously good fit" brag (Eat Sleep Append Repeat)
+## Sample 3 - GenAI compared to people (Warm welcome to LangWatch)
 
-> We did swap out the database, moving from ElasticSearch to
-> ClickHouse, which turned out to be an almost suspiciously good fit
-> for event sourcing. Append-only writes, columnar storage, absurdly
-> fast aggregations. But the real difference wasn't the database, but
-> rather the architecture on top of it.
+> GenAI really is like people. It's not deterministic, they don't
+> behave, they even answer back and negotiate. The same prompt can
+> cost twice as many tokens between two almost identical requests,
+> stall and require multiple retries, or just go on an absolute acid
+> trip and reinvent reality. Without rich traces recording prompt
+> content, generations params, token counts, model version, latency,
+> tool calls, and the ever growing list of features, keeping this
+> portion in a black box is unsustainable.
 
 **What's working:**
 
-- **"We did swap out"** - the "did" carries a hint of "yeah, that
-  happened" without going full "we made the decision to..."
-- **"Almost suspiciously good fit"** - characterising the technical
-  choice with personality. An LLM would say "well-suited" or
-  "particularly effective".
-- **Three-noun list**: "Append-only writes, columnar storage,
-  absurdly fast aggregations." No "such as", no "namely". Just the
-  three things.
-- **The pivot**: "But the real difference wasn't the database, but
-  rather the architecture on top of it." - sets up the next
-  paragraph, makes the reader want to keep reading.
+- **"GenAI really is like people"** - declarative, opens by stating
+  the comparison without ramp-up.
+- **"they don't behave, they even answer back and negotiate"** -
+  anthropomorphising for the joke, with the joke landing in the
+  cumulative ("answer back AND negotiate") rather than in a
+  punchline.
+- **"absolute acid trip and reinvent reality"** - "absolute" as a
+  British intensifier, then concrete hyperbole that nobody would
+  write neutrally. An LLM would say "produce unexpected output" or
+  "generate inaccurate responses".
+- **Dense technical list, no buffering**: "prompt content, generations
+  params, token counts, model version, latency, tool calls" - six
+  items, no "for example", no "namely". Six commas.
+- **Flat declarative closer**: "keeping this portion in a black box
+  is unsustainable." No "we believe" / "it's clear" hedging. The
+  paragraph lands on a claim.
 
 ---
 

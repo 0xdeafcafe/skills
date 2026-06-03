@@ -6,20 +6,6 @@ allowed-tools: Bash(gh:*), Bash(git:*), Bash(npm:*), Bash(yarn:*), Bash(pnpm:*),
 
 # write-pr - compose, verify, and open a PR
 
-write-pr is the moment between "I think this is done" and "the PR is
-open". It does three things, in order:
-
-1. **Compose** the PR - title, body, draft-or-ready, target branch -
-   from the commits on the current branch, the diff against the base,
-   any related ADR / spec / ticket, and the repo's PR template.
-2. **Verify** the branch is in a state worth showing reviewers - tests
-   pass, lint passes, types compile, build succeeds (where cheap),
-   commit messages aren't gibberish.
-3. **Open** the PR via `gh pr create`, but only after the user confirms
-   what's about to happen. Pushing a branch and creating a PR is
-   visible to other people - never run this step without explicit user
-   approval (even in auto mode).
-
 ## Phase 0 - Sanity checks
 
 Before doing anything:
@@ -108,21 +94,11 @@ ls .github/PULL_REQUEST_TEMPLATE/ 2>/dev/null
 ```
 
 If a template exists, the PR body MUST fill every section it defines.
-Skipping a section that exists in the template ("Test plan", "Risk
-assessment", etc.) gets flagged in review. Match the template structure
-exactly.
+Match the template structure exactly.
 
-### 1e. Reviewer signal (informational only)
+### 1e. Reviewer signal
 
-CODEOWNERS tells you who *will* be auto-assigned, not who *should* be:
-
-```bash
-cat .github/CODEOWNERS 2>/dev/null || cat CODEOWNERS 2>/dev/null
-```
-
-Don't manually request reviewers unless the user asks - let CODEOWNERS
-do its job. If the PR touches code with no CODEOWNERS rule, mention it
-in the report; the user may want to tag someone.
+Check CODEOWNERS to see who *will* be auto-assigned (`cat .github/CODEOWNERS 2>/dev/null`). Don't manually request reviewers. If touched code has no rule, mention it in the report.
 
 ## Phase 2 - Verify the branch is review-ready
 
@@ -150,10 +126,10 @@ npm run build 2>/dev/null || true
 
 Three outcomes:
 
-- **All pass** → continue.
-- **Lint / format / type failures** → stop. Suggest `/drive-code` to
+- **All pass** -> continue.
+- **Lint / format / type failures** -> stop. Suggest `/drive-code` to
   fix automatically before opening the PR. Don't paper over.
-- **Test failures** → stop. Surface them. Either the change is broken
+- **Test failures** -> stop. Surface them. Either the change is broken
   or the tests are; both are worth knowing before reviewers see the
   PR.
 
@@ -164,198 +140,63 @@ which becomes a draft PR or one with a `Known issues:` section.
 
 ### Title
 
-Conventions (in priority order - match the repo's style):
-
-```bash
-# Look at recent merged PR titles to extract convention
-gh pr list --state merged --limit 20 --json title --jq '.[].title'
-```
-
-Common conventions:
-
-| Style | Example |
-| --- | --- |
-| Conventional Commits | `feat(orders): allow cancellation within 24h` |
-| Imperative summary | `Allow cancellation of recent orders` |
-| Ticket-prefixed | `[LIN-1234] Order cancellation` |
-| Plain title-case | `Order cancellation` |
-
-Match what the repo uses. Don't introduce a new convention.
-
-Keep titles **under 70 characters**. The full title is what GitHub
-shows in the PR list. Long titles get truncated and skim badly.
+Match the repo's recent merged-PR title style (see `gh pr list --state merged --limit 20 --json title --jq '.[].title'`). Don't introduce a new convention. See `references/pr-templates.md` for common conventions and length rules.
 
 ### Body
 
-If a template exists, fill every section. Standard structure when
-there's no template:
-
-```markdown
-## Summary
-
-<2-4 sentences explaining what changed and why. The "why" is more
-important than the "what" - reviewers can see the what from the diff.>
-
-## Changes
-
-- <bullet per logical change>
-- <bullet per logical change>
-
-## Test plan
-
-- [ ] <how a reviewer can verify, step by step>
-- [ ] <unit / integration tests that cover this>
-- [ ] <manual flow walked, with screenshots if UI>
-
-## Linked
-
-- ADR: docs/adr/0042-...
-- Spec: specs/order-cancellation.feature
-- Ticket: LIN-1234
-```
+If a template exists, fill every section. Otherwise use a Summary / Changes / Test plan / Linked structure - see `references/pr-templates.md` for the full body template.
 
 Drafting rules:
 
-- **Why before what.** "We need to let customers cancel recent orders
-  to reduce support load on cancellation requests" → reviewer
-  understands the motivation in 5 seconds. "This PR adds cancellation"
-  → reviewer has to infer.
-- **Don't recap the diff.** The diff is right there. Don't bullet every
-  changed file unless the bullets *explain* something.
-- **Use checkboxes in the test plan.** Reviewers tick them as they
-  verify; the PR doubles as a checklist.
-- **Be honest about scope.** If something is intentionally not
-  included, say so - "this PR doesn't cover bulk cancellation; that's
-  in LIN-1235."
-- **Don't apologize / hedge / pad.** "This is a small change but..." -
-  reviewers don't need apologies. Just describe what landed.
-- **Don't sign.** The author is in the PR metadata. No "AFR / Claude"
-  signatures in the body.
+- **Why before what.** Motivation first; reviewers see the "what" in the diff.
+- **Don't recap the diff.** Bullets should *explain*, not enumerate changed files.
+- **Use checkboxes in the test plan.** Reviewers tick them as they verify.
+- **Be honest about scope.** Call out what's intentionally not included.
+- **Don't apologise / hedge / pad.** No "this is a small change but...".
+- **Don't sign.** Author is in PR metadata; no "AFR / Claude" signatures.
 
 ## Phase 4 - Draft or ready
 
 Decide based on signals:
 
-- Branch name contains `wip` / `draft` → open as draft.
-- The branch is missing tests for new code and the user knows it →
+- Branch name contains `wip` / `draft` -> open as draft.
+- The branch is missing tests for new code and the user knows it ->
   open as draft.
-- Pre-push checks fail and the user wants to open anyway → draft.
-- Otherwise → ready for review.
+- Pre-push checks fail and the user wants to open anyway -> draft.
+- Otherwise -> ready for review.
 
 When in doubt, ask the user.
 
 ## Phase 5 - Confirm with the user
 
-**Always confirm before pushing and opening.** Even in auto mode. PR
-creation is visible to others; the user gets to approve the title,
-body, draft state, and base branch before anything goes live.
+**Always confirm before pushing and opening.** Even in auto mode. PR creation is visible to others; the user gets to approve title, body, draft state, and base branch before anything goes live.
 
-Show:
-
-```
-Ready to open PR:
-
-  Title:  <proposed title>
-  Base:   <base branch>  (← <head branch>)
-  State:  Ready for review | Draft
-  
-  Pre-push checks:
-    ✅ types
-    ✅ lint
-    ✅ tests (142 passed)
-    ⚠️ format - 3 files reformatted; included in this commit
-
-Body:
-  <full proposed body>
-
-Proceed?  [y/N]
-```
-
-If the user says no, ask what to change. Iterate the draft. Don't push
-until they're satisfied.
+Show: title, base, head, draft state, pre-push check results, full body. Ask y/N. If no, iterate the draft until they're satisfied.
 
 ## Phase 6 - Push and open
 
-When confirmed:
+When confirmed, `git push -u origin <head-branch>` then `gh pr create --base <base> --head <head> --title "<title>" --body "$(cat <<'EOF' ... EOF)"` (add `--draft` if drafting). Show the URL afterwards via `gh pr view --json url --jq .url`.
 
-```bash
-# Push the branch
-git push -u origin <head-branch>
-
-# Create the PR
-gh pr create \
-  --base <base-branch> \
-  --head <head-branch> \
-  --title "<title>" \
-  --body "$(cat <<'EOF'
-<body>
-EOF
-)" \
-  $([ "$DRAFT" = "true" ] && echo "--draft")
-```
-
-After creation:
-
-```bash
-# Show the URL so the user can open it
-gh pr view --json url --jq .url
-```
-
-If the push fails because the branch already exists with diverged
-history, **stop**. Don't `--force` push. Tell the user the remote has
-moved and they need to decide (rebase, force-push, or open a different
-branch).
+If the push fails because the branch has diverged, **stop**. Don't `--force` push. Tell the user the remote has moved and they need to decide (rebase, force-push, or open a different branch).
 
 ## Phase 7 - Final report
 
 ```
 PR opened: <url>
-
-  Title: <title>
-  State: <ready | draft>
-  Auto-requested reviewers (via CODEOWNERS): @user1, @team-platform
-  
-Next steps:
-  - Wait for CI; if anything goes red, /drive-pr will iterate.
-  - Once reviewers comment, /drive-pr to address feedback.
-  - If touched UX surface, /drive-ux to walk through the change in a
-    real browser and add screenshots to the PR.
+Title: <title> | State: <ready | draft>
+Auto-assigned (CODEOWNERS): <list>
+Next: /drive-pr for CI / review feedback. /drive-ux if UI-visible.
 ```
 
 ## Operating rules
 
-- **Never push or create the PR without user confirmation.** Even in
-  auto mode. PR creation is shared-state, which is the canonical case
-  of "actions visible to others" the harness flags as needing approval.
-- **Never `git push --force`.** Even when the branch has diverged. The
-  user resolves divergence; the skill doesn't.
-- **Never `--no-verify` to skip pre-commit hooks.** If a hook fails,
-  fix the underlying issue. If the user wants to override, they invoke
-  the relevant flag themselves.
-- **Never approve or merge the PR.** write-pr opens; drive-pr iterates;
-  merging is a human decision.
-- **Don't pad the description.** Length is not a quality signal. Three
-  sentences and a test plan is fine for a small PR.
-- **Don't auto-request reviewers.** CODEOWNERS does it. Manual requests
-  are the user's call.
-- **Match the repo's conventions.** Title style, commit style, body
-  template - all from the existing repo, not from a generic template.
-- **Don't post the PR body in chat as a wall of markdown** unless the
-  user asks. Show the structure and key bullets; full markdown can be
-  reviewed once the PR is open.
+- **Never push or create the PR without user confirmation.** Even in auto mode.
+- **Never `git push --force`.** The user resolves divergence; the skill doesn't.
+- **Never `--no-verify`.** Fix the hook failure; don't skip it.
+- **Never approve or merge the PR.** write-pr opens; drive-pr iterates; merging is human.
+- **Don't auto-request reviewers.** CODEOWNERS does it. Match the repo's title / body conventions, not generic templates.
 
 ## Composing with other skills
 
-- **`/drive-code`** - run before `/write-pr` if lint/format/structure
-  is messy. write-pr should not be the place where lint failures get
-  fixed; drive-code is.
-- **`/drive-test`** - run before `/write-pr` if test coverage / quality
-  is shaky. Don't open a PR knowing the tests are weak.
-- **`/drive-feature`** - run before `/write-pr` for non-trivial
-  features. Audits the implementation against the spec; gaps surfaced
-  here belong in the PR description or as TODOs in the code, not as
-  surprises in review.
-- **`/drive-ux`** - run after `/write-pr` if the change is
-  UI-visible. Generates screenshots that can be pasted into the PR.
-- **`/drive-pr`** - the after-PR loop. Once write-pr opens it, drive-pr
-  drives it to merge-ready.
+- **Before:** `/drive-code` (lint/format), `/drive-test` (coverage), `/drive-feature` (spec audit).
+- **After:** `/drive-ux` (screenshots for UI changes), `/drive-pr` (CI + review feedback loop to merge-ready).

@@ -4,6 +4,18 @@ Load when you want the structured prompt. drive-code's SKILL.md has the
 short version inline; this is the deep-dive when you need a reminder of
 categories.
 
+## Toolchain detection
+
+Detect what the project uses, in priority order. Stop at the first hit
+per category.
+
+| Category | Detection order |
+| --- | --- |
+| **Linter** | `biome.json` → biome · `eslint.config.{js,ts,mjs}` / `.eslintrc*` → eslint · `ruff.toml` / `pyproject.toml[tool.ruff]` → ruff · `golangci.yml` → golangci-lint · `Cargo.toml` → `cargo clippy` |
+| **Formatter** | `biome.json` → biome format · `.prettierrc*` / `prettier` in package.json → prettier · `pyproject.toml[tool.black]` → black · `gofmt` for Go · `rustfmt.toml` → cargo fmt |
+| **TS/JS symbol intel** | `tsconfig.json` present → use the `tslsp` skill (do NOT fall back to grep/Edit for symbol-level work) |
+| **Test runner** | `vitest.config.*` → vitest · `jest.config.*` → jest · `playwright.config.*` → playwright · `pytest.ini`/`pyproject.toml[tool.pytest]` → pytest · `go test` for Go · `cargo test` for Rust |
+
 ## Single Responsibility
 
 A unit of code (file, class, function, module) should have one reason to
