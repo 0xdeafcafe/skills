@@ -96,17 +96,12 @@ the repo doubles as a marketplace:
 
 ```
 /plugin marketplace add 0xdeafcafe/skills
-/plugin install all-skills@alex-skills
+/plugin install skills@alex
 ```
 
-Or grab a subset:
-
-```
-/plugin install planning-skills@alex-skills
-/plugin install driving-skills@alex-skills
-/plugin install shipping-skills@alex-skills
-/plugin install tone-of-voice@alex-skills
-```
+Shows up in the plugin manager as `skills @ alex`. For selective
+installs, use the `npx skills add 0xdeafcafe/skills --skill <name>`
+path above instead.
 
 ## The trust gate
 

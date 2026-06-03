@@ -1,5 +1,5 @@
 {
-  "name": "alex-skills",
+  "name": "alex",
   "owner": {
     "name": "Alexander Forbes-Reed",
     "email": "me@alex.forbes.red"
@@ -10,52 +10,8 @@
   },
   "plugins": [
     {
-      "name": "planning-skills",
-      "description": "Discussion-driven skills that produce ADRs and Gherkin specs before code starts.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/plan-feature",
-        "./skills/write-adr",
-        "./skills/write-spec",
-        "./skills/review-spec"
-      ]
-    },
-    {
-      "name": "driving-skills",
-      "description": "Per-file audits during code: quality, feature logic, tests, security, UX.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/drive-code",
-        "./skills/drive-feature",
-        "./skills/drive-test",
-        "./skills/drive-security",
-        "./skills/drive-ux"
-      ]
-    },
-    {
-      "name": "shipping-skills",
-      "description": "Open the PR, iterate it to merge-ready.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/open-pr",
-        "./skills/drive-pr"
-      ]
-    },
-    {
-      "name": "tone-of-voice",
-      "description": "Ghost-write in Alex's voice for anything published under his name.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/tone-of-voice"
-      ]
-    },
-    {
-      "name": "all-skills",
-      "description": "All twelve skills in one install.",
+      "name": "skills",
+      "description": "Twelve Claude Code skills covering planning, driving, and shipping the PR lifecycle.",
       "source": "./",
       "strict": false,
       "skills": [
