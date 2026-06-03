@@ -1,0 +1,42 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Planning",
+      "description": "Discussion-driven skills that produce ADRs and Gherkin specs before code starts.",
+      "skills": [
+        "plan-feature",
+        "write-adr",
+        "write-spec",
+        "review-spec"
+      ]
+    },
+    {
+      "title": "Driving",
+      "description": "Per-file audits during code: quality, feature logic, tests, security, UX.",
+      "skills": [
+        "drive-code",
+        "drive-feature",
+        "drive-test",
+        "drive-security",
+        "drive-ux"
+      ]
+    },
+    {
+      "title": "Shipping",
+      "description": "Open the PR, iterate it to merge-ready.",
+      "skills": [
+        "write-pr",
+        "drive-pr"
+      ]
+    },
+    {
+      "title": "Cross-cutting",
+      "description": "Ghost-write in Alex's voice for anything published under his name.",
+      "skills": [
+        "tone-of-voice"
+      ]
+    }
+  ]
+}

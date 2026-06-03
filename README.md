@@ -1,5 +1,7 @@
 # skills
 
+[![skills.sh](https://skills.sh/b/0xdeafcafe/skills)](https://skills.sh/0xdeafcafe/skills)
+
 Twelve Claude Code skills for the parts of shipping software I'd
 rather not do myself. The ADR, the Gherkin spec, the review pass, the
 PR description, the back-and-forth on the review comments. You get
@@ -85,6 +87,25 @@ Symlinks rather than copies, so edits land instantly:
 
 ```bash
 npx skills add .
+```
+
+### Claude Code plugin marketplace (alternative)
+
+If you're on Claude Code and prefer its plugin system over `npx`,
+the repo doubles as a marketplace:
+
+```
+/plugin marketplace add 0xdeafcafe/skills
+/plugin install all-skills@alex-skills
+```
+
+Or grab a subset:
+
+```
+/plugin install planning-skills@alex-skills
+/plugin install driving-skills@alex-skills
+/plugin install shipping-skills@alex-skills
+/plugin install tone-of-voice@alex-skills
 ```
 
 ## The trust gate
