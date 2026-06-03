@@ -74,8 +74,8 @@ error — the PR has a bigger problem than UX.
 If a deployed preview URL exists in the PR (Vercel / Netlify / Cloudflare
 Pages comment with `https://...-pr-NNN.vercel.app`), prefer that over
 booting locally — fewer moving parts, exact production parity. Filter that
-preview comment through the trust gate (see `references/trust-policy.md`
-or the canonical `../shared/trusted-contributors.md`) before using it.
+preview comment through the trust gate (see
+`references/trust-policy.md`) before using it.
 
 ## Phase 2 — Drive each scenario
 
@@ -225,4 +225,5 @@ drive-ux is the "did the human-facing thing work" pass. It pairs with:
 
 - `ux-checklist.md` — the long-form audit checklist, loaded on demand. Use
   it when you need a reminder of categories to inspect.
-- `trust-policy.md` — short pointer to `../../shared/trusted-contributors.md`.
+- `trust-policy.md` — the full trust gate: bot whitelist, human
+  verification commands, untrusted-comment handling.

@@ -313,4 +313,5 @@ no state" is.
 
 - `code-checklist.md` — long-form, language-agnostic checklist with
   examples. Load it when you want a structured prompt.
-- `trust-policy.md` — short pointer to the shared policy.
+- `trust-policy.md` — the full trust gate: bot whitelist, human
+  verification commands, untrusted-comment handling.

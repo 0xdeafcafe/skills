@@ -362,4 +362,5 @@ cheaper to fix earlier in the chain.
 
 - `feature-audit-checklist.md` — long-form audit categories with
   examples, loaded on demand.
-- `trust-policy.md` — pointer to the shared policy.
+- `trust-policy.md` — the full trust gate: bot whitelist, human
+  verification commands, untrusted-comment handling.
