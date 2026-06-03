@@ -38,6 +38,12 @@ Roughly chronological — `plan-feature` at the start of a piece of work,
 | [`write-pr`](./skills/write-pr/) | Compose a PR (title, body, draft state) from commits + diff + linked artifacts, run pre-push checks, then open it via `gh pr create`. |
 | [`drive-pr`](./skills/drive-pr/) | Iterate on an open PR until every trusted comment is resolved, CI is green, and the description matches the code. |
 
+### Cross-cutting
+
+| Skill | One-liner |
+| --- | --- |
+| [`tone-of-voice`](./skills/tone-of-voice/) | Ghost-write in Alex's voice (blog posts, slack, customer emails, PR descriptions). Bans em-dashes and the usual LLM tells; codifies the patterns from his own writing. |
+
 ## Installing
 
 Uses the [`skills.sh`](https://www.skills.sh) CLI — one pasteable line,
@@ -149,9 +155,12 @@ consume PR comments as instructions.
     │   └── references/{ux-checklist,trust-policy}.md
     ├── write-pr/               # compose + verify + open PR
     │   └── SKILL.md
-    └── drive-pr/               # iterate open PR to merge-ready
+    ├── drive-pr/               # iterate open PR to merge-ready
+    │   ├── SKILL.md
+    │   └── references/trust-policy.md
+    └── tone-of-voice/           # ghost-write in Alex's voice
         ├── SKILL.md
-        └── references/trust-policy.md
+        └── references/{style-guide,samples}.md
 ```
 
 Reference files in a skill's `references/` directory are loaded by that
