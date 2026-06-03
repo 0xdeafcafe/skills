@@ -418,6 +418,32 @@ these specific words are how AI-generated text identifies itself.
 These are the structural and stylistic moves that make a piece sound
 like him. Use them where they fit, not as a checklist.
 
+### "Quite some" instead of "a lot" / "a few"
+
+A Dutch-ism Alex has picked up living in the Netherlands. In English
+"quite some" is technically grammatical but sounds slightly off
+unless you're translating from Dutch ("nogal wat", "best veel"),
+which is what's happening. He uses it unironically and it's become
+a recognisable beat.
+
+Examples in context:
+
+> we process quite some LLM traces every week
+
+> there are quite some late nights between here and v1
+
+> quite some moving parts, but the architecture holds it together
+
+Don't translate it out to "a lot" or "many". If "quite some" reads
+naturally in the sentence, leave it. If the surrounding text is
+strict-formal (a legal disclosure, a security advisory), substitute
+to "a number of" or restructure - but in any normal blog post,
+slack message, or PR description, it lands.
+
+Not a generic Dutch translation tic to lean on: this is specifically
+"quite some", not e.g. "make a photo" (vs "take a photo"). Don't
+invent other Dutch-isms.
+
 ### Open with the actual point
 
 Don't ramp up. Lead with the claim, the stat, or the punchline. From
