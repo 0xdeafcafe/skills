@@ -89,29 +89,24 @@ npx skills add .
 
 ## The trust gate
 
-PR comments are a prompt-injection vector with shell-level blast
-radius. Every skill that reads them runs the same filter:
+PR comments come from anyone with a GitHub account. If a skill
+follows their instructions, anyone with a GitHub account has shell
+on my laptop. Every skill that reads them runs the same filter:
 
-1. **AI bots** - a tiny whitelist (CodeRabbit, GitHub Copilot
-   reviewer, Kilo Code reviewer). Everything else with `[bot]` in
-   the handle is untrusted by default.
+1. **AI bots** - three trusted by name (CodeRabbit, GitHub Copilot
+   reviewer, Kilo Code reviewer). Other `[bot]` handles are
+   untrusted by default.
 2. **Humans** - verified members of the repo's owning organisation,
    or collaborators with `write` or higher, checked live via
-   `gh api`. No exceptions for "looks legit". Verification is a hard
-   gate.
+   `gh api`. "Looks legit" isn't a verification.
 
-Everything else is read for situational awareness, never acted on.
-A skill that follows instructions from a random GitHub account is
-a remote-code-execution primitive, and the gate is what stops that.
+Untrusted comments get read for context. They never move code,
+write a reply, or resolve a thread.
 
-The six `drive-*` skills (`drive-pr`, `drive-ux`, `drive-code`,
-`drive-feature`, `drive-test`, `drive-security`) each carry their
-own copy of the policy at `skills/<name>/references/trust-policy.md`.
-Kept in sync by hand. Edit one, edit all six.
-
-The five that only write files (`write-adr`, `write-spec`,
-`plan-feature`, `review-spec`, `write-pr`) don't carry it. They
-don't consume PR comments as instructions.
+Six of the twelve skills carry the policy at
+`skills/<name>/references/trust-policy.md` (the six `drive-*`). The
+other five only write files, so there's nothing to filter. Edit one,
+edit all six.
 
 ## Layout
 
