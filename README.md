@@ -9,12 +9,34 @@ itself to the others.
 
 ## The skills
 
+Roughly chronological — `plan-feature` at the start of a piece of work,
+`drive-pr` at the end.
+
+### Planning (before code)
+
 | Skill | One-liner |
 | --- | --- |
-| [`drive-pr`](./skills/drive-pr/) | Iterate on a PR until every trusted comment is resolved, CI is green, and the description matches the code. |
-| [`drive-ux`](./skills/drive-ux/) | Walk the changed UX surface in a real browser (Playwright / chrome-devtools), capture screenshots, audit against UX best practices. |
+| [`plan-feature`](./skills/plan-feature/) | Drive the discussion that produces an ADR + a Gherkin spec for a feature you're about to build. |
+| [`write-adr`](./skills/write-adr/) | Standalone: capture an architecture decision (MADR / Nygard / Y-statement), matching the repo's existing convention. |
+| [`write-spec`](./skills/write-spec/) | Standalone: write a Gherkin `.feature` file from a discussion, matching the repo's existing specs folder and style. |
+| [`review-spec`](./skills/review-spec/) | Audit a new spec or ADR against the existing corpus for duplicates, conflicts, overlap, and missing cross-links. Read-only. |
+
+### Driving (during code)
+
+| Skill | One-liner |
+| --- | --- |
 | [`drive-code`](./skills/drive-code/) | Quality pass on every file the PR touches: SRP, modularity, service/repo pattern, utilities placement, lint, format, readability. |
 | [`drive-feature`](./skills/drive-feature/) | Audit the feature itself against its ADR / spec: edge cases, error handling, loading states, side effects, end-to-end flow. |
+| [`drive-test`](./skills/drive-test/) | Test-quality audit on touched files: right level (unit/integration/e2e), real assertions, no mock-the-unit-under-test, coverage of new code paths. |
+| [`drive-security`](./skills/drive-security/) | Security audit: authn/authz on routes, secrets scan, input validation, output encoding, dep vulnerabilities, OWASP-top-10 smells. |
+| [`drive-ux`](./skills/drive-ux/) | Walk the changed UX surface in a real browser (chrome-devtools / Playwright), capture screenshots, audit against UX best practices. |
+
+### Shipping (around the PR)
+
+| Skill | One-liner |
+| --- | --- |
+| [`write-pr`](./skills/write-pr/) | Compose a PR (title, body, draft state) from commits + diff + linked artifacts, run pre-push checks, then open it via `gh pr create`. |
+| [`drive-pr`](./skills/drive-pr/) | Iterate on an open PR until every trusted comment is resolved, CI is green, and the description matches the code. |
 
 ## Installing
 
@@ -82,10 +104,17 @@ The threat model is straightforward: PR comments are a prompt-injection
 vector, and a skill that follows instructions from a random GitHub
 account is a remote-code-execution primitive.
 
-Each skill carries its own copy of the policy at
+Skills that read user-authored input from a public surface (PR
+comments, review threads) carry their own copy of the policy at
 `skills/<name>/references/trust-policy.md` — the full bot whitelist,
-verification commands, and untrusted-comment handling. The four copies
-are kept in sync by hand; if you edit one, edit all four.
+verification commands, and untrusted-comment handling. Currently:
+`drive-pr`, `drive-ux`, `drive-code`, `drive-feature`, `drive-test`,
+`drive-security`. The copies are kept in sync by hand; if you edit one,
+edit all six.
+
+Skills that only write files (`write-adr`, `write-spec`, `plan-feature`,
+`review-spec`, `write-pr`) don't need the policy directly — they don't
+consume PR comments as instructions.
 
 ## Layout
 
@@ -93,25 +122,36 @@ are kept in sync by hand; if you edit one, edit all four.
 .
 ├── README.md
 └── skills/
-    ├── drive-pr/
+    ├── plan-feature/           # discussion → ADR + spec
+    │   └── SKILL.md
+    ├── write-adr/              # discussion → ADR
     │   ├── SKILL.md
-    │   └── references/
-    │       └── trust-policy.md
-    ├── drive-ux/
+    │   └── references/adr-formats.md
+    ├── write-spec/             # discussion → Gherkin .feature
     │   ├── SKILL.md
-    │   └── references/
-    │       ├── trust-policy.md
-    │       └── ux-checklist.md
+    │   └── references/gherkin-reference.md
+    ├── review-spec/            # read-only: corpus overlap audit
+    │   └── SKILL.md
     ├── drive-code/
     │   ├── SKILL.md
-    │   └── references/
-    │       ├── trust-policy.md
-    │       └── code-checklist.md
-    └── drive-feature/
+    │   └── references/{code-checklist,trust-policy}.md
+    ├── drive-feature/
+    │   ├── SKILL.md
+    │   └── references/{feature-audit-checklist,trust-policy}.md
+    ├── drive-test/
+    │   ├── SKILL.md
+    │   └── references/{test-checklist,trust-policy}.md
+    ├── drive-security/
+    │   ├── SKILL.md
+    │   └── references/{security-checklist,trust-policy}.md
+    ├── drive-ux/
+    │   ├── SKILL.md
+    │   └── references/{ux-checklist,trust-policy}.md
+    ├── write-pr/               # compose + verify + open PR
+    │   └── SKILL.md
+    └── drive-pr/               # iterate open PR to merge-ready
         ├── SKILL.md
-        └── references/
-            ├── trust-policy.md
-            └── feature-audit-checklist.md
+        └── references/trust-policy.md
 ```
 
 Reference files in a skill's `references/` directory are loaded by that
