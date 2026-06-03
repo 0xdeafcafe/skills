@@ -37,8 +37,46 @@ exact verification commands and the canonical bot whitelist.
 
 ## Installing
 
-Skills live in `~/.claude/skills/<name>/SKILL.md`. To install everything from
-this repo, symlink each skill directory:
+### Quick install (`npx`, no clone needed)
+
+Paste this into any project's terminal — it copies all skills into
+`~/.claude/skills/`:
+
+```bash
+npx -y github:0xdeafcafe/skills add
+```
+
+Once the package is published to npm, the same works as:
+
+```bash
+npx -y @0xdeafcafe/skills add
+```
+
+A few useful variants:
+
+```bash
+# install just the ones you want
+npx -y github:0xdeafcafe/skills add drive-pr drive-ux
+
+# see what's available without installing
+npx -y github:0xdeafcafe/skills list
+
+# install into a per-project skills directory instead of the global one
+npx -y github:0xdeafcafe/skills add --dir ./.claude/skills
+
+# see what's currently installed (in ~/.claude/skills/)
+npx -y github:0xdeafcafe/skills installed
+
+# uninstall
+npx -y github:0xdeafcafe/skills remove drive-pr
+```
+
+Run `npx -y github:0xdeafcafe/skills --help` for the full reference.
+
+### Dev install (symlinks back to this repo)
+
+If you're hacking on the skills themselves, symlink each one — edits in this
+repo take effect immediately:
 
 ```bash
 for skill in drive-pr drive-ux drive-code drive-feature; do
@@ -46,10 +84,11 @@ for skill in drive-pr drive-ux drive-code drive-feature; do
 done
 ```
 
-Or symlink the whole repo and let Claude Code find skills by name (it walks
-subdirectories looking for `SKILL.md`).
+The CLI knows about symlinks: `skills add` will skip a symlinked target
+(use `--force` to replace) so a stray `add` doesn't break your dev setup.
 
-To uninstall a single skill, remove its symlink — no other state to clean up.
+To uninstall a single skill, remove the directory or symlink under
+`~/.claude/skills/` (or use `npx -y github:0xdeafcafe/skills remove <name>`).
 
 ## Layout
 

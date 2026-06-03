@@ -1,0 +1,32 @@
+{
+  "name": "@0xdeafcafe/skills",
+  "version": "0.1.0",
+  "description": "Personal Claude Code skills for software-engineering work (drive-pr, drive-ux, drive-code, drive-feature).",
+  "bin": {
+    "skills": "./bin/skills.js"
+  },
+  "files": [
+    "bin",
+    "drive-pr",
+    "drive-ux",
+    "drive-code",
+    "drive-feature",
+    "shared",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT",
+  "author": "Alexander Forbes-Reed",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0xdeafcafe/skills.git"
+  },
+  "keywords": [
+    "claude-code",
+    "skills",
+    "ai",
+    "pr-review"
+  ]
+}
