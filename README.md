@@ -1,17 +1,17 @@
 # skills
 
 Twelve Claude Code skills for the parts of shipping software I'd
-rather not do myself. Planning the change, writing the spec,
-addressing review comments, keeping the PR description honest, you
-get the picture.
+rather not do myself. The ADR, the Gherkin spec, the review pass, the
+PR description, the back-and-forth on the review comments. You get
+the picture.
 
-This isn't another "awesome-claude-skills" list. Each one is
-opinionated about what "done" looks like, and they compose:
-`plan-feature` writes the ADR and spec before code starts, the
-`drive-*` family audits the work while it's happening, `write-pr`
-opens the PR, `drive-pr` iterates on it until everything's green,
-and `tone-of-voice` keeps anything I publish from sounding like an
-LLM wrote it (which, to be clear, an LLM did).
+They compose. `plan-feature` writes the ADR and the spec before any
+code gets touched. The `drive-*` family audits the work while it's
+happening (code quality, the feature against its spec, tests,
+security, the UX in a real browser). `write-pr` opens the PR.
+`drive-pr` iterates until CI is green and the description matches
+what actually shipped. `tone-of-voice` keeps anything I publish from
+sounding like an LLM wrote it, which, to be clear, an LLM did.
 
 ## The skills
 
@@ -62,10 +62,10 @@ Interactive by default; it asks which skills and which agents you
 want.
 
 ```bash
-# install a few
+# a few, not all
 npx skills add 0xdeafcafe/skills --skill drive-pr --skill drive-ux
 
-# list available without installing
+# list without installing
 npx skills add 0xdeafcafe/skills --list
 
 # everything, globally, into Claude Code, no prompts
@@ -97,8 +97,8 @@ radius. Every skill that reads them runs the same filter:
    the handle is untrusted by default.
 2. **Humans** - verified members of the repo's owning organisation,
    or collaborators with `write` or higher, checked live via
-   `gh api`. No exceptions for "looks legit". Verification is a
-   hard gate, not a vibe check.
+   `gh api`. No exceptions for "looks legit". Verification is a hard
+   gate.
 
 Everything else is read for situational awareness, never acted on.
 A skill that follows instructions from a random GitHub account is
@@ -158,9 +158,8 @@ don't consume PR comments as instructions.
 
 Reference files in a skill's `references/` are loaded on demand,
 which keeps the main `SKILL.md` lean. Long checklists exist without
-bloating the context that gets loaded every time a skill triggers.
+bloating the context that gets pulled in every time a skill fires.
 
-Each skill is self-contained. When the CLI installs `drive-pr`,
-you get `drive-pr/SKILL.md` plus everything under
-`drive-pr/references/`. No cross-skill paths to break on a
-standalone install.
+Each skill is self-contained. When the CLI installs `drive-pr`, you
+get `drive-pr/SKILL.md` plus everything under `drive-pr/references/`.
+No cross-skill paths to break on a standalone install.
