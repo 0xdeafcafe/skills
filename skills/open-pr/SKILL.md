@@ -1,10 +1,10 @@
 ---
-name: write-pr
-description: Use when the user says "open a PR", "/write-pr", "draft a PR", "create the PR", "write a PR description", or wants Claude to compose a pull request from the current branch and open it on GitHub. Drafts the title and body from commits + diffstat + linked ADR/spec/ticket, runs the repo's pre-push checks (tests, lint, type-check, build), shows the user the proposed PR for confirmation, then pushes and creates via `gh pr create`. Bookend to /drive-pr - write-pr opens, drive-pr iterates.
-allowed-tools: Bash(gh:*), Bash(git:*), Bash(npm:*), Bash(yarn:*), Bash(pnpm:*), Bash(bun:*), Bash(npx:*), Bash(just:*), Bash(make:*), Bash(go:*), Bash(cargo:*), Bash(eslint:*), Bash(biome:*), Bash(prettier:*), Bash(ruff:*), Bash(black:*), Bash(rg:*), Read, Grep, Glob, Skill
+name: open-pr
+description: Use when the user says "open a PR", "/open-pr", "make the PR", "ship this", "draft a PR", "create the PR", or wants Claude to turn the current branch's work into an open pull request. Runs final sanity checks (lint, format, type-check, tslsp diagnostics if installed), drafts a title and body that actually describe what's in the diff and commits + any linked ADR / spec / ticket, confirms with the user, then pushes and opens via `gh pr create`. Closes by asking whether to drive the PR now (`/drive-pr`) or wait for review. Bookend to `/drive-pr` - open-pr opens, drive-pr iterates.
+allowed-tools: Bash(gh:*), Bash(git:*), Bash(npm:*), Bash(yarn:*), Bash(pnpm:*), Bash(bun:*), Bash(npx:*), Bash(just:*), Bash(make:*), Bash(go:*), Bash(cargo:*), Bash(eslint:*), Bash(biome:*), Bash(prettier:*), Bash(ruff:*), Bash(black:*), Bash(tslsp:*), Bash(rg:*), Read, Grep, Glob, Skill
 ---
 
-# write-pr - compose, verify, and open a PR
+# open-pr - compose, verify, and open a PR
 
 ## Phase 0 - Sanity checks
 
@@ -60,7 +60,7 @@ The shape of the diff tells you the shape of the PR. 12 files
 changed across 4 directories means a different summary style than
 1 file with 800 lines changed.
 
-### 1c. Linked artifacts
+### 1c. Linked artefacts
 
 Look for references to documents the PR depends on or extends:
 
@@ -100,41 +100,44 @@ Match the template structure exactly.
 
 Check CODEOWNERS to see who *will* be auto-assigned (`cat .github/CODEOWNERS 2>/dev/null`). Don't manually request reviewers. If touched code has no rule, mention it in the report.
 
-## Phase 2 - Verify the branch is review-ready
+## Phase 2 - Final sanity checks
 
-Run the project's pre-push checks. If a `Justfile` / `Makefile` /
-`package.json` script exists for "pre-push" or "check", use that - it's
-the project's own definition of "ready". Otherwise run the toolchain
-directly:
+Four checks, in order. The first three are unconditional; the fourth
+runs only when tslsp is available.
 
 ```bash
-# Type check (TS)
-tslsp diagnostics --files <touched paths>   # or `npx tsc --noEmit`
-
-# Lint
+# 1. Lint (the project's linter on touched files)
 <linter> <touched paths>
 
-# Format check (don't write, just verify)
+# 2. Format (verify only - don't write)
 <formatter> --check <touched paths>
 
-# Tests for affected packages
-<test-runner> <touched paths or affected packages>
+# 3. Type check
+npx tsc --noEmit                 # TS without tslsp
+# or
+go build ./...                   # Go
+cargo check                      # Rust
+pyright                          # Python
 
-# Build (if cheap - skip if it takes >2 minutes)
-npm run build 2>/dev/null || true
+# 4. tslsp diagnostics - if and only if tslsp is on PATH
+command -v tslsp >/dev/null 2>&1 && tslsp diagnostics --files <touched paths>
 ```
+
+Use the project's `check` / `pre-push` script if one exists in
+`Justfile` / `Makefile` / `package.json` - the project's own
+definition of "ready" beats the generic toolchain detection.
 
 Three outcomes:
 
 - **All pass** -> continue.
-- **Lint / format / type failures** -> stop. Suggest `/drive-code` to
-  fix automatically before opening the PR. Don't paper over.
-- **Test failures** -> stop. Surface them. Either the change is broken
-  or the tests are; both are worth knowing before reviewers see the
-  PR.
+- **Lint / format / type / tslsp failures** -> stop. Suggest
+  `/drive-code` to fix lint and format automatically. Don't paper over.
+- **Test failures from a `check` script** -> stop. Surface them.
+  Either the change is broken or the tests are; both are worth knowing
+  before reviewers see the PR.
 
 The user can override with "open anyway, I know about that failure" -
-which becomes a draft PR or one with a `Known issues:` section.
+the PR opens as draft or with a `Known issues:` section.
 
 ## Phase 3 - Draft the title and body
 
@@ -162,7 +165,7 @@ Decide based on signals:
 - Branch name contains `wip` / `draft` -> open as draft.
 - The branch is missing tests for new code and the user knows it ->
   open as draft.
-- Pre-push checks fail and the user wants to open anyway -> draft.
+- Phase 2 checks failed and the user wants to open anyway -> draft.
 - Otherwise -> ready for review.
 
 When in doubt, ask the user.
@@ -171,7 +174,7 @@ When in doubt, ask the user.
 
 **Always confirm before pushing and opening.** Even in auto mode. PR creation is visible to others; the user gets to approve title, body, draft state, and base branch before anything goes live.
 
-Show: title, base, head, draft state, pre-push check results, full body. Ask y/N. If no, iterate the draft until they're satisfied.
+Show: title, base, head, draft state, Phase 2 check results, full body. Ask y/N. If no, iterate the draft until they're satisfied.
 
 ## Phase 6 - Push and open
 
@@ -179,24 +182,38 @@ When confirmed, `git push -u origin <head-branch>` then `gh pr create --base <ba
 
 If the push fails because the branch has diverged, **stop**. Don't `--force` push. Tell the user the remote has moved and they need to decide (rebase, force-push, or open a different branch).
 
-## Phase 7 - Final report
+## Phase 7 - Final report and handoff
+
+Print a tight report, then explicitly ask the user what to do next:
 
 ```
 PR opened: <url>
-Title: <title> | State: <ready | draft>
-Auto-assigned (CODEOWNERS): <list>
-Next: /drive-pr for CI / review feedback. /drive-ux if UI-visible.
+Title:    <title>
+State:    <ready | draft>
+Assigned: <CODEOWNERS list or "none - touched code has no rule">
+
+Drive it now, or wait for review?
+
+  - `/drive-pr` iterates on CI failures and AI-bot feedback as they
+    land. Best when you want continuous attention until the PR is
+    merge-ready.
+  - Wait: leave it for human reviewers and circle back when feedback
+    arrives. Best when humans are expected to weigh in before any
+    iteration is useful (e.g. a contentious design choice, an early
+    draft of a larger piece).
 ```
+
+Then stop. The user picks.
 
 ## Operating rules
 
 - **Never push or create the PR without user confirmation.** Even in auto mode.
 - **Never `git push --force`.** The user resolves divergence; the skill doesn't.
 - **Never `--no-verify`.** Fix the hook failure; don't skip it.
-- **Never approve or merge the PR.** write-pr opens; drive-pr iterates; merging is human.
+- **Never approve or merge the PR.** open-pr opens; drive-pr iterates; merging is human.
 - **Don't auto-request reviewers.** CODEOWNERS does it. Match the repo's title / body conventions, not generic templates.
 
 ## Composing with other skills
 
 - **Before:** `/drive-code` (lint/format), `/drive-test` (coverage), `/drive-feature` (spec audit).
-- **After:** `/drive-ux` (screenshots for UI changes), `/drive-pr` (CI + review feedback loop to merge-ready).
+- **After (Phase 7 handoff):** `/drive-pr` (CI + review feedback loop to merge-ready), `/drive-ux` (screenshots for UI changes).

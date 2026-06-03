@@ -40,7 +40,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/write-pr",
+        "./skills/open-pr",
         "./skills/drive-pr"
       ]
     },
@@ -68,7 +68,7 @@
         "./skills/drive-test",
         "./skills/drive-security",
         "./skills/drive-ux",
-        "./skills/write-pr",
+        "./skills/open-pr",
         "./skills/drive-pr",
         "./skills/tone-of-voice"
       ]

@@ -10,7 +10,7 @@ the picture.
 They compose. `plan-feature` writes the ADR and the spec before any
 code gets touched. The `drive-*` family audits the work while it's
 happening (code quality, the feature against its spec, tests,
-security, the UX in a real browser). `write-pr` opens the PR.
+security, the UX in a real browser). `open-pr` opens the PR.
 `drive-pr` iterates until CI is green and the description matches
 what actually shipped. `tone-of-voice` keeps anything I publish from
 sounding like an LLM wrote it, which, to be clear, an LLM did.
@@ -43,7 +43,7 @@ work, `drive-pr` at the end.
 
 | Skill | One-liner |
 | --- | --- |
-| [`write-pr`](./skills/write-pr/) | Composes a PR (title, body, draft state) from commits, diff, and linked ADR / spec / ticket. Runs pre-push checks, then opens via `gh pr create`. |
+| [`open-pr`](./skills/open-pr/) | Composes a PR (title, body, draft state) from commits, diff, and linked ADR / spec / ticket. Runs final sanity checks (lint, format, type-check, tslsp), opens via `gh pr create`, then asks whether to drive it now or wait for review. |
 | [`drive-pr`](./skills/drive-pr/) | Iterates on the open PR until every trusted comment is resolved, CI is green, and the description matches what actually shipped. |
 
 ### Cross-cutting
@@ -161,7 +161,7 @@ edit all six.
     ├── drive-ux/
     │   ├── SKILL.md
     │   └── references/{ux-checklist,trust-policy}.md
-    ├── write-pr/               # compose + verify + open PR
+    ├── open-pr/                # compose + verify + open PR (then ask: drive or wait?)
     │   ├── SKILL.md
     │   └── references/pr-templates.md
     ├── drive-pr/               # iterate open PR to merge-ready
