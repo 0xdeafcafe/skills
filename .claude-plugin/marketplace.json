@@ -6,12 +6,12 @@
   },
   "metadata": {
     "description": "Personal Claude Code skills for software-engineering work",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "plugins": [
     {
       "name": "skills",
-      "description": "Sixteen Claude Code skills covering entry, planning, driving, and shipping the PR lifecycle.",
+      "description": "Twenty Claude Code skills covering entry, planning, reviewing, driving, and shipping the PR lifecycle.",
       "source": "./",
       "strict": false,
       "skills": [
@@ -22,7 +22,11 @@
         "./skills/write-adr",
         "./skills/write-spec",
         "./skills/review-spec",
+        "./skills/review-change",
+        "./skills/review-pr",
+        "./skills/drive-plan",
         "./skills/drive-change",
+        "./skills/implement-change",
         "./skills/drive-code",
         "./skills/drive-feature",
         "./skills/drive-test",

@@ -17,15 +17,25 @@
         "plan-change",
         "backfill-feature",
         "write-adr",
-        "write-spec",
+        "write-spec"
+      ]
+    },
+    {
+      "title": "Reviewing",
+      "description": "Read-only audit suite. review-change / review-pr are aggregators that drive the diff through the agent pipeline (slice → fan-out → merge → verify) and emit findings without writing. review-spec is a corpus-checker for new specs/ADRs against the existing set. Emit findings in finding-format.md schema; never edit files.",
+      "skills": [
+        "review-change",
+        "review-pr",
         "review-spec"
       ]
     },
     {
       "title": "Driving",
-      "description": "Audit suite for the work in progress. drive-change is the aggregator; the others can be called directly when only one slice is wanted.",
+      "description": "Orchestrators that drive state forward. drive-plan composes planning + implementation + review for substantial changes; drive-change implements + reviews from conversation intent for quick changes; implement-change writes code from a formal spec. The drive-code/test/feature/security/ux specialists currently audit + fix; they will be renamed to read-only review-* siblings in a follow-up step.",
       "skills": [
+        "drive-plan",
         "drive-change",
+        "implement-change",
         "drive-code",
         "drive-feature",
         "drive-test",
