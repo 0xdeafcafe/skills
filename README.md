@@ -52,10 +52,10 @@ my register rather than drifting into LLM tells.
 
 ```
 /plugin marketplace add 0xdeafcafe/skills
-/plugin install skills@alex
+/plugin install skills@0xdeafcafe
 ```
 
-Shows up as `skills @ alex` in the plugin manager.
+Shows up as `skills @ 0xdeafcafe` in the plugin manager.
 
 For other agents (Cursor, Codex, OpenCode) or selective installs, the
 [skills.sh](https://www.skills.sh) CLI:
