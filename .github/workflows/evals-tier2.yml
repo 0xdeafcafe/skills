@@ -1,0 +1,167 @@
+# Tier-2 pipeline runs against real fixtures via the LangWatch gateway.
+# EXPENSIVE — burns gateway / Anthropic credits. Gated three ways so it
+# never runs by accident:
+#
+#  1. PR label "run-tier2" — collaborator-only; the workflow only fires
+#     when a write-permission user attaches the label.
+#  2. Issue comment "/eval tier2" on a PR — quick repl-style trigger for
+#     collaborators while reviewing. Same write-perm check.
+#  3. workflow_dispatch — manual run from the Actions tab. Pre-release
+#     check or ad-hoc smoke.
+#
+# Public-repo forks never trigger this (label / comment gates check
+# repository permission level, not just who authored the comment).
+name: evals · tier-2
+
+on:
+  pull_request:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      fixture:
+        description: "Fixture name (blank = all)"
+        required: false
+        default: ""
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.gate.outputs.should_run }}
+      ref: ${{ steps.gate.outputs.ref }}
+    steps:
+      - name: Decide whether to run
+        id: gate
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const event = context.eventName;
+            const actor = context.actor;
+
+            // For label + comment events, verify the actor has write
+            // access. workflow_dispatch already enforces this.
+            const hasWritePerm = async (login) => {
+              try {
+                const r = await github.rest.repos.getCollaboratorPermissionLevel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  username: login,
+                });
+                return ["admin", "maintain", "write"].includes(r.data.permission);
+              } catch {
+                return false;
+              }
+            };
+
+            const refForPr = async (prNumber) => {
+              const pr = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+              });
+              return pr.data.head.sha;
+            };
+
+            if (event === "workflow_dispatch") {
+              core.setOutput("should_run", "true");
+              core.setOutput("ref", context.sha);
+              return;
+            }
+
+            if (event === "pull_request") {
+              if (context.payload.label?.name !== "run-tier2") {
+                core.setOutput("should_run", "false");
+                return;
+              }
+              if (!(await hasWritePerm(actor))) {
+                core.setFailed(`@${actor} added the run-tier2 label but lacks write permission`);
+                return;
+              }
+              core.setOutput("should_run", "true");
+              core.setOutput("ref", context.payload.pull_request.head.sha);
+              return;
+            }
+
+            if (event === "issue_comment") {
+              if (!context.payload.issue.pull_request) {
+                core.setOutput("should_run", "false");
+                return;
+              }
+              const body = (context.payload.comment.body || "").trim();
+              if (!/^\/eval\s+tier2\b/i.test(body)) {
+                core.setOutput("should_run", "false");
+                return;
+              }
+              if (!(await hasWritePerm(actor))) {
+                core.setFailed(`@${actor} ran /eval tier2 but lacks write permission`);
+                return;
+              }
+              const ref = await refForPr(context.payload.issue.number);
+              core.setOutput("should_run", "true");
+              core.setOutput("ref", ref);
+
+              // Acknowledge so the human knows it kicked off.
+              await github.rest.reactions.createForIssueComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: context.payload.comment.id,
+                content: "rocket",
+              });
+              return;
+            }
+
+            core.setOutput("should_run", "false");
+
+  pipeline:
+    needs: guard
+    if: needs.guard.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: evals
+    env:
+      LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
+      LANGWATCH_PROJECT_ID: ${{ secrets.LANGWATCH_PROJECT_ID }}
+      LANGWATCH_ENDPOINT: ${{ secrets.LANGWATCH_ENDPOINT }}
+      LANGWATCH_VIRTUAL_AI_KEY: ${{ secrets.LANGWATCH_VIRTUAL_AI_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.guard.outputs.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - run: pnpm install --frozen-lockfile
+
+      # Tier-2 uses `claude` for /drive-change. The Claude Code CLI ships
+      # as @anthropic-ai/claude-code on npm; install pinned so CI matches
+      # local. The AI gateway env vars route every call through LangWatch.
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Configure gateway env for claude
+        run: |
+          echo "ANTHROPIC_BASE_URL=$LANGWATCH_ENDPOINT" >> "$GITHUB_ENV"
+          echo "ANTHROPIC_AUTH_TOKEN=$LANGWATCH_VIRTUAL_AI_KEY" >> "$GITHUB_ENV"
+
+      - name: Install the skill plugin under test
+        run: |
+          # The plugin under test is the repo itself. Install the marketplace
+          # entry so /drive-change is available to `claude -p`.
+          claude --version
+          claude plugin marketplace add $(pwd)/.. || true
+          claude plugin install skills@0xdeafcafe-skills || true
+
+      - name: Run tier-2 pipeline
+        env:
+          TIER2_FIXTURE: ${{ github.event.inputs.fixture }}
+        run: |
+          if [ -n "$TIER2_FIXTURE" ]; then
+            pnpm tier2 "$TIER2_FIXTURE"
+          else
+            pnpm tier2
+          fi
