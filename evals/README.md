@@ -61,10 +61,14 @@ A research subagent looked at langwatch.ai's eval offering. **Verdict: useful at
 evals/
 ├── README.md                          # this file
 ├── description-opt-history.md         # historical record of run_loop opts
-├── lib/                               # shared eval helpers
-│   ├── schema.py                      # finding-format.schema.json validator
-│   ├── merger_ref.py                  # reference merger implementation for tier-1 tests
-│   └── sensitivity_ref.py             # sensitivity-gating reference
+├── package.json                       # pnpm workspace
+├── tsconfig.json
+├── lib/                               # shared eval helpers (TypeScript)
+│   ├── schema.ts                      # ajv-backed finding-format validator
+│   ├── finding-parser.ts              # parses reviewer transcripts into Finding objects
+│   ├── merger-ref.ts                  # reference merger implementation for tier-1 tests
+│   ├── sensitivity-ref.ts             # sensitivity-gating reference
+│   └── __tests__/                     # vitest unit tests
 ├── fixtures/                          # canary git states
 │   └── <fixture-name>/
 │       ├── setup.sh
@@ -74,9 +78,20 @@ evals/
 │       ├── expected.budget.json
 │       └── notes.md
 ├── runners/
-│   ├── run_tier1.py                   # tier-1 contract test runner
-│   └── run_pipeline.py                # tier-2 fixture runner (SDK-headless)
+│   ├── run-tier1.ts                   # tier-1 contract test runner
+│   └── run-pipeline.ts                # tier-2 fixture runner (Agent SDK)
 └── .trigger-log.jsonl                 # gitignored; populated by hook
+```
+
+## Running
+
+```bash
+cd evals
+pnpm install
+pnpm test              # vitest — tier-1 contract tests
+pnpm typecheck         # tsc --noEmit
+pnpm tier1             # programmatic tier-1 runner (CI-friendly output)
+pnpm tier2             # tier-2 pipeline runner — needs API access
 ```
 
 ## Current state

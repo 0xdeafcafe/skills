@@ -1,9 +1,11 @@
 .DS_Store
 *.swp
+.env
 *.swo
 .idea/
 .vscode/
 node_modules/
+evals/.trigger-log.jsonl
 dist/
 build/
 *.log
