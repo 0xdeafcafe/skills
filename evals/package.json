@@ -20,8 +20,12 @@
     "vitest": "^2.0.0"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/context-async-hooks": "^2.7.1",
+    "@opentelemetry/sdk-node": "^0.218.0",
     "ajv": "^8.17.0",
-    "ajv-formats": "^3.0.0"
+    "ajv-formats": "^3.0.0",
+    "langwatch": "^0.32.0"
   },
   "packageManager": "pnpm@10.15.1"
 }
