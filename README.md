@@ -9,6 +9,22 @@ to skip, important enough that skipping bites a quarter later.
 
 They compose. Pick a front door.
 
+## Install
+
+```
+/plugin marketplace add 0xdeafcafe/skills
+/plugin install skills@0xdeafcafe
+```
+
+Shows up as `skills @ 0xdeafcafe` in the plugin manager.
+
+For other agents (Cursor, Codex, OpenCode) or selective installs, the
+[skills.sh](https://www.skills.sh) CLI:
+
+```bash
+npx skills add 0xdeafcafe/skills
+```
+
 ## The flow
 
 ```mermaid
@@ -47,22 +63,6 @@ flowchart TD
 under my name (commit messages, PR bodies, anything published) and to
 its own conversational replies in this CLI, so the assistant stays in
 my register rather than drifting into LLM tells.
-
-## Install
-
-```
-/plugin marketplace add 0xdeafcafe/skills
-/plugin install skills@0xdeafcafe
-```
-
-Shows up as `skills @ 0xdeafcafe` in the plugin manager.
-
-For other agents (Cursor, Codex, OpenCode) or selective installs, the
-[skills.sh](https://www.skills.sh) CLI:
-
-```bash
-npx skills add 0xdeafcafe/skills
-```
 
 ## What it looks like
 
