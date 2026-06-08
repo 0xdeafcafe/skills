@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://0xdeafcafe.dev/skills/finding-format.schema.json",
+  "title": "Finding",
+  "description": "Machine-readable schema for the finding-format.md block shape. The merger validates every reviewer-emitted finding against this; malformed findings are silently discarded.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["severity", "category", "file", "line", "summary", "why", "fix"],
+  "properties": {
+    "severity": {
+      "enum": ["P0", "P1", "P2", "P3"],
+      "description": "P0 must fix (blocks merge); P1 should fix before merge; P2 should fix soon; P3 nice to have. Default to P2 when uncertain."
+    },
+    "category": {
+      "enum": ["security", "design", "hygiene", "test", "feature", "ux", "perf", "a11y"],
+      "description": "Drives sensitivity gating. category=security forces Opus dispatch regardless of file path."
+    },
+    "file": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s/].*$",
+      "description": "Repo-relative path. Must not start with whitespace or absolute slash."
+    },
+    "line": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Single integer line number — the line where the problem is most acute."
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^\\S.*\\S$",
+      "description": "One sentence, declarative. No leading or trailing whitespace."
+    },
+    "why": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^\\S.*\\S$",
+      "description": "One sentence on the root cause or concrete consequence."
+    },
+    "fix": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^\\S.*\\S$",
+      "description": "One sentence on the change. Prefix with 'decide:' for judgment calls — the merger routes those to judgment_findings, never to fix-applier."
+    },
+    "slice": {
+      "type": "string",
+      "description": "Optional slice name, stamped by the merger when running per-slice."
+    },
+    "reviewer": {
+      "type": "string",
+      "description": "Optional reviewer identifier, stamped during schema parsing."
+    },
+    "evidence": {
+      "type": "string",
+      "description": "Optional — used by review-ux for screenshot paths and similar attachments."
+    },
+    "originating_reviewers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional — populated by the merger after dedup to list every reviewer that contributed to this finding."
+    },
+    "apply_validated": {
+      "type": "boolean",
+      "description": "Optional — set by the merger to false when a fix is too vague for git apply --check construction but the finding is still kept."
+    }
+  }
+}
