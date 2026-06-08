@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "tier1": "node runners/run-tier1.ts",
-    "tier2": "node runners/run-pipeline.ts",
-    "upload-dataset": "node runners/upload-dataset.ts",
+    "tier2": "node --env-file-if-exists=../.env runners/run-pipeline.ts",
+    "upload-dataset": "node --env-file-if-exists=../.env runners/upload-dataset.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"

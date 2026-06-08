@@ -35,21 +35,35 @@ const parseArgs = (argv: readonly string[]): Args => {
   return { fixture, dryRun: args.includes("--dry-run") };
 };
 
+/**
+ * Resolve gateway credentials from either of two conventions:
+ *
+ * 1. LangWatch-native naming (preferred — what the user has in their .env):
+ *    LANGWATCH_ENDPOINT + LANGWATCH_VIRTUAL_AI_KEY
+ *
+ * 2. Anthropic-SDK naming (works if exported manually):
+ *    ANTHROPIC_BASE_URL + ANTHROPIC_AUTH_TOKEN
+ *
+ * If either form is set we route through the gateway. As a last resort,
+ * LOCAL_ANTHROPIC_API_KEY bypasses the gateway entirely (smoke runs only;
+ * no LangWatch telemetry).
+ */
 const checkEnv = (dryRun: boolean): EnvResult => {
   if (dryRun) return { ok: true, reason: "--dry-run; gateway not required" };
 
-  const { ANTHROPIC_BASE_URL, ANTHROPIC_AUTH_TOKEN, LOCAL_ANTHROPIC_API_KEY } = process.env;
-  const viaGateway =
-    ANTHROPIC_BASE_URL?.includes("langwatch") && ANTHROPIC_AUTH_TOKEN?.startsWith("vk-lw-");
+  const baseUrl = process.env.ANTHROPIC_BASE_URL ?? process.env.LANGWATCH_ENDPOINT;
+  const authToken = process.env.ANTHROPIC_AUTH_TOKEN ?? process.env.LANGWATCH_VIRTUAL_AI_KEY;
 
-  if (viaGateway) return { ok: true, reason: "routing via LangWatch gateway" };
-  if (LOCAL_ANTHROPIC_API_KEY) {
+  if (baseUrl && authToken) {
+    return { ok: true, reason: `routing via LangWatch gateway (${new URL(baseUrl).host})` };
+  }
+  if (process.env.LOCAL_ANTHROPIC_API_KEY) {
     return { ok: true, reason: "LOCAL_ANTHROPIC_API_KEY set — bypassing gateway" };
   }
   return {
     ok: false,
     reason:
-      "set ANTHROPIC_BASE_URL + ANTHROPIC_AUTH_TOKEN (gateway) or LOCAL_ANTHROPIC_API_KEY (bypass)",
+      "no gateway credentials: set LANGWATCH_ENDPOINT + LANGWATCH_VIRTUAL_AI_KEY (or the ANTHROPIC_* equivalents), or LOCAL_ANTHROPIC_API_KEY for a bypass run",
   };
 };
 
