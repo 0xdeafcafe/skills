@@ -8,3 +8,4 @@ dist/
 build/
 *.log
 .skill-evals/
+skills/*-workspace/

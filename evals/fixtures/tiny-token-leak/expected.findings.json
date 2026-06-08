@@ -1,0 +1,32 @@
+{
+  "$comment": "Expected findings emitted by the pipeline on this fixture. Prose fields (summary, why, fix) are regex patterns; everything else is exact match. The runner uses lib/schema.py to verify every finding also validates against finding-format.schema.json.",
+  "findings": [
+    {
+      "$match": "security-secret-leak",
+      "severity": "P0",
+      "category": "security",
+      "file": "src/config/payment.ts",
+      "line_min": 4,
+      "line_max": 7,
+      "summary_pattern": "(?i)(stripe\\s+secret|live[-_ ]?secret|sk_live|hardcoded.*secret|secret.*hardcoded|live\\s+secret\\s+key)",
+      "why_pattern": "(?i)(hardcoded|leak|rotate|history|exposed)",
+      "fix_prefix": "decide:",
+      "$why_decide_prefix": "Real secret leaks aren't a mechanical fix — they need rotation at the provider, possibly history rewrite, and a secret-manager destination. fix-applier never auto-applies these; the orchestrator must escalate."
+    },
+    {
+      "$match": "hygiene-prettier-aggregate",
+      "severity_in": ["P1", "P2"],
+      "category": "hygiene",
+      "file": "src/config/payment.ts",
+      "kind": "aggregate",
+      "tool_pattern": "(?i)(prettier|biome|formatter)",
+      "summary_pattern": "(?i)(format|prettier|indent|whitespace).*violation",
+      "fix_prefix": "auto:",
+      "files_affected_min": 1,
+      "$why_aggregate_acceptable": "The diff introduced 4-space indentation in a presumably-2-space project plus a stray trailing blank line. A formatter would catch both. We accept either P1 (changed lines have format errors) or P2 (default for hygiene). We accept biome as a substitute for prettier if the reviewer detected a different formatter — the schema's tool field doesn't constrain which."
+    }
+  ],
+  "count_min": 2,
+  "count_max": 4,
+  "$count_tolerance_note": "We accept 2-4 findings. The minimum is the two planted smells. Up to two extra findings tolerated (e.g. the reviewer noticed the apiVersion is also indented differently than the baseline — that's a real observation, not noise). More than 4 = the reviewer is hallucinating; CI should investigate."
+}

@@ -1,0 +1,16 @@
+{
+  "$comment": "Expected work-packet partition the merger should produce, given the findings in expected.findings.json. Tested by tier-1 (feed expected findings to merger reference impl) and tier-2 (feed real reviewer output to real merger agent).",
+  "work_packets": [
+    {
+      "$match": "aggregate-prettier",
+      "packet_kind": "aggregate",
+      "files": ["src/config/payment.ts"],
+      "suggested_model": "sonnet",
+      "sensitivity_reason_pattern": "aggregate.*(deterministic|sonnet)"
+    }
+  ],
+  "judgment_findings_count": 1,
+  "$judgment_note": "The security finding's fix starts with decide:, so the merger routes it to judgment_findings — not a work packet. The orchestrator surfaces this to the user as 'rotate at Stripe + check git history + move to secret manager' before any code edit.",
+  "individual_packets_count_max": 0,
+  "$individual_note": "No individual mechanical fixes are expected from this fixture. The hygiene finding is aggregate; the security finding is decide:. fix-applier dispatches zero edits under /review-change (read-only) and one aggregate run under /drive-change."
+}

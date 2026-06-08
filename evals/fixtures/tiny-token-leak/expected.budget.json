@@ -1,0 +1,18 @@
+{
+  "$comment": "Soft caps on tokens per agent for this fixture. CI tracks regressions but doesn't fail on overrun by default — these are signals, not gates. If a budget is exceeded by >2x consistently across 3 runs, investigate.",
+  "total_tokens_p95_soft_cap": 50000,
+  "per_agent": {
+    "orchestrator": {
+      "tokens_p95_soft_cap": 8000,
+      "$note": "Tiny mode skips the slicer + verifier and runs a single Opus pass; the orchestrator's working state should stay small."
+    },
+    "single-opus-pass": {
+      "tokens_p95_soft_cap": 30000,
+      "$note": "The fixture is one file, ~12 LOC changed. A single Opus pass with reviewer prompts inlined should fit comfortably here."
+    },
+    "merger": {
+      "tokens_p95_soft_cap": 4000,
+      "$note": "Validates the 2 findings against the schema, partitions, annotates sensitivity. Should be tiny."
+    }
+  }
+}
