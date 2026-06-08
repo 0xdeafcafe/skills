@@ -13,10 +13,10 @@ They compose. Pick a front door.
 
 ```
 /plugin marketplace add 0xdeafcafe/skills
-/plugin install skills@0xdeafcafe
+/plugin install skills@0xdeafcafe-skills
 ```
 
-Shows up as `skills @ 0xdeafcafe` in the plugin manager.
+Shows up as `skills @ 0xdeafcafe-skills` in the plugin manager.
 
 For other agents (Cursor, Codex, OpenCode) or selective installs, the
 [skills.sh](https://www.skills.sh) CLI:
