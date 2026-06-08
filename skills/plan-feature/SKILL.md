@@ -39,7 +39,7 @@ Find existing ADRs in `docs/adr/` (or `docs/architecture/decisions/`, etc.) and 
 
 Read 2-3 existing examples of each to extract style. Defaults when nothing exists:
 
-- **ADR**: `docs/adr/NNNN-title.md`, MADR v3 format.
+- **ADR**: `docs/adr/YYYYMMDD-title.md` (date-prefixed, MADR v3 format - avoids merge collisions when parallel PRs each add an ADR). If the repo already uses sequential `NNNN-title.md`, match it but flag the collision risk to the user.
 - **Spec**: `specs/feature-name.feature`, full `As a … I want … So that …` narrative.
 
 ## Phase 1 - Open the discussion
@@ -70,7 +70,7 @@ State the plan back to the user:
 
 ```
 Plan:
-  - Writing ADR-NNNN: "<title>"  (location: docs/adr/)
+  - Writing ADR <id>: "<title>"  (location: docs/adr/, id format matches repo - e.g. 20260608 or 0042)
   - Writing spec: <feature-name>.feature  (location: specs/)
   - The ADR will reference the spec for the behavioural contract;
     the spec will reference the ADR for the architectural rationale.
@@ -134,7 +134,7 @@ the history shows what was decided when:
 
 ```bash
 git add <adr-dir>/<adr-file>
-git commit -m "ADR-NNNN: <title>"
+git commit -m "ADR <id>: <title>"  # e.g. "ADR 20260608: ..." or "ADR-0042: ..."
 
 git add <specs-dir>/<spec-file>.feature
 git commit -m "spec: <feature title>"

@@ -13,7 +13,7 @@ all. Spec: <https://adr.github.io/madr/>.
 ```markdown
 ---
 status: accepted
-date: 2026-06-03
+date: 2026-06-08
 decision-makers: [team]
 consulted: []
 informed: []
@@ -118,7 +118,7 @@ Still common in older / Java-flavored shops.
 
 ## Status
 
-Proposed | Accepted | Deprecated | Superseded by ADR-NNNN
+Proposed | Accepted | Deprecated | Superseded by <adr-id>
 
 ## Context
 
@@ -163,26 +163,30 @@ Regardless of format, ADRs typically pass through these states:
 | Proposed | Draft, under discussion |
 | Accepted | The decision is in force |
 | Deprecated | The decision was reversed; no replacement |
-| Superseded by ADR-NNNN | Replaced by a newer decision |
+| Superseded by `<adr-id>` | Replaced by a newer decision (id matches the repo's naming convention, e.g. `ADR 20260608` or `ADR-0042`) |
 
 When superseding, update **both** ADRs:
 
 1. The new ADR references the old one in its Context.
-2. The old ADR's Status changes to `Superseded by ADR-NNNN` with a link.
+2. The old ADR's Status changes to `Superseded by <adr-id>` (matching the repo's naming convention) with a link.
 
 Don't delete superseded ADRs. The audit log is the whole point.
 
-## Numbering conventions
+## Naming conventions
 
 | Convention | Example | Notes |
 | --- | --- | --- |
-| Zero-padded 4-digit | `0042-use-postgres.md` | Most common; supports 9999 ADRs before re-padding |
-| Zero-padded 3-digit | `042-use-postgres.md` | Same idea, smaller cap |
-| Non-padded | `42-use-postgres.md` | Sorts wrong in `ls`; avoid for new repos |
-| `ADR-` prefix | `ADR-0042-use-postgres.md` | Common in older repos |
-| Date-prefixed | `2026-06-03-use-postgres.md` | Used when "decision order" is less important than "decision date" |
+| Date-prefixed compact (**default for new repos**) | `20260608-use-postgres.md` | No collisions across parallel PRs; sorts chronologically; same-day clashes broken by slug |
+| Date-prefixed ISO | `2026-06-08-use-postgres.md` | Same benefits, slightly more readable, slightly more visual noise |
+| Zero-padded 4-digit sequential | `0042-use-postgres.md` | Historically most common; **collides** when two PRs in parallel both grab the next number |
+| Zero-padded 3-digit sequential | `042-use-postgres.md` | Same idea, smaller cap, same collision issue |
+| Non-padded sequential | `42-use-postgres.md` | Sorts wrong in `ls`; avoid for new repos |
+| `ADR-` prefix sequential | `ADR-0042-use-postgres.md` | Common in older repos |
 
-Match the existing convention; don't introduce a new one.
+Match the existing convention; don't silently introduce a new one. If
+the repo uses sequential and the team is hitting merge collisions,
+that's the moment to discuss switching - but get an explicit call from
+the user rather than mixing schemes.
 
 ## Common mistakes
 

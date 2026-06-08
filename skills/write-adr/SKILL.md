@@ -38,18 +38,27 @@ rg -l --type md '^# *ADR' . 2>/dev/null | head -10
 
 If you find existing ADRs, **read 2-3 of them** to extract the convention:
 
-- Location and numbering scheme (e.g. `NNNN-title.md` zero-padded, or
-  `ADR-NNN-` prefix, or unnumbered).
+- Location and naming scheme (e.g. `YYYYMMDD-title.md` date-prefixed,
+  `NNNN-title.md` zero-padded sequential, `ADR-NNN-` prefix, or
+  unnumbered).
 - Format and frontmatter (see `references/adr-formats.md` for common
   patterns).
 - Typical length - match it.
 - `Status` transitions tracked (Proposed → Accepted → Superseded)?
 - Category/component tags?
 
-If **no existing ADRs** are found, default to **MADR v3.0** (the most
-common modern convention - see `references/adr-formats.md`) and create the
-directory at `docs/adr/`. State this default to the user; they can
-redirect.
+**Default for new repos: MADR v3.0 with date-prefixed filenames**
+(`YYYYMMDD-short-kebab-case-title.md`). Date-prefixed naming avoids the
+"two PRs both grab ADR-0042" collision problem that bites teams with
+parallel work streams, and the slug breaks ties when two ADRs land the
+same day. State this default to the user; they can redirect.
+
+**If the repo uses sequential numbering (`NNNN-title.md`,
+`ADR-NNNN-title.md`):** note it to the user and ask whether to follow
+local convention or start the date-prefixed style for new ADRs going
+forward. Don't silently mix conventions - get an explicit call. If they
+choose to switch, the existing ADRs stay as they are (no renames); the
+new ADR is the first of the new style.
 
 ## Phase 1 - Discuss the decision
 
@@ -95,15 +104,19 @@ Once you have enough material, draft the ADR. Keep it tight:
   the Decision section. ADRs are written *after* the decision; the
   decision is a fact.
 
-Pick the right number:
+Pick the filename:
 
-```bash
-# Find the highest existing ADR number, +1.
-ls <adr-dir>/ | grep -E '^[0-9]+' | sort -n | tail -1
-```
-
-File name: match existing convention. If MADR-style:
-`NNNN-short-kebab-case-title.md`.
+- **Date-prefixed (default for new repos):**
+  `YYYYMMDD-short-kebab-case-title.md`, e.g.
+  `20260608-use-postgres.md`. Use today's date (UTC is fine; just be
+  consistent with what existing entries use if any). If another ADR
+  already exists for today, the slug differentiates them - no need to
+  append a time suffix unless the repo's convention does.
+- **Sequential (legacy / matching existing repo):** find the next number
+  with `ls <adr-dir>/ | grep -E '^[0-9]+' | sort -n | tail -1`, then
+  +1. Match the padding (`0042-`, `042-`, etc.). Be aware: if another
+  PR in flight is also adding an ADR, you may collide on merge - check
+  open PRs with `gh pr list` if the repo is high-throughput.
 
 ## Phase 3 - Review with the user
 
@@ -133,7 +146,9 @@ recorded.
 
 ```bash
 git add <adr-dir>/<file>
-git commit -m "ADR-NNNN: <title>"
+# Date-prefixed: "ADR 20260608: <title>"
+# Sequential:    "ADR-0042: <title>"
+git commit -m "ADR <id>: <title>"
 ```
 
 If the repo has a different commit convention (check `git log --oneline -20`),
@@ -143,11 +158,13 @@ match it.
 
 If the ADR supersedes a previous one, **update the superseded ADR**:
 
-- Change its `Status:` from `Accepted` to `Superseded by ADR-NNNN`.
+- Change its `Status:` from `Accepted` to `Superseded by <new-adr-id>`
+  (e.g. `Superseded by ADR 20260608` or `Superseded by ADR-0042`,
+  matching whichever scheme the repo uses).
 - Add a link in the new ADR's frontmatter or body.
 
-If the ADR is driven by a Linear/Jira ticket, ADR-N from before, an RFC,
-or external doc, link to it in the Context section.
+If the ADR is driven by a Linear/Jira ticket, a prior ADR, an RFC, or
+external doc, link to it in the Context section.
 
 If the repo has an INDEX or README of ADRs (common in
 `docs/adr/README.md`), update it with the new entry.
@@ -159,7 +176,7 @@ If the repo has an INDEX or README of ADRs (common in
 - **Don't dress up tech debt as a decision.** Be honest if you're locking in X because migration is no longer feasible.
 - **Don't make the consequences section all upside.** Every decision closes doors; name them.
 - **Match the local style.** Read 2-3 existing ADRs before drafting; match length and tone.
-- **Numbers matter.** Re-check the next available number right before writing.
+- **Identifiers matter.** For date-prefixed: use today's date and confirm no same-day slug clash. For sequential: re-check the next available number right before writing, and on high-throughput repos check open PRs for in-flight ADRs that might race you.
 
 ## Composing with other skills
 
