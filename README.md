@@ -170,13 +170,16 @@ The six `drive-*` skills that read comments each ship their own copy
 of `references/trust-policy.md` so a standalone CLI install of one
 skill still has the policy locally. The canonical lives in
 `skills/drive-pr/references/trust-policy.md`; the other five are
-mirrors. Edit the canonical, then:
+mirrors. After editing the canonical, propagate it manually:
 
 ```bash
-scripts/sync-trust-policy.sh
+for d in drive-code drive-feature drive-test drive-security drive-ux; do
+  cp skills/drive-pr/references/trust-policy.md skills/$d/references/trust-policy.md
+done
 ```
 
-Idempotent. Tells you what to stage.
+Then stage the five mirrors. No script lives in this repo on purpose -
+skills with zero executable surface are safer to install.
 
 ## Layout
 
@@ -185,8 +188,6 @@ Idempotent. Tells you what to stage.
 ├── README.md
 ├── .claude-plugin/marketplace.json
 ├── skills.sh.json
-├── scripts/
-│   └── sync-trust-policy.sh
 └── skills/
     ├── start-feature/         # entry: known work
     ├── start-discussion/      # entry: exploratory
