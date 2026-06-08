@@ -2,106 +2,149 @@
 
 [![skills.sh](https://skills.sh/b/0xdeafcafe/skills)](https://skills.sh/0xdeafcafe/skills)
 
-Twelve Claude Code skills for the parts of shipping software I'd
+Sixteen Claude Code skills for the parts of shipping software I'd
 rather not do myself. The ADR, the Gherkin spec, the review pass, the
-PR description, the back-and-forth on the review comments. You get
-the picture.
+PR description, the back-and-forth on the review comments. They
+compose; you pick the front door.
 
-They compose. `plan-feature` writes the ADR and the spec before any
-code gets touched. The `drive-*` family audits the work while it's
-happening (code quality, the feature against its spec, tests,
-security, the UX in a real browser). `open-pr` opens the PR.
-`drive-pr` iterates until CI is green and the description matches
-what actually shipped. `tone-of-voice` keeps anything I publish from
-sounding like an LLM wrote it, which, to be clear, an LLM did.
+## The flow
 
-## The skills
+```mermaid
+flowchart TD
+  Start(["I want to work on something"])
+  Start -->|Known intent| StartFeature["/start-feature"]
+  Start -->|Exploring| StartDiscussion["/start-discussion"]
+  StartDiscussion --> StartFeature
 
-Roughly chronological. `plan-feature` at the start of a piece of
-work, `drive-pr` at the end.
+  StartFeature --> Branch{New or existing?}
+  Branch -->|New| Plan["/plan-change"]
+  Branch -->|Existing, ADR exists| Plan
+  Branch -->|Existing, no ADR| Backfill["/backfill-feature"]
+  Backfill --> Plan
+  Branch -->|Trivial| Skip([Skip scaffolding])
 
-### Planning (before code)
+  Plan --> Build([Implement])
+  Skip --> Build
+  Build --> DriveChange["/drive-change"]
+  DriveChange -->|Findings to fix| Build
+  DriveChange -->|Clean| OpenPR["/open-pr"]
+  OpenPR --> DrivePR["/drive-pr"]
+  DrivePR --> Merged([Merged])
 
-| Skill | One-liner |
-| --- | --- |
-| [`plan-feature`](./skills/plan-feature/) | Drives the discussion that produces an ADR and a Gherkin spec for whatever you're about to build. |
-| [`write-adr`](./skills/write-adr/) | Standalone: capture an architecture decision. MADR / Nygard / Y-statement, matched to whatever the repo already does. |
-| [`write-spec`](./skills/write-spec/) | Standalone: write a Gherkin `.feature` file. Matches the repo's existing specs folder and naming. |
-| [`review-spec`](./skills/review-spec/) | Audits a new spec or ADR against the existing corpus for duplicates, conflicts, overlap, and missing cross-links. Read-only. |
+  classDef entry fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef plan fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef drive fill:#dcfce7,stroke:#16a34a,color:#14532d
+  classDef ship fill:#fce7f3,stroke:#db2777,color:#831843
+  class StartFeature,StartDiscussion entry
+  class Plan,Backfill plan
+  class DriveChange drive
+  class OpenPR,DrivePR ship
+```
 
-### Driving (during code)
-
-| Skill | One-liner |
-| --- | --- |
-| [`drive-code`](./skills/drive-code/) | Quality pass on every file the PR touched. SRP, modularity, service/repo pattern, utilities placement, lint, format, readability. |
-| [`drive-feature`](./skills/drive-feature/) | Audits the feature itself against its ADR or spec. Edge cases, error handling, loading states, side effects, the bits that bite in production. |
-| [`drive-test`](./skills/drive-test/) | Test quality on touched files. Right level (unit / integration / e2e), real assertions, no mocking the unit under test, coverage of new paths. |
-| [`drive-security`](./skills/drive-security/) | Authz on touched routes, secrets scan, input validation, output encoding, dep vulnerabilities, the OWASP-top-10 smells. |
-| [`drive-ux`](./skills/drive-ux/) | Walks the changed UX surface in a real browser via chrome-devtools or Playwright. Screenshots, a11y audit, the works. |
-
-### Shipping (around the PR)
-
-| Skill | One-liner |
-| --- | --- |
-| [`open-pr`](./skills/open-pr/) | Composes a PR (title, body, draft state) from commits, diff, and linked ADR / spec / ticket. Runs final sanity checks (lint, format, type-check, tslsp), opens via `gh pr create`, then asks whether to drive it now or wait for review. |
-| [`drive-pr`](./skills/drive-pr/) | Iterates on the open PR until every trusted comment is resolved, CI is green, and the description matches what actually shipped. |
-
-### Cross-cutting
-
-| Skill | One-liner |
-| --- | --- |
-| [`tone-of-voice`](./skills/tone-of-voice/) | Ghost-writes in my voice for anything that goes out under my name. Bans em-dashes and the usual LLM tells (yes, this README too). |
+`tone-of-voice` runs across the lot - applied whenever Claude is
+ghost-writing on my behalf (commit messages, PR bodies, anything
+published) and to its own conversational replies.
 
 ## Installing
-
-```bash
-npx skills add 0xdeafcafe/skills
-```
-
-That's it. Works with Claude Code, Cursor, Codex, OpenCode, and the
-rest of the agent zoo via the [skills.sh](https://www.skills.sh) CLI.
-Interactive by default; it asks which skills and which agents you
-want.
-
-```bash
-# a few, not all
-npx skills add 0xdeafcafe/skills --skill drive-pr --skill drive-ux
-
-# list without installing
-npx skills add 0xdeafcafe/skills --list
-
-# everything, globally, into Claude Code, no prompts
-npx skills add 0xdeafcafe/skills --all -a claude-code -g -y
-
-# later
-npx skills update
-npx skills remove drive-pr
-```
-
-Full reference at the [skills.sh docs](https://www.skills.sh/docs/cli).
-
-### Dev install
-
-If you're hacking on these locally, point the CLI at the checkout.
-Symlinks rather than copies, so edits land instantly:
-
-```bash
-npx skills add .
-```
-
-### Claude Code plugin marketplace (alternative)
-
-If you're on Claude Code and prefer its plugin system over `npx`,
-the repo doubles as a marketplace:
 
 ```
 /plugin marketplace add 0xdeafcafe/skills
 /plugin install skills@alex
 ```
 
-Shows up in the plugin manager as `skills @ alex`. For selective
-installs, use the `npx skills add 0xdeafcafe/skills --skill <name>`
-path above instead.
+Shows up as `skills @ alex` in the plugin manager.
+
+For other agents (Cursor, Codex, OpenCode, ...) or selective installs,
+use the [skills.sh CLI](https://www.skills.sh/docs/cli):
+
+```bash
+npx skills add 0xdeafcafe/skills
+```
+
+## What it looks like
+
+A walked-through session, lightly compressed:
+
+```
+you:    I want to add CSV export on the orders page.
+
+claude: [/start-feature]
+        New code, or modifying something existing?
+
+you:    Existing orders page.
+
+claude: I can't find an ADR for the orders module. I'll back it up
+        before we touch it.
+
+        [/backfill-feature]
+        Reading src/orders/... here's what I think the area does today:
+          - server-paginated listing
+          - cancellation routed through a state machine in OrderService
+          - no exports yet
+        Correct?
+
+you:    Yes.
+
+claude: Writing retroactive ADR + characterization spec + 8 tests
+        locking current behaviour. All green.
+
+        [/plan-change]
+        Now the CSV export. What does the user click, and what comes
+        out the other side?
+
+[discussion. ADR + spec drafted, reviewed, committed.]
+
+you:    Plan looks right. Let's build.
+
+[implementation back-and-forth]
+
+you:    Done. Audit it.
+
+claude: [/drive-change]
+        Running code, test, feature, security, and ux (UI files
+        touched).
+          drive-code:     clean
+          drive-test:     1 missing edge case (empty order list)
+          drive-feature:  clean
+          drive-security: clean
+          drive-ux:       loading state missing on the Export button
+        2 P1 findings, none P0. Want to address them before /open-pr?
+
+[fixes]
+
+you:    Open it.
+
+claude: [/open-pr]
+        ...
+        PR opened: https://github.com/...
+        Drive it now, or wait for review?
+```
+
+## The skills
+
+| Skill | One-liner |
+| --- | --- |
+| **Entry** | |
+| [`start-feature`](./skills/start-feature/) | Front door for known work. Routes to `plan-change` / `backfill-feature`. |
+| [`start-discussion`](./skills/start-discussion/) | Open-ended exploration. No file writes; talks until intent emerges. |
+| **Planning** | |
+| [`plan-change`](./skills/plan-change/) | Drives the discussion that produces an ADR + Gherkin spec for what's about to be built. |
+| [`backfill-feature`](./skills/backfill-feature/) | Retroactive ADR + spec + characterization tests for existing code with no documentation. |
+| [`write-adr`](./skills/write-adr/) | Standalone ADR. MADR / Nygard / Y-statement, matched to whatever the repo already does. |
+| [`write-spec`](./skills/write-spec/) | Standalone Gherkin `.feature` file. |
+| [`review-spec`](./skills/review-spec/) | Audits a new spec or ADR against the existing corpus for duplicates, conflicts, overlap. Read-only. |
+| **Driving** | |
+| [`drive-change`](./skills/drive-change/) | Aggregator. Runs code, test, feature, security (+ ux if UI touched), reports findings by severity. |
+| [`drive-code`](./skills/drive-code/) | Per-file quality: SRP, modularity, length, naming, lint, format. |
+| [`drive-feature`](./skills/drive-feature/) | Feature logic against ADR / spec. Edge cases, error handling, side effects. |
+| [`drive-test`](./skills/drive-test/) | Test quality on touched files. Right level, real assertions, no mocking the unit under test. |
+| [`drive-security`](./skills/drive-security/) | Authz, secrets, input validation, deps, OWASP-top-10 smells. |
+| [`drive-ux`](./skills/drive-ux/) | Walks the changed UX in a real browser. Screenshots, a11y, console errors. |
+| **Shipping** | |
+| [`open-pr`](./skills/open-pr/) | Composes title + body, runs final checks, opens via `gh pr create`. |
+| [`drive-pr`](./skills/drive-pr/) | Iterates the open PR until trusted comments are resolved and CI is green. |
+| **Cross-cutting** | |
+| [`tone-of-voice`](./skills/tone-of-voice/) | Ghost-writes in my voice. Applies to PR bodies, commits, and Claude's own replies. |
 
 ## The trust gate
 
@@ -110,67 +153,58 @@ follows their instructions, anyone with a GitHub account has shell
 on my laptop. Every skill that reads them runs the same filter:
 
 1. **AI bots** - three trusted by name (CodeRabbit, GitHub Copilot
-   reviewer, Kilo Code reviewer). Other `[bot]` handles are
-   untrusted by default.
+   reviewer, Kilo Code reviewer). Other `[bot]` handles are untrusted
+   by default.
 2. **Humans** - verified members of the repo's owning organisation,
-   or collaborators with `write` or higher, checked live via
-   `gh api`. "Looks legit" isn't a verification.
+   or collaborators with `write` or higher, checked live via `gh api`.
+   "Looks legit" isn't a verification.
 
-Untrusted comments get read for context. They never move code,
-write a reply, or resolve a thread.
+Untrusted comments get read for context. They never move code, write
+a reply, or resolve a thread.
 
-Six of the twelve skills carry the policy at
-`skills/<name>/references/trust-policy.md` (the six `drive-*`). The
-other five only write files, so there's nothing to filter. Edit one,
-edit all six.
+The six `drive-*` skills that read comments each ship their own copy
+of `references/trust-policy.md` so a standalone CLI install of one
+skill still has the policy locally. The canonical lives in
+`skills/drive-pr/references/trust-policy.md`; the other five are
+mirrors. Edit the canonical, then run:
+
+```bash
+scripts/sync-trust-policy.sh
+```
+
+It copies the canonical to the five mirrors and tells you what to
+stage. If you forget, the five drift; the script is idempotent so
+running it twice is harmless.
 
 ## Layout
 
 ```
 .
 ├── README.md
+├── .claude-plugin/marketplace.json
+├── skills.sh.json
 └── skills/
-    ├── plan-feature/           # discussion -> ADR + spec
-    │   └── SKILL.md
-    ├── write-adr/              # discussion -> ADR
-    │   ├── SKILL.md
-    │   └── references/adr-formats.md
-    ├── write-spec/             # discussion -> Gherkin .feature
-    │   ├── SKILL.md
-    │   └── references/gherkin-reference.md
-    ├── review-spec/            # read-only: corpus overlap audit
-    │   ├── SKILL.md
-    │   └── references/finding-examples.md
-    ├── drive-code/
-    │   ├── SKILL.md
-    │   └── references/{code-checklist,trust-policy}.md
-    ├── drive-feature/
-    │   ├── SKILL.md
-    │   └── references/{feature-audit-checklist,trust-policy}.md
-    ├── drive-test/
-    │   ├── SKILL.md
-    │   └── references/{test-checklist,trust-policy}.md
-    ├── drive-security/
-    │   ├── SKILL.md
-    │   └── references/{security-checklist,trust-policy}.md
-    ├── drive-ux/
-    │   ├── SKILL.md
-    │   └── references/{ux-checklist,trust-policy}.md
-    ├── open-pr/                # compose + verify + open PR (then ask: drive or wait?)
-    │   ├── SKILL.md
-    │   └── references/pr-templates.md
-    ├── drive-pr/               # iterate open PR to merge-ready
-    │   ├── SKILL.md
-    │   └── references/{trust-policy,graphql-queries}.md
-    └── tone-of-voice/          # ghost-write in my voice
-        ├── SKILL.md
-        └── references/{style-guide,samples}.md
+    ├── start-feature/         # entry: known work
+    ├── start-discussion/      # entry: exploratory
+    ├── plan-change/           # ADR + spec
+    ├── backfill-feature/      # retroactive ADR + spec + tests
+    ├── write-adr/             # ADR only
+    ├── write-spec/            # Gherkin spec only
+    ├── review-spec/           # corpus overlap audit
+    ├── drive-change/          # aggregator
+    ├── drive-code/            # per-file quality
+    ├── drive-feature/         # logic vs spec
+    ├── drive-test/            # test quality
+    ├── drive-security/        # secrets / authz / deps
+    ├── drive-ux/              # browser walk-through
+    ├── open-pr/               # compose + open
+    ├── drive-pr/              # iterate to merge-ready
+    └── tone-of-voice/         # ghost-write in my voice
 ```
-
-Reference files in a skill's `references/` are loaded on demand,
-which keeps the main `SKILL.md` lean. Long checklists exist without
-bloating the context that gets pulled in every time a skill fires.
 
 Each skill is self-contained. When the CLI installs `drive-pr`, you
 get `drive-pr/SKILL.md` plus everything under `drive-pr/references/`.
 No cross-skill paths to break on a standalone install.
+
+Reference files in `references/` are loaded on demand, which keeps
+the main `SKILL.md` lean.
