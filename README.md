@@ -110,7 +110,7 @@ claude: [/drive-change]
           review-code:     clean
           review-test:     1 missing edge case (empty order list)
           review-feature:  clean
-          drive-security: clean
+          review-security: clean
           drive-ux:       loading state missing on the Export button
         2 P1 findings, none P0. Address them before /open-pr?
 
@@ -142,7 +142,7 @@ claude: [/open-pr]
 | [`review-code`](./skills/review-code/) | Per-file quality. SRP, modularity, length, naming, lint, format. |
 | [`review-feature`](./skills/review-feature/) | Feature logic against ADR / spec. Edge cases, error handling, side effects. |
 | [`review-test`](./skills/review-test/) | Test quality on touched files. Right level, real assertions, no mocking the unit under test. |
-| [`drive-security`](./skills/drive-security/) | Authz, secrets, input validation, dependency vulns, OWASP-top-10 smells. |
+| [`review-security`](./skills/review-security/) | Authz, secrets, input validation, dependency vulns, OWASP-top-10 smells. |
 | [`drive-ux`](./skills/drive-ux/) | Walks the changed UX in a real browser. Screenshots, a11y, console errors. |
 | **Shipping** | |
 | [`open-pr`](./skills/open-pr/) | Composes title and body, runs final checks, opens via `gh pr create`. Wires `tone-of-voice` so the body sounds like the author. |
@@ -173,7 +173,7 @@ skill still has the policy locally. The canonical lives in
 mirrors. After editing the canonical, propagate it manually:
 
 ```bash
-for d in review-code review-feature review-test drive-security drive-ux; do
+for d in review-code review-feature review-test review-security drive-ux; do
   cp skills/drive-pr/references/trust-policy.md skills/$d/references/trust-policy.md
 done
 ```
@@ -200,7 +200,7 @@ skills with zero executable surface are safer to install.
     ├── review-code/            # per-file quality
     ├── review-feature/         # logic vs spec
     ├── review-test/            # test quality
-    ├── drive-security/        # secrets / authz / deps
+    ├── review-security/        # secrets / authz / deps
     ├── drive-ux/              # browser walk-through
     ├── open-pr/               # compose + open
     ├── drive-pr/              # iterate to merge-ready

@@ -1,6 +1,6 @@
 ---
 name: drive-change
-description: Use when the user says "/drive-change", "drive the change", "audit the PR", "review my work", "run all the audits", "is this ready to ship", or wants Claude to run the full audit suite on the current change (PR or working tree). Always runs /review-code + /review-test + /review-feature + /drive-security in sensible order. Adds /drive-ux automatically if UI files are touched (.tsx/.jsx/.vue/.svelte/.astro/.html/.css/.scss/.less). Produces a single unified report grouped by severity. Individual /drive-* skills remain callable directly when you want only one slice.
+description: Use when the user says "/drive-change", "drive the change", "audit the PR", "review my work", "run all the audits", "is this ready to ship", or wants Claude to run the full audit suite on the current change (PR or working tree). Always runs /review-code + /review-test + /review-feature + /review-security in sensible order. Adds /drive-ux automatically if UI files are touched (.tsx/.jsx/.vue/.svelte/.astro/.html/.css/.scss/.less). Produces a single unified report grouped by severity. Individual /drive-* skills remain callable directly when you want only one slice.
 allowed-tools: Bash(gh:*), Bash(git:*), Read, Grep, Glob, Skill
 ---
 
@@ -15,7 +15,7 @@ Always runs:
 - `/review-code` - per-file quality, lint, format
 - `/review-test` - test quality + coverage on touched files
 - `/review-feature` - feature logic against ADR / spec
-- `/drive-security` - authz, secrets, input validation, deps
+- `/review-security` - authz, secrets, input validation, deps
 
 Conditionally runs:
 
@@ -145,9 +145,9 @@ should look at it from your angle." Example shape:
 - review-code split src/orders.ts into queries.ts and mutations.ts;
   review-test should check both for coverage
 - review-feature flagged that the cancellation path emits an
-  `order.cancelled` event - drive-security should verify the event
+  `order.cancelled` event - review-security should verify the event
   payload doesn't leak PII
-- drive-security found that the refund webhook is unauthenticated;
+- review-security found that the refund webhook is unauthenticated;
   review-feature may want to revisit whether the spec covers the
   unauth case
 ```
@@ -169,7 +169,7 @@ security / UX:
    diffs the later audits should see.
 2. `/review-test` - test quality on the now-formatted code.
 3. `/review-feature` - behaviour against spec.
-4. `/drive-security` - secrets, authz, deps, input validation.
+4. `/review-security` - secrets, authz, deps, input validation.
 5. `/drive-ux` (if scope includes UI files) - browser walk-through.
 
 Invoke each via the Skill tool. The invocation passes the current
@@ -182,20 +182,20 @@ state.
 
 **Severity ownership varies by sub-audit:**
 
-- `/drive-security` already uses P0-P3 tiers in its own findings -
+- `/review-security` already uses P0-P3 tiers in its own findings -
   pass these through verbatim, don't re-translate.
 - `/review-code`, `/review-test`, `/review-feature`, `/drive-ux` don't
   assign severity natively. drive-change assigns it using the rubric
   below.
 
-This keeps drive-security's domain expertise (CVSS-aligned) intact
+This keeps review-security's domain expertise (CVSS-aligned) intact
 while giving the other audits a consistent rubric.
 
 Severity rubric (drive-change applies when the sub-audit hasn't
 already):
 
 - **P0** - Blocks merge: security vulnerability (defer to
-  drive-security's call), broken feature against spec, failing tests,
+  review-security's call), broken feature against spec, failing tests,
   data-loss risk.
 - **P1** - Should fix before merge: known bug, missing edge case,
   code smell that hurts maintainability at the point of change.
@@ -240,12 +240,12 @@ drive-change ran <N> audits on <PR #N or working tree>.
   review-code:     <one-line summary>
   review-test:     <one-line summary>
   review-feature:  <one-line summary>
-  drive-security: <one-line summary>
+  review-security: <one-line summary>
   drive-ux:       <one-line summary>   | "skipped - no UI files touched"
 
 Findings, severity-ordered:
 
-  P0  <one-line finding>          (from drive-security)
+  P0  <one-line finding>          (from review-security)
   P0  <one-line finding>          (from review-feature)
   P1  <one-line finding>          (from review-code)
   P2  <one-line finding>          (from review-test)
@@ -253,7 +253,7 @@ Findings, severity-ordered:
 
 Mechanical fixes applied (each its own commit):
   <sha> lint + format on touched files       (review-code)
-  <sha> <other mechanical fix>               (drive-security)
+  <sha> <other mechanical fix>               (review-security)
 
 Next steps:
   - <suggested action>
@@ -306,7 +306,7 @@ The user decides; the skill states the read.
 ## Composing with other skills
 
 - **Calls:** `/review-code`, `/review-test`, `/review-feature`,
-  `/drive-security`, `/drive-ux` (conditional).
+  `/review-security`, `/drive-ux` (conditional).
 - **Before:** `/plan-change` (the change being audited).
 - **After:** `/open-pr` (turn the change into a PR), or back to
   implementation if findings need addressing.
