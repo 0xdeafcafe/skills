@@ -1,6 +1,6 @@
 # Test-quality checklist - long form
 
-Load when you want the full audit prompt. drive-test's SKILL.md has the
+Load when you want the full audit prompt. review-test's SKILL.md has the
 short version inline.
 
 ## The testing pyramid (the version that actually works)

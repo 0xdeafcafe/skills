@@ -152,7 +152,7 @@ Match the repo's commit message convention (`git log --oneline -20`).
 
 ## Phase 6 - Suggest next steps
 
-After both files land, point the user at natural next moves: `/review-spec` to check overlap before building, then start implementation (ADR defines the *shape*, spec defines the *behaviour*), and `/drive-feature` once code exists to check it against the spec.
+After both files land, point the user at natural next moves: `/review-spec` to check overlap before building, then start implementation (ADR defines the *shape*, spec defines the *behaviour*), and `/review-feature` once code exists to check it against the spec.
 
 ## Operating rules
 
@@ -166,4 +166,4 @@ After both files land, point the user at natural next moves: `/review-spec` to c
 
 - **Before:** `/start-feature` is the usual entry. `/backfill-feature` runs first if the feature you're modifying has no ADR yet.
 - **After both documents land:** `/review-spec` checks for overlap / conflict against the rest of the corpus.
-- **Once code exists:** `/drive-feature` audits implementation against the spec written here. `/drive-change` runs the full audit suite.
+- **Once code exists:** `/review-feature` audits implementation against the spec written here. `/drive-change` runs the full audit suite.

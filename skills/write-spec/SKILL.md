@@ -186,7 +186,7 @@ Show the draft. Ask:
 
 The last two questions are critical: a spec out of sync with code is
 worse than no spec because it lies. If the conversation reveals drift,
-flag it but don't fix code in this skill - that's `/drive-feature`.
+flag it but don't fix code in this skill - that's `/review-feature`.
 
 ## Phase 5 - Write the file
 
@@ -244,4 +244,4 @@ these executable.
 - **`/backfill-feature`** - writes a characterization spec for existing code that has none.
 - **`/write-adr`** - architecture side, standalone.
 - **`/review-spec`** - check for overlap / conflict with existing specs.
-- **`/drive-feature`** - verifies implementation matches the spec.
+- **`/review-feature`** - verifies implementation matches the spec.

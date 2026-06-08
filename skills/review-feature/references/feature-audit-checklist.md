@@ -1,6 +1,6 @@
 # Feature audit checklist - long form
 
-Load when you want a structured prompt for the audit. drive-feature's
+Load when you want a structured prompt for the audit. review-feature's
 SKILL.md has the short version; this expands every category with
 examples and common failure modes.
 

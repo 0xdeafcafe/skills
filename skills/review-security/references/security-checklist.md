@@ -1,6 +1,6 @@
 # Security audit checklist - long form
 
-Load when you want the full prompt. drive-security's SKILL.md has the
+Load when you want the full prompt. review-security's SKILL.md has the
 short version inline.
 
 ## Authentication
