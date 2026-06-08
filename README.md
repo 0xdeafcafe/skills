@@ -111,7 +111,7 @@ claude: [/drive-change]
           review-test:     1 missing edge case (empty order list)
           review-feature:  clean
           review-security: clean
-          drive-ux:       loading state missing on the Export button
+          review-ux:       loading state missing on the Export button
         2 P1 findings, none P0. Address them before /open-pr?
 
 [fixes]
@@ -143,7 +143,7 @@ claude: [/open-pr]
 | [`review-feature`](./skills/review-feature/) | Feature logic against ADR / spec. Edge cases, error handling, side effects. |
 | [`review-test`](./skills/review-test/) | Test quality on touched files. Right level, real assertions, no mocking the unit under test. |
 | [`review-security`](./skills/review-security/) | Authz, secrets, input validation, dependency vulns, OWASP-top-10 smells. |
-| [`drive-ux`](./skills/drive-ux/) | Walks the changed UX in a real browser. Screenshots, a11y, console errors. |
+| [`review-ux`](./skills/review-ux/) | Walks the changed UX in a real browser. Screenshots, a11y, console errors. |
 | **Shipping** | |
 | [`open-pr`](./skills/open-pr/) | Composes title and body, runs final checks, opens via `gh pr create`. Wires `tone-of-voice` so the body sounds like the author. |
 | [`drive-pr`](./skills/drive-pr/) | Iterates the open PR until trusted comments are resolved and CI is green. |
@@ -173,7 +173,7 @@ skill still has the policy locally. The canonical lives in
 mirrors. After editing the canonical, propagate it manually:
 
 ```bash
-for d in review-code review-feature review-test review-security drive-ux; do
+for d in review-code review-feature review-test review-security review-ux; do
   cp skills/drive-pr/references/trust-policy.md skills/$d/references/trust-policy.md
 done
 ```
@@ -201,7 +201,7 @@ skills with zero executable surface are safer to install.
     ├── review-feature/         # logic vs spec
     ├── review-test/            # test quality
     ├── review-security/        # secrets / authz / deps
-    ├── drive-ux/              # browser walk-through
+    ├── review-ux/              # browser walk-through
     ├── open-pr/               # compose + open
     ├── drive-pr/              # iterate to merge-ready
     └── tone-of-voice/         # ghost-write in my voice

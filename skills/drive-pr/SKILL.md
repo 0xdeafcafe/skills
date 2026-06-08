@@ -277,7 +277,7 @@ When the loop exits, print a short user-facing summary with this schema:
 drive-pr addresses *comments* + *CI* + *description*. It does NOT do:
 
 - Code-quality audits → `/review-code`.
-- UX walkthrough → `/drive-ux`.
+- UX walkthrough → `/review-ux`.
 - Feature-logic vs. ADR/spec → `/review-feature`.
 
 If review comments keep flagging the same class of issue, suggest the user

@@ -1,6 +1,6 @@
 ---
 name: drive-change
-description: Use when the user says "/drive-change", "drive the change", "audit the PR", "review my work", "run all the audits", "is this ready to ship", or wants Claude to run the full audit suite on the current change (PR or working tree). Always runs /review-code + /review-test + /review-feature + /review-security in sensible order. Adds /drive-ux automatically if UI files are touched (.tsx/.jsx/.vue/.svelte/.astro/.html/.css/.scss/.less). Produces a single unified report grouped by severity. Individual /drive-* skills remain callable directly when you want only one slice.
+description: Use when the user says "/drive-change", "drive the change", "audit the PR", "review my work", "run all the audits", "is this ready to ship", or wants Claude to run the full audit suite on the current change (PR or working tree). Always runs /review-code + /review-test + /review-feature + /review-security in sensible order. Adds /review-ux automatically if UI files are touched (.tsx/.jsx/.vue/.svelte/.astro/.html/.css/.scss/.less). Produces a single unified report grouped by severity. Individual /drive-* skills remain callable directly when you want only one slice.
 allowed-tools: Bash(gh:*), Bash(git:*), Read, Grep, Glob, Skill
 ---
 
@@ -19,7 +19,7 @@ Always runs:
 
 Conditionally runs:
 
-- `/drive-ux` - **if** the change touches UI files (`.tsx`, `.jsx`,
+- `/review-ux` - **if** the change touches UI files (`.tsx`, `.jsx`,
   `.vue`, `.svelte`, `.astro`, `.html`, `.css`, `.scss`, `.less`)
 
 The individual `/drive-*` skills stay callable directly - use those
@@ -63,7 +63,7 @@ Glob the touched files for UI extensions:
 <touched-files> | grep -E '\.(tsx|jsx|vue|svelte|astro|html|css|scss|less)$' | head -1
 ```
 
-If at least one match, include `/drive-ux`. Otherwise skip it.
+If at least one match, include `/review-ux`. Otherwise skip it.
 
 Also include UX if a framework route file changed even without a CSS
 touch:
@@ -170,7 +170,7 @@ security / UX:
 2. `/review-test` - test quality on the now-formatted code.
 3. `/review-feature` - behaviour against spec.
 4. `/review-security` - secrets, authz, deps, input validation.
-5. `/drive-ux` (if scope includes UI files) - browser walk-through.
+5. `/review-ux` (if scope includes UI files) - browser walk-through.
 
 Invoke each via the Skill tool. The invocation passes the current
 carry-forward state as context, so the sub-audit starts with the
@@ -184,7 +184,7 @@ state.
 
 - `/review-security` already uses P0-P3 tiers in its own findings -
   pass these through verbatim, don't re-translate.
-- `/review-code`, `/review-test`, `/review-feature`, `/drive-ux` don't
+- `/review-code`, `/review-test`, `/review-feature`, `/review-ux` don't
   assign severity natively. drive-change assigns it using the rubric
   below.
 
@@ -221,7 +221,7 @@ Carry-forward notes (free-form, one per line) capture anything a
 later audit should know about - e.g. "review-code split src/orders.ts
 into two files; review-test should look at both."
 
-By the time `/drive-ux` finishes (or the run ends without it), the
+By the time `/review-ux` finishes (or the run ends without it), the
 state holds the full picture: change context, all findings, all
 mechanical fixes, all notes. Phase 4 builds the unified report from
 this state.
@@ -241,7 +241,7 @@ drive-change ran <N> audits on <PR #N or working tree>.
   review-test:     <one-line summary>
   review-feature:  <one-line summary>
   review-security: <one-line summary>
-  drive-ux:       <one-line summary>   | "skipped - no UI files touched"
+  review-ux:       <one-line summary>   | "skipped - no UI files touched"
 
 Findings, severity-ordered:
 
@@ -306,7 +306,7 @@ The user decides; the skill states the read.
 ## Composing with other skills
 
 - **Calls:** `/review-code`, `/review-test`, `/review-feature`,
-  `/review-security`, `/drive-ux` (conditional).
+  `/review-security`, `/review-ux` (conditional).
 - **Before:** `/plan-change` (the change being audited).
 - **After:** `/open-pr` (turn the change into a PR), or back to
   implementation if findings need addressing.

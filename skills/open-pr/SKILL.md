@@ -249,4 +249,4 @@ Then stop. The user picks.
 ## Composing with other skills
 
 - **Before:** `/review-code` (lint/format), `/review-test` (coverage), `/review-feature` (spec audit).
-- **After (Phase 7 handoff):** `/drive-pr` (CI + review feedback loop to merge-ready), `/drive-ux` (screenshots for UI changes).
+- **After (Phase 7 handoff):** `/drive-pr` (CI + review feedback loop to merge-ready), `/review-ux` (screenshots for UI changes).
