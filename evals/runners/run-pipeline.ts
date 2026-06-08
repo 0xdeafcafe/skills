@@ -1,14 +1,18 @@
-// Tier-2 pipeline runner — invokes /drive-change against each fixture in the
-// LangWatch dataset, scores the output against the fixture's expected
-// findings, and logs per-metric pass/fail back to LangWatch as an experiment
-// run. Routes through the AI gateway so per-call telemetry lands in the
-// dashboard automatically.
+// Tier-2 — per-reviewer fixture evals.
+//
+// For every (fixture, reviewer) row in the LangWatch dataset, invoke
+// `claude -p /<reviewer>` three times against the fixture's git state and
+// score each run against the row's expected findings. Logs per-run + aggregate
+// metrics to a LangWatch experiment so the dashboard can show pass-rate +
+// mean ± stddev per fixture × reviewer cell.
 //
 // Usage:
-//   node runners/run-pipeline.ts                    # all rows from the dataset
-//   node runners/run-pipeline.ts <fixture-name>     # single row by fixture_name
-//   node runners/run-pipeline.ts --dry-run          # no Claude call; harness shape only
-//   node runners/run-pipeline.ts --local            # iterate local fixtures, skip dataset fetch
+//   node runners/run-pipeline.ts                          # all rows
+//   node runners/run-pipeline.ts --fixture <name>         # filter by fixture
+//   node runners/run-pipeline.ts --reviewer <name>        # filter by reviewer
+//   node runners/run-pipeline.ts --dry-run                # skip claude calls
+//   node runners/run-pipeline.ts --runs 1                 # override 3 runs
+//   node runners/run-pipeline.ts --local                  # local fixtures only
 
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
@@ -21,34 +25,47 @@ import { type ExpectedFindings, scoreFixture } from "../lib/scoring.ts";
 import { type Finding, validateFinding } from "../lib/schema.ts";
 
 const SERVICE_NAME = "skills-evals";
-const EXPERIMENT_NAME = "skills-fixture-eval";
+const EXPERIMENT_NAME = "skills-reviewer-eval";
 const DATASET_SLUG = "skills-eval-fixtures";
+const DEFAULT_RUNS_PER_CELL = 3;
 const FIXTURES_DIR = new URL("../fixtures/", import.meta.url).pathname;
+// The repo root is the plugin under test — load it via --plugin-dir so the
+// eval pins the *current* skill code rather than whatever stale snapshot is
+// installed globally.
+const PLUGIN_DIR = new URL("../../", import.meta.url).pathname;
 
 type Args = {
   readonly fixtureFilter: string | null;
+  readonly reviewerFilter: string | null;
   readonly dryRun: boolean;
   readonly local: boolean;
+  readonly runs: number;
 };
 
-type FixtureRow = {
+type Row = {
   readonly fixture_name: string;
-  readonly diff_patch: string;
-  readonly expected_findings: string;
+  readonly reviewer_skill: string;
+  readonly expected_findings: string; // JSON-encoded ExpectedFindings
   readonly notes: string;
   readonly fixture_version: string;
 };
 
 const parseArgs = (argv: readonly string[]): Args => {
   const args = argv.slice(2);
+  const flagValue = (name: string): string | null => {
+    const idx = args.indexOf(name);
+    return idx === -1 ? null : args[idx + 1] ?? null;
+  };
   return {
-    fixtureFilter: args.find((a) => !a.startsWith("--")) ?? null,
+    fixtureFilter: flagValue("--fixture"),
+    reviewerFilter: flagValue("--reviewer"),
     dryRun: args.includes("--dry-run"),
     local: args.includes("--local"),
+    runs: Number(flagValue("--runs") ?? DEFAULT_RUNS_PER_CELL),
   };
 };
 
-const fetchDataset = (): readonly FixtureRow[] => {
+const fetchDatasetRows = (): readonly Row[] => {
   const r = spawnSync("langwatch", ["dataset", "get", DATASET_SLUG, "--format", "json"], {
     encoding: "utf8",
   });
@@ -56,26 +73,34 @@ const fetchDataset = (): readonly FixtureRow[] => {
     throw new Error(`langwatch dataset get failed: ${r.stderr || r.stdout}`);
   }
   const parsed = JSON.parse(r.stdout) as {
-    readonly entries?: readonly { readonly entry: FixtureRow }[];
+    readonly entries?: readonly { readonly entry: Row }[];
   };
   return (parsed.entries ?? []).map((e) => e.entry);
 };
 
-const loadLocalFixture = async (name: string): Promise<FixtureRow> => {
-  const dir = join(FIXTURES_DIR, name);
-  return {
-    fixture_name: name,
-    diff_patch: await readFile(join(dir, "diff.patch"), "utf8"),
-    expected_findings: await readFile(join(dir, "expected.findings.json"), "utf8"),
-    notes: await readFile(join(dir, "notes.md"), "utf8").catch(() => ""),
-    fixture_version: "local",
-  };
-};
-
-const discoverLocalFixtures = async (): Promise<readonly string[]> => {
+const loadLocalRows = async (): Promise<readonly Row[]> => {
   const { readdir } = await import("node:fs/promises");
-  const entries = await readdir(FIXTURES_DIR, { withFileTypes: true });
-  return entries.filter((d) => d.isDirectory()).map((d) => d.name);
+  const names = (await readdir(FIXTURES_DIR, { withFileTypes: true }))
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name);
+
+  const rows: Row[] = [];
+  for (const name of names) {
+    const dir = join(FIXTURES_DIR, name);
+    const raw = await readFile(join(dir, "expected.findings.json"), "utf8");
+    const notes = await readFile(join(dir, "notes.md"), "utf8").catch(() => "");
+    const expected = JSON.parse(raw) as { by_reviewer: Record<string, unknown> };
+    for (const [reviewer_skill, slice] of Object.entries(expected.by_reviewer)) {
+      rows.push({
+        fixture_name: name,
+        reviewer_skill,
+        expected_findings: JSON.stringify(slice),
+        notes,
+        fixture_version: "local",
+      });
+    }
+  }
+  return rows;
 };
 
 const setupRepo = async (
@@ -96,19 +121,17 @@ const setupRepo = async (
   };
 };
 
-const parseFindingsFromOutput = (
-  output: string,
-): { readonly findings: readonly Finding[]; readonly all_valid: boolean; readonly drifted_count: number } => {
-  const blocks = splitTranscript(output);
+const parseFindings = (
+  response: string,
+): { readonly findings: readonly Finding[]; readonly all_valid: boolean; readonly drifted: number } => {
+  const blocks = splitTranscript(response);
   const findings: Finding[] = [];
   let drifted = 0;
-
   for (const block of blocks) {
     try {
       const parsed = parseFindingBlock(block);
-      if (parsed === null) continue; // not a finding (prose / preamble)
-      const errors = validateFinding(parsed);
-      if (errors.length > 0) {
+      if (parsed === null) continue;
+      if (validateFinding(parsed).length > 0) {
         drifted += 1;
         continue;
       }
@@ -117,101 +140,178 @@ const parseFindingsFromOutput = (
       drifted += 1;
     }
   }
+  return { findings, all_valid: drifted === 0, drifted };
+};
+
+type RunOutcome = {
+  readonly run_index: number;
+  readonly invoked_ok: boolean;
+  readonly findings_count: number;
+  readonly drifted_count: number;
+  readonly overall_pass: boolean;
+  readonly expected_findings_matched: number;
+  readonly extra_findings_count: number;
+  readonly missing_specs_count: number;
+  readonly cost_usd: number | null;
+  readonly tokens: { readonly input: number; readonly output: number } | null;
+};
+
+const runSingle = (cwd: string, reviewer: string, runIndex: number, expected: ExpectedFindings): RunOutcome => {
+  const invoke = invokeClaude({ cwd, prompt: `/${reviewer}`, pluginDir: PLUGIN_DIR });
+
+  if (invoke.timedOut || invoke.exitCode !== 0 || !invoke.response) {
+    return {
+      run_index: runIndex,
+      invoked_ok: false,
+      findings_count: 0,
+      drifted_count: 0,
+      overall_pass: false,
+      expected_findings_matched: 0,
+      extra_findings_count: 0,
+      missing_specs_count: expected.findings.length,
+      cost_usd: invoke.costUsd,
+      tokens: invoke.tokens,
+    };
+  }
+
+  const { findings, all_valid, drifted } = parseFindings(invoke.response);
+  const score = scoreFixture(findings, expected, { all_valid });
 
   return {
-    findings,
-    all_valid: drifted === 0,
+    run_index: runIndex,
+    invoked_ok: true,
+    findings_count: findings.length,
     drifted_count: drifted,
+    overall_pass: score.overall_pass,
+    expected_findings_matched: score.expected_findings_matched,
+    extra_findings_count: score.extra_findings_count,
+    missing_specs_count: score.missing_specs_count,
+    cost_usd: invoke.costUsd,
+    tokens: invoke.tokens,
   };
 };
 
-/**
- * Run one fixture. Returns the score so the caller can report aggregate
- * stats, but the canonical record is the LangWatch experiment run — the
- * function logs every metric there.
- *
- * `evalLog` writes to LangWatch when telemetry is enabled; it's the only
- * coupling to the SDK in this function.
- */
-const runOne = async (
-  row: FixtureRow,
-  index: number,
-  evalLog: (key: string, body: { index: number; passed?: boolean; score?: number; label?: string }) => void,
-  opts: { readonly dryRun: boolean },
-): Promise<{ readonly fixture_name: string; readonly overall_pass: boolean }> => {
-  console.log(`\n▶ ${row.fixture_name}`);
+const mean = (xs: readonly number[]): number =>
+  xs.length === 0 ? 0 : xs.reduce((a, b) => a + b, 0) / xs.length;
+
+const stddev = (xs: readonly number[]): number => {
+  if (xs.length < 2) return 0;
+  const m = mean(xs);
+  return Math.sqrt(xs.reduce((acc, x) => acc + (x - m) ** 2, 0) / (xs.length - 1));
+};
+
+type CellSummary = {
+  readonly fixture_name: string;
+  readonly reviewer_skill: string;
+  readonly run_count: number;
+  readonly pass_rate: number;
+  readonly mean_findings_count: number;
+  readonly stddev_findings_count: number;
+  readonly mean_extra_findings: number;
+  readonly mean_missing_specs: number;
+  readonly mean_drifted: number;
+  readonly mean_matched: number;
+  readonly total_cost_usd: number;
+  readonly invocation_failures: number;
+};
+
+const summarise = (
+  row: Row,
+  outcomes: readonly RunOutcome[],
+): CellSummary => ({
+  fixture_name: row.fixture_name,
+  reviewer_skill: row.reviewer_skill,
+  run_count: outcomes.length,
+  pass_rate: outcomes.filter((o) => o.overall_pass).length / outcomes.length,
+  mean_findings_count: mean(outcomes.map((o) => o.findings_count)),
+  stddev_findings_count: stddev(outcomes.map((o) => o.findings_count)),
+  mean_extra_findings: mean(outcomes.map((o) => o.extra_findings_count)),
+  mean_missing_specs: mean(outcomes.map((o) => o.missing_specs_count)),
+  mean_drifted: mean(outcomes.map((o) => o.drifted_count)),
+  mean_matched: mean(outcomes.map((o) => o.expected_findings_matched)),
+  total_cost_usd: outcomes.reduce((acc, o) => acc + (o.cost_usd ?? 0), 0),
+  invocation_failures: outcomes.filter((o) => !o.invoked_ok).length,
+});
+
+const passRateLabel = (rate: number): string => {
+  if (rate === 1) return "✓"; // 3/3 — green
+  if (rate >= 2 / 3) return "~"; // 2/3 — flaky
+  return "✗"; // <2/3 — broken
+};
+
+const runOneCell = async (
+  row: Row,
+  args: Args,
+  emit: (key: string, body: { passed?: boolean; score?: number }) => void,
+): Promise<CellSummary> => {
+  console.log(`\n▶ ${row.fixture_name} × ${row.reviewer_skill}`);
 
   await using repo = await setupRepo(row.fixture_name);
 
-  if (opts.dryRun) {
-    console.log("  ◦ --dry-run; skipping invocation");
-    return { fixture_name: row.fixture_name, overall_pass: true };
+  if (args.dryRun) {
+    console.log("  ◦ --dry-run; skipping invocations");
+    return summarise(row, [
+      { run_index: 0, invoked_ok: true, findings_count: 0, drifted_count: 0, overall_pass: true,
+        expected_findings_matched: 1, extra_findings_count: 0, missing_specs_count: 0,
+        cost_usd: 0, tokens: null },
+    ]);
   }
-
-  console.log("  ◦ invoking claude -p /drive-change");
-  const invoke = invokeClaude({ cwd: repo.path, prompt: "/drive-change" });
-
-  if (invoke.timedOut) {
-    console.log("  ✗ timed out");
-    evalLog("invocation_succeeded", { index, passed: false, label: "timeout" });
-    return { fixture_name: row.fixture_name, overall_pass: false };
-  }
-  if (invoke.exitCode !== 0) {
-    console.log(`  ✗ claude exited ${invoke.exitCode}: ${invoke.stderr.slice(0, 200)}`);
-    evalLog("invocation_succeeded", { index, passed: false, label: `exit_${invoke.exitCode}` });
-    return { fixture_name: row.fixture_name, overall_pass: false };
-  }
-  evalLog("invocation_succeeded", { index, passed: true });
-
-  const { findings, all_valid, drifted_count } = parseFindingsFromOutput(invoke.stdout);
-  console.log(`  ◦ parsed ${findings.length} finding(s) (${drifted_count} drifted)`);
-  evalLog("drifted_findings_count", { index, score: drifted_count });
 
   const expected = JSON.parse(row.expected_findings) as ExpectedFindings;
-  const score = scoreFixture(findings, expected, { all_valid });
+  const outcomes: RunOutcome[] = [];
 
-  evalLog("count_in_range", { index, passed: score.count_in_range });
-  evalLog("all_findings_schema_valid", { index, passed: score.all_findings_schema_valid });
-  evalLog("expected_findings_matched", { index, score: score.expected_findings_matched });
-  evalLog("extra_findings_count", { index, score: score.extra_findings_count });
-  evalLog("missing_specs_count", { index, score: score.missing_specs_count });
-  evalLog("overall_pass", { index, passed: score.overall_pass });
-
-  for (const spec of score.per_spec) {
-    evalLog(`spec_${spec.$match}_passed`, { index, passed: spec.all_passed });
+  for (let i = 0; i < args.runs; i++) {
+    console.log(`  ◦ run ${i + 1}/${args.runs}`);
+    const outcome = runSingle(repo.path, row.reviewer_skill, i, expected);
+    outcomes.push(outcome);
+    emit(`run_${i}_overall_pass`, { passed: outcome.overall_pass });
+    emit(`run_${i}_findings_count`, { score: outcome.findings_count });
+    emit(`run_${i}_drifted_count`, { score: outcome.drifted_count });
+    if (outcome.cost_usd !== null) emit(`run_${i}_cost_usd`, { score: outcome.cost_usd });
   }
 
-  console.log(`  ${score.overall_pass ? "✓" : "✗"} overall_pass=${score.overall_pass} matched=${score.expected_findings_matched}`);
-  return { fixture_name: row.fixture_name, overall_pass: score.overall_pass };
+  const cell = summarise(row, outcomes);
+  emit("pass_rate", { score: cell.pass_rate });
+  emit("mean_findings_count", { score: cell.mean_findings_count });
+  emit("stddev_findings_count", { score: cell.stddev_findings_count });
+  emit("mean_extra_findings", { score: cell.mean_extra_findings });
+  emit("mean_missing_specs", { score: cell.mean_missing_specs });
+  emit("mean_drifted", { score: cell.mean_drifted });
+  emit("mean_matched", { score: cell.mean_matched });
+  emit("total_cost_usd", { score: cell.total_cost_usd });
+  emit("invocation_failures", { score: cell.invocation_failures });
+
+  console.log(`  ${passRateLabel(cell.pass_rate)} pass_rate=${cell.pass_rate.toFixed(2)} mean_findings=${cell.mean_findings_count.toFixed(1)} cost=$${cell.total_cost_usd.toFixed(4)}`);
+  return cell;
 };
 
 const main = async (): Promise<void> => {
   const args = parseArgs(process.argv);
+  if (!Number.isFinite(args.runs) || args.runs < 1) {
+    throw new Error(`--runs must be a positive integer; got ${args.runs}`);
+  }
 
-  // Resolve rows: dataset (default) or local on disk.
-  const rows: readonly FixtureRow[] = args.local
-    ? await Promise.all((await discoverLocalFixtures()).map(loadLocalFixture))
-    : fetchDataset();
-
-  const filtered = args.fixtureFilter
-    ? rows.filter((r) => r.fixture_name === args.fixtureFilter)
-    : rows;
+  const rows: readonly Row[] = args.local ? await loadLocalRows() : fetchDatasetRows();
+  const filtered = rows.filter((r) =>
+    (!args.fixtureFilter || r.fixture_name === args.fixtureFilter) &&
+    (!args.reviewerFilter || r.reviewer_skill === args.reviewerFilter),
+  );
 
   if (filtered.length === 0) {
-    throw new Error(args.fixtureFilter
-      ? `no fixture named "${args.fixtureFilter}" found in ${args.local ? "local fixtures/" : "the dataset"}`
-      : "no fixtures to run");
+    throw new Error(`no rows match filters: fixture=${args.fixtureFilter} reviewer=${args.reviewerFilter}`);
   }
-  console.log(`◦ running ${filtered.length} fixture(s)`);
+  console.log(`◦ running ${filtered.length} cell(s) × ${args.runs} run(s) = ${filtered.length * args.runs} total invocation(s)`);
 
-  // Set up LangWatch experiment + telemetry. Skipped when API key is unset
-  // — useful for harness-shape smoke tests without burning quota.
-  if (!process.env.LANGWATCH_API_KEY) {
-    console.log("◦ LANGWATCH_API_KEY unset — running without experiment / telemetry");
-    for (let i = 0; i < filtered.length; i++) {
-      const row = filtered[i];
-      if (!row) continue;
-      await runOne(row, i, () => {}, { dryRun: args.dryRun });
+  // Dry-runs always skip the LangWatch experiment wrapper too — an empty
+  // experiment record clutters the dashboard with rows that have no metrics.
+  if (!process.env.LANGWATCH_API_KEY || args.dryRun) {
+    if (args.dryRun && process.env.LANGWATCH_API_KEY) {
+      console.log("◦ --dry-run set; skipping LangWatch experiment to avoid empty rows");
+    } else {
+      console.log("◦ LANGWATCH_API_KEY unset — running without experiment / telemetry");
+    }
+    for (const row of filtered) {
+      await runOneCell(row, args, () => {});
     }
     return;
   }
@@ -223,9 +323,9 @@ const main = async (): Promise<void> => {
   const experiment = await lw.experiments.init(EXPERIMENT_NAME);
 
   await experiment.run([...filtered], async ({ item, index }) => {
-    await runOne(item, index, (key, body) => experiment.log(key, body), {
-      dryRun: args.dryRun,
-    });
+    await runOneCell(item, args, (key, body) =>
+      experiment.log(key, { index, ...body }),
+    );
   });
 
   console.log("\n✓ experiment run complete — see the LangWatch dashboard");

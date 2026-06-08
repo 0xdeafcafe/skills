@@ -24,12 +24,14 @@ type FindingSpec = {
   readonly kind?: "individual" | "aggregate";
 };
 
-type ExpectedFindings = { readonly findings: readonly FindingSpec[] };
-type ExpectedPackets = {
-  readonly work_packets?: readonly {
-    readonly $match?: string;
-    readonly suggested_model?: "opus" | "sonnet";
-  }[];
+type ReviewerExpected = {
+  readonly findings: readonly FindingSpec[];
+  readonly count_min?: number;
+  readonly count_max?: number;
+};
+
+type ExpectedFindings = {
+  readonly by_reviewer: Readonly<Record<string, ReviewerExpected>>;
 };
 
 type Check = { readonly name: string; readonly ok: boolean; readonly detail: string };
@@ -43,10 +45,7 @@ const readJson = async <T>(path: string): Promise<T | null> => {
   }
 };
 
-const checkSpec = (
-  spec: FindingSpec,
-  packets: ExpectedPackets | null,
-): readonly Check[] => {
+const checkSpec = (spec: FindingSpec, reviewer: string): readonly Check[] => {
   const name = spec.$match ?? "(unnamed)";
 
   if (!spec.category) {
@@ -82,24 +81,14 @@ const checkSpec = (
     categories: [spec.category],
     isAggregate: spec.kind === "aggregate",
   });
-  const expectedPacket = packets?.work_packets?.find((p) => p.$match === spec.$match);
 
-  const gateCheck: Check = expectedPacket?.suggested_model
-    ? {
-        name: `[${name}] gate model`,
-        ok: gateResult.suggested_model === expectedPacket.suggested_model,
-        detail:
-          gateResult.suggested_model === expectedPacket.suggested_model
-            ? `${gateResult.suggested_model} (${gateResult.sensitivity_reason})`
-            : `gate=${gateResult.suggested_model} vs fixture expects ${expectedPacket.suggested_model}`,
-      }
-    : {
-        name: `[${name}] gate`,
-        ok: true,
-        detail: `${gateResult.suggested_model} (${gateResult.sensitivity_reason})`,
-      };
+  const gateCheck: Check = {
+    name: `[${reviewer}/${name}] gate`,
+    ok: true,
+    detail: `${gateResult.suggested_model} (${gateResult.sensitivity_reason})`,
+  };
 
-  return [schemaCheck, gateCheck];
+  return [{ ...schemaCheck, name: `[${reviewer}/${name}] schema-valid` }, gateCheck];
 };
 
 const runFixture = async (fixture: string): Promise<FixtureResult> => {
@@ -113,13 +102,29 @@ const runFixture = async (fixture: string): Promise<FixtureResult> => {
     };
   }
 
-  const packets = await readJson<ExpectedPackets>(join(dir, "expected.packets.json"));
+  if (!expected.by_reviewer || typeof expected.by_reviewer !== "object") {
+    return {
+      fixture,
+      checks: [{ name: "expected.findings.json has by_reviewer", ok: false, detail: "missing or wrong shape" }],
+    };
+  }
+
+  const reviewers = Object.entries(expected.by_reviewer);
+  const specChecks = reviewers.flatMap(([reviewer, slice]) =>
+    slice.findings.flatMap((spec) => checkSpec(spec, reviewer)),
+  );
+
+  const totalSpecs = reviewers.reduce((n, [, slice]) => n + slice.findings.length, 0);
 
   return {
     fixture,
     checks: [
-      { name: "expected.findings.json parses", ok: true, detail: `${expected.findings.length} specs` },
-      ...expected.findings.flatMap((spec) => checkSpec(spec, packets)),
+      {
+        name: "expected.findings.json parses",
+        ok: true,
+        detail: `${reviewers.length} reviewer(s), ${totalSpecs} total spec(s)`,
+      },
+      ...specChecks,
     ],
   };
 };

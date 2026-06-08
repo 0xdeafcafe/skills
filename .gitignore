@@ -11,3 +11,11 @@ build/
 *.log
 .skill-evals/
 skills/*-workspace/
+
+# Per-user Claude Code state — local skill cache, settings, langwatch skill lock
+.agents/
+.claude/
+skills-lock.json
+
+# Local diagnostic scripts in the eval harness (see `evals/scripts/dump-*.ts`)
+evals/scripts/dump-*.ts

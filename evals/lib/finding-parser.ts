@@ -39,9 +39,11 @@ const INT_KEYS = new Set(["files_affected_count", "violations_count"]);
 const ARRAY_KEYS = new Set(["files_affected", "originating_reviewers"]);
 
 export class ParseError extends Error {
-  constructor(message: string, public block: string) {
+  readonly block: string;
+  constructor(message: string, block: string) {
     super(message);
     this.name = "ParseError";
+    this.block = block;
   }
 }
 

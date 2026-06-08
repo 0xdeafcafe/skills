@@ -7,6 +7,7 @@
   "scripts": {
     "tier1": "node runners/run-tier1.ts",
     "tier2": "node --env-file-if-exists=../.env runners/run-pipeline.ts",
+    "tier3": "node --env-file-if-exists=../.env runners/run-tier3.ts",
     "upload-dataset": "node --env-file-if-exists=../.env runners/upload-dataset.ts",
     "test": "vitest run",
     "test:watch": "vitest",

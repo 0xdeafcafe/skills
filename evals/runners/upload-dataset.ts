@@ -1,17 +1,16 @@
-// Uploads every fixture in evals/fixtures/ to a LangWatch dataset.
+// Uploads every (fixture × reviewer) pair in evals/fixtures/ as a separate
+// row in a LangWatch dataset. Why per-pair, not per-fixture: tier-2 invokes
+// each /review-* skill in isolation against a fixture, so the natural eval
+// row is one combination — `evaluation.run(rows, callback)` iterates them
+// directly without us having to expand on the runner side.
 //
-// Why this exists: the tier-2 runner needs to know which fixtures to
-// iterate; the LangWatch dashboard wants the fixtures as rows so it can
-// group experiment runs, drill into per-fixture pass/fail, and compare
-// runs across commits. Keeping the dataset in sync with disk is a CLI
-// wrapper away.
+// One fixture with N reviewer slices in expected.findings.json → N rows.
 //
 // Usage:
 //   node runners/upload-dataset.ts             # upsert into the dataset
-//   node runners/upload-dataset.ts --dry-run   # print JSON, no upload
+//   node runners/upload-dataset.ts --dry-run   # build records, print, don't upload
 //
-// Requires `langwatch login --device` (or LANGWATCH_API_KEY in env).
-// The CLI doesn't expose dataset CRUD via the TS SDK, so we shell out.
+// Requires LANGWATCH_API_KEY in env (the .env loader handles it).
 
 import { readFile, readdir } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
@@ -19,26 +18,35 @@ import { join } from "node:path";
 
 const FIXTURES_DIR = new URL("../fixtures/", import.meta.url).pathname;
 const DATASET_NAME = "skills-eval-fixtures";
+
 const COLUMNS: readonly string[] = [
   "fixture_name:string",
+  "reviewer_skill:string",
   "diff_patch:string",
   "expected_findings:string",
-  "expected_packets:string",
-  "expected_budget:string",
   "planted_smells:string",
   "notes:string",
   "fixture_version:string",
 ];
 
-type FixtureRecord = {
+type FixtureRow = {
   readonly fixture_name: string;
+  readonly reviewer_skill: string;
   readonly diff_patch: string;
   readonly expected_findings: string;
-  readonly expected_packets: string;
-  readonly expected_budget: string;
   readonly planted_smells: string;
   readonly notes: string;
   readonly fixture_version: string;
+};
+
+type ReviewerExpected = {
+  readonly findings?: readonly { readonly category?: string }[];
+  readonly count_min?: number;
+  readonly count_max?: number;
+};
+
+type ExpectedByReviewer = {
+  readonly by_reviewer: Readonly<Record<string, ReviewerExpected>>;
 };
 
 const readMaybe = async (path: string): Promise<string> => {
@@ -54,35 +62,36 @@ const lastCommitSha = (dir: string): string => {
   return r.stdout.trim() || "uncommitted";
 };
 
-const inferPlantedSmells = (expectedFindings: string): readonly string[] => {
-  if (!expectedFindings) return [];
-  try {
-    const parsed = JSON.parse(expectedFindings) as {
-      readonly findings?: readonly { readonly category?: string }[];
-    };
-    const categories = (parsed.findings ?? [])
-      .map((f) => f.category)
-      .filter((c): c is string => Boolean(c));
-    return Array.from(new Set(categories)).sort();
-  } catch {
-    return [];
-  }
+const categoriesFor = (slice: ReviewerExpected): readonly string[] => {
+  const categories = (slice.findings ?? [])
+    .map((f) => f.category)
+    .filter((c): c is string => Boolean(c));
+  return Array.from(new Set(categories)).sort();
 };
 
-const buildRecord = async (name: string): Promise<FixtureRecord> => {
+const buildRowsForFixture = async (name: string): Promise<readonly FixtureRow[]> => {
   const dir = join(FIXTURES_DIR, name);
-  const expected_findings = await readMaybe(join(dir, "expected.findings.json"));
+  const expectedRaw = await readMaybe(join(dir, "expected.findings.json"));
+  if (!expectedRaw) throw new Error(`fixture ${name} is missing expected.findings.json`);
 
-  return {
+  const expected = JSON.parse(expectedRaw) as ExpectedByReviewer;
+  if (!expected.by_reviewer || typeof expected.by_reviewer !== "object") {
+    throw new Error(`fixture ${name}'s expected.findings.json lacks by_reviewer`);
+  }
+
+  const diff_patch = await readMaybe(join(dir, "diff.patch"));
+  const notes = await readMaybe(join(dir, "notes.md"));
+  const fixture_version = lastCommitSha(dir);
+
+  return Object.entries(expected.by_reviewer).map(([reviewer_skill, slice]) => ({
     fixture_name: name,
-    diff_patch: await readMaybe(join(dir, "diff.patch")),
-    expected_findings,
-    expected_packets: await readMaybe(join(dir, "expected.packets.json")),
-    expected_budget: await readMaybe(join(dir, "expected.budget.json")),
-    planted_smells: JSON.stringify(inferPlantedSmells(expected_findings)),
-    notes: await readMaybe(join(dir, "notes.md")),
-    fixture_version: lastCommitSha(dir),
-  };
+    reviewer_skill,
+    diff_patch,
+    expected_findings: JSON.stringify(slice),
+    planted_smells: JSON.stringify(categoriesFor(slice)),
+    notes,
+    fixture_version,
+  }));
 };
 
 type CliResult = { readonly ok: boolean; readonly stdout: string; readonly stderr: string };
@@ -96,20 +105,24 @@ const lw = (args: readonly string[]): CliResult => {
   };
 };
 
-const datasetExists = (slug: string): boolean => {
-  // `dataset get` returns 0 on success, non-zero on not-found / error.
-  // We're not parsing the output — just using exit code as a probe.
-  const r = lw(["dataset", "get", slug, "--format", "json"]);
-  return r.ok;
-};
+const datasetExists = (slug: string): boolean =>
+  lw(["dataset", "get", slug, "--format", "json"]).ok;
 
 const createDataset = (): void => {
   console.log(`◦ creating dataset "${DATASET_NAME}"`);
-  const r = lw(["dataset", "create", DATASET_NAME, "--columns", COLUMNS.join(","), "--format", "json"]);
+  const r = lw([
+    "dataset",
+    "create",
+    DATASET_NAME,
+    "--columns",
+    COLUMNS.join(","),
+    "--format",
+    "json",
+  ]);
   if (!r.ok) throw new Error(`dataset create failed:\n${r.stderr || r.stdout}`);
 };
 
-const addRecords = (slug: string, records: readonly FixtureRecord[]): void => {
+const addRecords = (slug: string, records: readonly FixtureRow[]): void => {
   console.log(`◦ adding ${records.length} records to ${slug}`);
   const r = lw(["dataset", "records", "add", slug, "--json", JSON.stringify(records)]);
   if (!r.ok) throw new Error(`records add failed:\n${r.stderr || r.stdout}`);
@@ -123,18 +136,23 @@ const main = async (): Promise<void> => {
     .map((d) => d.name);
   if (fixtures.length === 0) throw new Error(`no fixtures in ${FIXTURES_DIR}`);
 
-  const records = await Promise.all(fixtures.map(buildRecord));
-
-  console.log(`◦ built ${records.length} record(s): ${records.map((r) => r.fixture_name).join(", ")}`);
+  const rows = (await Promise.all(fixtures.map(buildRowsForFixture))).flat();
+  const summary = rows
+    .reduce<Map<string, number>>((acc, r) => acc.set(r.fixture_name, (acc.get(r.fixture_name) ?? 0) + 1), new Map())
+    .entries();
+  for (const [fixture, count] of summary) {
+    console.log(`◦ ${fixture}: ${count} reviewer row(s)`);
+  }
+  console.log(`◦ ${rows.length} total row(s)`);
 
   if (dryRun) {
-    console.log(JSON.stringify(records, null, 2));
-    console.log(`✓ --dry-run: ${records.length} record(s) ready (not uploaded)`);
+    console.log(JSON.stringify(rows, null, 2));
+    console.log(`✓ --dry-run: ${rows.length} row(s) ready (not uploaded)`);
     return;
   }
 
   if (!process.env.LANGWATCH_API_KEY) {
-    throw new Error("LANGWATCH_API_KEY unset — run `langwatch login --device` first");
+    throw new Error("LANGWATCH_API_KEY unset — load .env or export it");
   }
 
   if (!datasetExists(DATASET_NAME)) {
@@ -146,8 +164,8 @@ const main = async (): Promise<void> => {
     );
   }
 
-  addRecords(DATASET_NAME, records);
-  console.log(`✓ uploaded ${records.length} record(s)`);
+  addRecords(DATASET_NAME, rows);
+  console.log(`✓ uploaded ${rows.length} row(s)`);
 };
 
 await main().catch((err: unknown) => {

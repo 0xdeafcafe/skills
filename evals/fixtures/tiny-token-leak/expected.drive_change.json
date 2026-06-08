@@ -1,0 +1,23 @@
+{
+  "$comment": "Expected /drive-change Phase 7 unified report for the tiny-token-leak fixture. Tier-3 invokes the orchestrator end-to-end and parses the prose-shaped report (Mode / Slices / Specialists / Findings). Tolerant: severity_in arrays, summary regex patterns, count ranges. mode + expected_specialists_run are the orchestration-correctness signals; the per-finding checks ensure routing landed in the right reviewer's lane.",
+  "mode": "tiny",
+  "expected_specialists_run": ["review-hygiene", "review-security"],
+  "count_min": 2,
+  "count_max": 4,
+  "findings": [
+    {
+      "$match": "security-secret-leak",
+      "severity": "P0",
+      "reviewer": "review-security",
+      "file": "src/config/payment.ts",
+      "summary_pattern": "(?i)(stripe\\s+secret|sk_live|hardcoded.*secret|secret.*hardcoded|live\\s+secret\\s+key|secret\\s+leak)"
+    },
+    {
+      "$match": "hygiene-prettier-aggregate",
+      "severity_in": ["P1", "P2"],
+      "reviewer": "review-hygiene",
+      "file": "src/config/payment.ts",
+      "summary_pattern": "(?i)(format|prettier|indent|whitespace).*violation|prettier.*auto[- ]?fix"
+    }
+  ]
+}

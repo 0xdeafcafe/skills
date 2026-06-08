@@ -13,6 +13,12 @@
 # repository permission level, not just who authored the comment).
 name: evals · tier-2
 
+# The pipeline doesn't write to the repo; it reads, runs claude -p, and
+# logs to LangWatch. Default GHA token grants more than that — narrow it
+# so a compromised dep can't push.
+permissions:
+  contents: read
+
 on:
   pull_request:
     types: [labeled]
@@ -24,6 +30,14 @@ on:
         description: "Fixture name (blank = all)"
         required: false
         default: ""
+      reviewer:
+        description: "Reviewer skill (blank = all). e.g. review-security"
+        required: false
+        default: ""
+      runs:
+        description: "Runs per (fixture × reviewer) cell. Default 3."
+        required: false
+        default: "3"
 
 jobs:
   guard:
@@ -138,11 +152,16 @@ jobs:
           version: 10
       - run: pnpm install --frozen-lockfile
 
-      # Tier-2 uses `claude` for /drive-change. The Claude Code CLI ships
-      # as @anthropic-ai/claude-code on npm; install pinned so CI matches
-      # local. The AI gateway env vars route every call through LangWatch.
+      # Tier-2 invokes one `/review-*` skill per cell via `claude -p`. The
+      # Claude Code CLI ships as @anthropic-ai/claude-code on npm; install
+      # pinned so CI matches local. The AI gateway env vars route every call
+      # through LangWatch — `claude -p` honours ANTHROPIC_BASE_URL +
+      # ANTHROPIC_AUTH_TOKEN.
       - name: Install Claude Code CLI
-        run: npm install -g @anthropic-ai/claude-code
+        # Pinned so a malicious postinstall in a hot-published version can't
+        # exfil the LANGWATCH_* secrets that are in scope at install time.
+        # Bump deliberately when you want a newer CLI.
+        run: npm install -g @anthropic-ai/claude-code@2.1.142
       - name: Configure gateway env for claude
         run: |
           echo "ANTHROPIC_BASE_URL=$LANGWATCH_ENDPOINT" >> "$GITHUB_ENV"
@@ -151,17 +170,19 @@ jobs:
       - name: Install the skill plugin under test
         run: |
           # The plugin under test is the repo itself. Install the marketplace
-          # entry so /drive-change is available to `claude -p`.
+          # entry so /review-* slash commands resolve under `claude -p`.
           claude --version
-          claude plugin marketplace add $(pwd)/.. || true
+          claude plugin marketplace add "$GITHUB_WORKSPACE" || true
           claude plugin install skills@0xdeafcafe-skills || true
 
       - name: Run tier-2 pipeline
         env:
           TIER2_FIXTURE: ${{ github.event.inputs.fixture }}
+          TIER2_REVIEWER: ${{ github.event.inputs.reviewer }}
+          TIER2_RUNS: ${{ github.event.inputs.runs }}
         run: |
-          if [ -n "$TIER2_FIXTURE" ]; then
-            pnpm tier2 "$TIER2_FIXTURE"
-          else
-            pnpm tier2
-          fi
+          ARGS=()
+          if [ -n "$TIER2_FIXTURE" ]; then ARGS+=(--fixture "$TIER2_FIXTURE"); fi
+          if [ -n "$TIER2_REVIEWER" ]; then ARGS+=(--reviewer "$TIER2_REVIEWER"); fi
+          if [ -n "$TIER2_RUNS" ]; then ARGS+=(--runs "$TIER2_RUNS"); fi
+          pnpm tier2 "${ARGS[@]}"
