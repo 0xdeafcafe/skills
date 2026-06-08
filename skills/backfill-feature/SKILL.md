@@ -216,10 +216,15 @@ confidence. Invoke `/plan-change` with the new ADR + spec as context.
 Backfill complete:
   ADR:   <path> (retroactive)
   Spec:  <path> (characterization)
-  Tests: <N> tests covering current behaviour, all green
+  Tests: <N> tests, all green     | <N> tests written, @unverified
 
 Calling /plan-change next to design the change.
 ```
+
+If the tests are `@unverified` (Phase 4 soft-gate fired), call this
+out explicitly in the hand-off message - don't claim "all green" when
+the runner never ran. The downstream `/plan-change` discussion should
+know whether the baseline is actually locked or only documented.
 
 ## Operating rules
 
