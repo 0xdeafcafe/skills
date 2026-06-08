@@ -1,6 +1,6 @@
 ---
 name: drive-change
-description: Use when the user says "/drive-change", "drive the change", "audit the PR", "review my work", "run all the audits", "is this ready to ship", or wants Claude to run the full audit suite on the current change (PR or working tree). Always runs /review-code + /drive-test + /review-feature + /drive-security in sensible order. Adds /drive-ux automatically if UI files are touched (.tsx/.jsx/.vue/.svelte/.astro/.html/.css/.scss/.less). Produces a single unified report grouped by severity. Individual /drive-* skills remain callable directly when you want only one slice.
+description: Use when the user says "/drive-change", "drive the change", "audit the PR", "review my work", "run all the audits", "is this ready to ship", or wants Claude to run the full audit suite on the current change (PR or working tree). Always runs /review-code + /review-test + /review-feature + /drive-security in sensible order. Adds /drive-ux automatically if UI files are touched (.tsx/.jsx/.vue/.svelte/.astro/.html/.css/.scss/.less). Produces a single unified report grouped by severity. Individual /drive-* skills remain callable directly when you want only one slice.
 allowed-tools: Bash(gh:*), Bash(git:*), Read, Grep, Glob, Skill
 ---
 
@@ -13,7 +13,7 @@ audits on the current change. You don't have to remember which
 Always runs:
 
 - `/review-code` - per-file quality, lint, format
-- `/drive-test` - test quality + coverage on touched files
+- `/review-test` - test quality + coverage on touched files
 - `/review-feature` - feature logic against ADR / spec
 - `/drive-security` - authz, secrets, input validation, deps
 
@@ -143,7 +143,7 @@ should look at it from your angle." Example shape:
 ```
 ## Carry-forward notes
 - review-code split src/orders.ts into queries.ts and mutations.ts;
-  drive-test should check both for coverage
+  review-test should check both for coverage
 - review-feature flagged that the cancellation path emits an
   `order.cancelled` event - drive-security should verify the event
   payload doesn't leak PII
@@ -167,7 +167,7 @@ security / UX:
 
 1. `/review-code` - mechanical fixes (lint, format) often produce
    diffs the later audits should see.
-2. `/drive-test` - test quality on the now-formatted code.
+2. `/review-test` - test quality on the now-formatted code.
 3. `/review-feature` - behaviour against spec.
 4. `/drive-security` - secrets, authz, deps, input validation.
 5. `/drive-ux` (if scope includes UI files) - browser walk-through.
@@ -184,7 +184,7 @@ state.
 
 - `/drive-security` already uses P0-P3 tiers in its own findings -
   pass these through verbatim, don't re-translate.
-- `/review-code`, `/drive-test`, `/review-feature`, `/drive-ux` don't
+- `/review-code`, `/review-test`, `/review-feature`, `/drive-ux` don't
   assign severity natively. drive-change assigns it using the rubric
   below.
 
@@ -219,7 +219,7 @@ the state as:
 
 Carry-forward notes (free-form, one per line) capture anything a
 later audit should know about - e.g. "review-code split src/orders.ts
-into two files; drive-test should look at both."
+into two files; review-test should look at both."
 
 By the time `/drive-ux` finishes (or the run ends without it), the
 state holds the full picture: change context, all findings, all
@@ -238,7 +238,7 @@ After all sub-audits finish, produce a single combined report:
 drive-change ran <N> audits on <PR #N or working tree>.
 
   review-code:     <one-line summary>
-  drive-test:     <one-line summary>
+  review-test:     <one-line summary>
   review-feature:  <one-line summary>
   drive-security: <one-line summary>
   drive-ux:       <one-line summary>   | "skipped - no UI files touched"
@@ -248,7 +248,7 @@ Findings, severity-ordered:
   P0  <one-line finding>          (from drive-security)
   P0  <one-line finding>          (from review-feature)
   P1  <one-line finding>          (from review-code)
-  P2  <one-line finding>          (from drive-test)
+  P2  <one-line finding>          (from review-test)
   ...
 
 Mechanical fixes applied (each its own commit):
@@ -305,7 +305,7 @@ The user decides; the skill states the read.
 
 ## Composing with other skills
 
-- **Calls:** `/review-code`, `/drive-test`, `/review-feature`,
+- **Calls:** `/review-code`, `/review-test`, `/review-feature`,
   `/drive-security`, `/drive-ux` (conditional).
 - **Before:** `/plan-change` (the change being audited).
 - **After:** `/open-pr` (turn the change into a PR), or back to

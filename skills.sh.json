@@ -28,6 +28,7 @@
         "review-pr",
         "review-code",
         "review-feature",
+        "review-test",
         "review-spec"
       ]
     },
@@ -38,7 +39,6 @@
         "drive-plan",
         "drive-change",
         "implement-change",
-        "drive-test",
         "drive-security",
         "drive-ux"
       ]
