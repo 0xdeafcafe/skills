@@ -248,5 +248,5 @@ Then stop. The user picks.
 
 ## Composing with other skills
 
-- **Before:** `/review-code` (lint/format), `/drive-test` (coverage), `/drive-feature` (spec audit).
+- **Before:** `/review-code` (lint/format), `/drive-test` (coverage), `/review-feature` (spec audit).
 - **After (Phase 7 handoff):** `/drive-pr` (CI + review feedback loop to merge-ready), `/drive-ux` (screenshots for UI changes).

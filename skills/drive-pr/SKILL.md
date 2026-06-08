@@ -278,7 +278,7 @@ drive-pr addresses *comments* + *CI* + *description*. It does NOT do:
 
 - Code-quality audits → `/review-code`.
 - UX walkthrough → `/drive-ux`.
-- Feature-logic vs. ADR/spec → `/drive-feature`.
+- Feature-logic vs. ADR/spec → `/review-feature`.
 
 If review comments keep flagging the same class of issue, suggest the user
 run the relevant drive-* skill first.

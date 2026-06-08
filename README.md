@@ -109,7 +109,7 @@ claude: [/drive-change]
         Running code, test, feature, security, ux (UI files touched).
           review-code:     clean
           drive-test:     1 missing edge case (empty order list)
-          drive-feature:  clean
+          review-feature:  clean
           drive-security: clean
           drive-ux:       loading state missing on the Export button
         2 P1 findings, none P0. Address them before /open-pr?
@@ -140,7 +140,7 @@ claude: [/open-pr]
 | **Driving** | |
 | [`drive-change`](./skills/drive-change/) | Aggregator. Runs code, test, feature, security (plus ux when UI files are touched). Carries findings between sub-audits so cross-cutting issues surface once, not five times. |
 | [`review-code`](./skills/review-code/) | Per-file quality. SRP, modularity, length, naming, lint, format. |
-| [`drive-feature`](./skills/drive-feature/) | Feature logic against ADR / spec. Edge cases, error handling, side effects. |
+| [`review-feature`](./skills/review-feature/) | Feature logic against ADR / spec. Edge cases, error handling, side effects. |
 | [`drive-test`](./skills/drive-test/) | Test quality on touched files. Right level, real assertions, no mocking the unit under test. |
 | [`drive-security`](./skills/drive-security/) | Authz, secrets, input validation, dependency vulns, OWASP-top-10 smells. |
 | [`drive-ux`](./skills/drive-ux/) | Walks the changed UX in a real browser. Screenshots, a11y, console errors. |
@@ -173,7 +173,7 @@ skill still has the policy locally. The canonical lives in
 mirrors. After editing the canonical, propagate it manually:
 
 ```bash
-for d in review-code drive-feature drive-test drive-security drive-ux; do
+for d in review-code review-feature drive-test drive-security drive-ux; do
   cp skills/drive-pr/references/trust-policy.md skills/$d/references/trust-policy.md
 done
 ```
@@ -198,7 +198,7 @@ skills with zero executable surface are safer to install.
     ├── review-spec/           # corpus overlap audit
     ├── drive-change/          # aggregator
     ├── review-code/            # per-file quality
-    ├── drive-feature/         # logic vs spec
+    ├── review-feature/         # logic vs spec
     ├── drive-test/            # test quality
     ├── drive-security/        # secrets / authz / deps
     ├── drive-ux/              # browser walk-through
