@@ -1,6 +1,6 @@
 ---
 name: drive-change
-description: Use when the user says "/drive-change", "drive the change", "audit the PR", "review my work", "run all the audits", "is this ready to ship", or wants Claude to run the full audit suite on the current change (PR or working tree). Always runs /drive-code + /drive-test + /drive-feature + /drive-security in sensible order. Adds /drive-ux automatically if UI files are touched (.tsx/.jsx/.vue/.svelte/.astro/.html/.css/.scss/.less). Produces a single unified report grouped by severity. Individual /drive-* skills remain callable directly when you want only one slice.
+description: Use when the user says "/drive-change", "drive the change", "audit the PR", "review my work", "run all the audits", "is this ready to ship", or wants Claude to run the full audit suite on the current change (PR or working tree). Always runs /review-code + /drive-test + /drive-feature + /drive-security in sensible order. Adds /drive-ux automatically if UI files are touched (.tsx/.jsx/.vue/.svelte/.astro/.html/.css/.scss/.less). Produces a single unified report grouped by severity. Individual /drive-* skills remain callable directly when you want only one slice.
 allowed-tools: Bash(gh:*), Bash(git:*), Read, Grep, Glob, Skill
 ---
 
@@ -12,7 +12,7 @@ audits on the current change. You don't have to remember which
 
 Always runs:
 
-- `/drive-code` - per-file quality, lint, format
+- `/review-code` - per-file quality, lint, format
 - `/drive-test` - test quality + coverage on touched files
 - `/drive-feature` - feature logic against ADR / spec
 - `/drive-security` - authz, secrets, input validation, deps
@@ -42,7 +42,7 @@ git ls-files --others --exclude-standard
 Build the list of touched files. Exclude lockfiles, generated files
 (`linguist-generated=true`, `dist/`, `build/`, `generated/`,
 `__generated__/`, `*.pb.*`), binary blobs, fixtures, vendored code -
-same exclusions as `/drive-code` Phase 0.
+same exclusions as `/review-code` Phase 0.
 
 If the list is empty, how to proceed depends on how `/drive-change` was
 invoked:
@@ -142,7 +142,7 @@ should look at it from your angle." Example shape:
 
 ```
 ## Carry-forward notes
-- drive-code split src/orders.ts into queries.ts and mutations.ts;
+- review-code split src/orders.ts into queries.ts and mutations.ts;
   drive-test should check both for coverage
 - drive-feature flagged that the cancellation path emits an
   `order.cancelled` event - drive-security should verify the event
@@ -165,7 +165,7 @@ Run the audits in this order. The dependency is mechanical: code
 fixes first (so later audits see the polished code), then logic /
 security / UX:
 
-1. `/drive-code` - mechanical fixes (lint, format) often produce
+1. `/review-code` - mechanical fixes (lint, format) often produce
    diffs the later audits should see.
 2. `/drive-test` - test quality on the now-formatted code.
 3. `/drive-feature` - behaviour against spec.
@@ -184,7 +184,7 @@ state.
 
 - `/drive-security` already uses P0-P3 tiers in its own findings -
   pass these through verbatim, don't re-translate.
-- `/drive-code`, `/drive-test`, `/drive-feature`, `/drive-ux` don't
+- `/review-code`, `/drive-test`, `/drive-feature`, `/drive-ux` don't
   assign severity natively. drive-change assigns it using the rubric
   below.
 
@@ -218,7 +218,7 @@ the state as:
 ```
 
 Carry-forward notes (free-form, one per line) capture anything a
-later audit should know about - e.g. "drive-code split src/orders.ts
+later audit should know about - e.g. "review-code split src/orders.ts
 into two files; drive-test should look at both."
 
 By the time `/drive-ux` finishes (or the run ends without it), the
@@ -237,7 +237,7 @@ After all sub-audits finish, produce a single combined report:
 ```
 drive-change ran <N> audits on <PR #N or working tree>.
 
-  drive-code:     <one-line summary>
+  review-code:     <one-line summary>
   drive-test:     <one-line summary>
   drive-feature:  <one-line summary>
   drive-security: <one-line summary>
@@ -247,12 +247,12 @@ Findings, severity-ordered:
 
   P0  <one-line finding>          (from drive-security)
   P0  <one-line finding>          (from drive-feature)
-  P1  <one-line finding>          (from drive-code)
+  P1  <one-line finding>          (from review-code)
   P2  <one-line finding>          (from drive-test)
   ...
 
 Mechanical fixes applied (each its own commit):
-  <sha> lint + format on touched files       (drive-code)
+  <sha> lint + format on touched files       (review-code)
   <sha> <other mechanical fix>               (drive-security)
 
 Next steps:
@@ -292,7 +292,7 @@ The user decides; the skill states the read.
 - **UX is conditional.** Skip if no UI files touched. Don't fire up a
   browser to audit a backend-only change.
 - **Don't double-fix.** Each sub-audit applies its own mechanical
-  fixes. Run order in Phase 3 means `/drive-code` gets there first;
+  fixes. Run order in Phase 3 means `/review-code` gets there first;
   later audits see the post-fix state.
 - **The carry-forward state is the source of truth for the report.**
   Don't rebuild findings from transcripts at the end - that defeats
@@ -305,7 +305,7 @@ The user decides; the skill states the read.
 
 ## Composing with other skills
 
-- **Calls:** `/drive-code`, `/drive-test`, `/drive-feature`,
+- **Calls:** `/review-code`, `/drive-test`, `/drive-feature`,
   `/drive-security`, `/drive-ux` (conditional).
 - **Before:** `/plan-change` (the change being audited).
 - **After:** `/open-pr` (turn the change into a PR), or back to

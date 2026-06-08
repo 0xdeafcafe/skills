@@ -1,6 +1,6 @@
 # Code-quality checklist - long form
 
-Load when you want the structured prompt. drive-code's SKILL.md has the
+Load when you want the structured prompt. review-code's SKILL.md has the
 short version inline; this is the deep-dive when you need a reminder of
 categories.
 

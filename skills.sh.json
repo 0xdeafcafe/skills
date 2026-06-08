@@ -22,10 +22,11 @@
     },
     {
       "title": "Reviewing",
-      "description": "Read-only audit suite. review-change / review-pr are aggregators that drive the diff through the agent pipeline (slice → fan-out → merge → verify) and emit findings without writing. review-spec is a corpus-checker for new specs/ADRs against the existing set. Emit findings in finding-format.md schema; never edit files.",
+      "description": "Read-only audit suite. review-change / review-pr are aggregators that drive the diff through the agent pipeline (slice → fan-out → merge → verify) and emit findings without writing. review-spec is a corpus-checker for new specs/ADRs against the existing set. Specialists (review-code, etc.) emit findings the orchestrators aggregate. All emit findings in finding-format.md schema; never edit files.",
       "skills": [
         "review-change",
         "review-pr",
+        "review-code",
         "review-spec"
       ]
     },
@@ -36,7 +37,6 @@
         "drive-plan",
         "drive-change",
         "implement-change",
-        "drive-code",
         "drive-feature",
         "drive-test",
         "drive-security",

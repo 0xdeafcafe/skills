@@ -107,7 +107,7 @@ you:    Done. Audit it.
 
 claude: [/drive-change]
         Running code, test, feature, security, ux (UI files touched).
-          drive-code:     clean
+          review-code:     clean
           drive-test:     1 missing edge case (empty order list)
           drive-feature:  clean
           drive-security: clean
@@ -139,7 +139,7 @@ claude: [/open-pr]
 | [`review-spec`](./skills/review-spec/) | Audits a new spec or ADR against the existing corpus for duplicates, conflicts, overlap. Read-only. |
 | **Driving** | |
 | [`drive-change`](./skills/drive-change/) | Aggregator. Runs code, test, feature, security (plus ux when UI files are touched). Carries findings between sub-audits so cross-cutting issues surface once, not five times. |
-| [`drive-code`](./skills/drive-code/) | Per-file quality. SRP, modularity, length, naming, lint, format. |
+| [`review-code`](./skills/review-code/) | Per-file quality. SRP, modularity, length, naming, lint, format. |
 | [`drive-feature`](./skills/drive-feature/) | Feature logic against ADR / spec. Edge cases, error handling, side effects. |
 | [`drive-test`](./skills/drive-test/) | Test quality on touched files. Right level, real assertions, no mocking the unit under test. |
 | [`drive-security`](./skills/drive-security/) | Authz, secrets, input validation, dependency vulns, OWASP-top-10 smells. |
@@ -173,7 +173,7 @@ skill still has the policy locally. The canonical lives in
 mirrors. After editing the canonical, propagate it manually:
 
 ```bash
-for d in drive-code drive-feature drive-test drive-security drive-ux; do
+for d in review-code drive-feature drive-test drive-security drive-ux; do
   cp skills/drive-pr/references/trust-policy.md skills/$d/references/trust-policy.md
 done
 ```
@@ -197,7 +197,7 @@ skills with zero executable surface are safer to install.
     ├── write-spec/            # Gherkin spec only
     ├── review-spec/           # corpus overlap audit
     ├── drive-change/          # aggregator
-    ├── drive-code/            # per-file quality
+    ├── review-code/            # per-file quality
     ├── drive-feature/         # logic vs spec
     ├── drive-test/            # test quality
     ├── drive-security/        # secrets / authz / deps
