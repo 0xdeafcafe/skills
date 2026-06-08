@@ -1,5 +1,5 @@
 {
-  "$comment": "Expected findings emitted by the pipeline on this fixture. Prose fields (summary, why, fix) are regex patterns; everything else is exact match. The runner uses lib/schema.py to verify every finding also validates against finding-format.schema.json.",
+  "$comment": "Expected findings emitted by the pipeline on this fixture. Prose fields (summary, why, fix) are regex patterns; everything else is exact match. The runner uses lib/schema.ts to verify every finding also validates against finding-format.schema.json.",
   "findings": [
     {
       "$match": "security-secret-leak",
