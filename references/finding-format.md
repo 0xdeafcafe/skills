@@ -106,3 +106,45 @@ What the bad version does wrong: prose preamble; praise; vague location ("around
 This format has a machine-readable companion at [`finding-format.schema.json`](./finding-format.schema.json) (JSON Schema Draft 2020-12). The merger (`agents/orchestrate-merge.md`) validates every emitted finding against the schema; malformed findings are silently discarded and surfaced to the user as "reviewer X had N drifted findings."
 
 **Reviewer guidance.** Before emitting each finding, mentally check: does the first line match `[P0-3] [<category>] <file>:<line> — <summary>` exactly? Do `why:` and `fix:` each have non-empty content on their own line? If you cannot render a finding in the structured form, **skip it** — never emit prose. The merger silently discards malformed findings; you will not get a chance to revise.
+
+---
+
+## Fix prefixes
+
+The `fix:` line uses three forms, and the prefix decides what happens to the finding downstream:
+
+- **Mechanical edit** (no prefix) — a concrete edit a fix-applier can translate into an `Edit` tool call: `replace localStorage.setItem(...) at line 147 with cookieStore.set`. The fix-applier reads the cited line, generates the edit, applies it.
+- **`auto: <command>`** — a deterministic tool the fix-applier runs directly without LLM editing: `auto: prettier --write src/components`. The fix-applier doesn't read files, doesn't generate edits, just runs the command and validates the result. Used by `/review-hygiene` for linter / formatter passes where the tool already knows how to fix the violations.
+- **`decide: <question>`** — a judgment call the orchestrator escalates to the user: `decide: extract formatUserName to src/utils/users.ts?` The fix-applier never sees these — they route to `judgment_findings` in the merger output.
+
+Pick the form that matches reality. Don't dress up a real judgment call as a mechanical edit (the fix-applier will misapply it); don't dress up an `auto:` command as a mechanical edit (you'll pay LLM tokens for work the tool does deterministically).
+
+---
+
+## Individual vs aggregate findings
+
+Most findings are **individual** — one finding per violation, one line per finding block. That's the default and the schema's required shape always works for it (don't set `kind:` explicitly; the default is `individual`).
+
+When the producing tool can generate hundreds of identical findings (Prettier on a wholesale format-skipped file, ESLint after a rule tightening, ruff on a Python repo with a new style), emit **one aggregate finding** instead:
+
+```
+[P2] [hygiene] src/components/Button.tsx:1 — 230 prettier auto-fixable violations across 8 files
+why: prettier --check listed 230 issues, all marked auto-fixable; running `prettier --write` resolves them deterministically.
+fix: auto: prettier --write src/components
+kind: aggregate
+tool: prettier
+files_affected: ["src/components/Button.tsx", "src/components/Card.tsx", "src/components/List.tsx"]
+files_affected_count: 8
+violations_count: 230
+```
+
+Schema rules for aggregate findings:
+
+- `kind: aggregate` is required (default `individual` doesn't get the special treatment).
+- `tool`, `files_affected_count`, `violations_count` are required in practice (the schema marks them optional so individual findings don't break, but aggregate findings without them are useless).
+- `file` and `line` are still required (schema constraint) — set `file` to the first entry in `files_affected` (or `.` for repo-wide changes) and `line` to `1`. They're index-keys for dedup; not visible to the user in aggregate mode.
+- `summary` describes the *aggregate* ("230 prettier violations across 8 files"), not any one violation.
+
+The merger treats aggregate findings differently from individual ones: it doesn't dedup by `file:line` (no two reviewers should emit the same tool's aggregate for the same paths), and it doesn't apply-validate (the tool runs in Phase 5 and self-validates). The fix-applier sees the `auto:` fix and runs the command across `files_affected`, then re-runs the tool in check-mode to confirm zero remaining violations.
+
+If aggregate-mode tooling can't fix something (a lint rule that needs human judgment, an unused-import the tool refuses to auto-delete), emit those as **individual** findings alongside the aggregate. The user sees "230 auto-fixed + 4 manual" rather than 234 lines of detail.

@@ -19,12 +19,12 @@
       "type": "string",
       "minLength": 1,
       "pattern": "^[^\\s/].*$",
-      "description": "Repo-relative path. Must not start with whitespace or absolute slash."
+      "description": "Repo-relative path. Must not start with whitespace or absolute slash. For aggregate findings, use the first file in files_affected (or '.' for repo-wide)."
     },
     "line": {
       "type": "integer",
       "minimum": 1,
-      "description": "Single integer line number — the line where the problem is most acute."
+      "description": "Single integer line number — the line where the problem is most acute. For aggregate findings, set to 1."
     },
     "summary": {
       "type": "string",
@@ -42,7 +42,31 @@
       "type": "string",
       "minLength": 1,
       "pattern": "^\\S.*\\S$",
-      "description": "One sentence on the change. Prefix with 'decide:' for judgment calls — the merger routes those to judgment_findings, never to fix-applier."
+      "description": "One sentence on the change. Prefix conventions: 'decide:' routes to judgment_findings (never auto-applied, escalated to user); 'auto: <command>' runs the named command via fix-applier without LLM editing (used by review-hygiene for linter --fix runs); anything else is a concrete mechanical edit the fix-applier translates into a Edit-tool call."
+    },
+    "kind": {
+      "enum": ["individual", "aggregate"],
+      "default": "individual",
+      "description": "individual = one finding per violation (default). aggregate = one finding that represents N violations the named tool can fix in bulk; orchestrator/agent context never sees the per-violation detail, only the aggregate count. Used by review-hygiene to keep large lint/format runs out of the orchestrator's context."
+    },
+    "tool": {
+      "type": "string",
+      "description": "For aggregate findings: the tool that produced the violations and can fix them (e.g. 'prettier', 'eslint', 'biome', 'gofmt', 'ruff'). Optional for individual findings."
+    },
+    "files_affected": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "For aggregate findings: list of files the aggregate covers. Used by the merger to partition packets and by fix-applier to know which paths to run the tool on. Optional for individual findings."
+    },
+    "files_affected_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "For aggregate findings: count of files covered. Surfaced in the report so the user sees scale without the merger having to compute it."
+    },
+    "violations_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "For aggregate findings: count of individual violations the aggregate represents. Surfaced in the report."
     },
     "slice": {
       "type": "string",

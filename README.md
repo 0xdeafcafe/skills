@@ -2,7 +2,7 @@
 
 [![skills.sh](https://skills.sh/b/0xdeafcafe/skills)](https://skills.sh/0xdeafcafe/skills)
 
-Twenty Claude Code skills for the parts of shipping software I'd
+Twenty-one Claude Code skills for the parts of shipping software I'd
 rather not do myself. The ADR. The Gherkin spec. The audit pass. The
 PR description. The back-and-forth on review comments. Tedious enough
 to skip, important enough that skipping bites a quarter later.
@@ -117,8 +117,9 @@ you:    Done. Audit it.
 
 claude: [/drive-change]
         Triage: small (12 files, 2 directories). Skipping the slicer.
-        Fan-out to review-code, review-test, review-feature,
+        Fan-out to review-hygiene, review-code, review-test, review-feature,
         review-security, review-ux in parallel.
+          review-hygiene:  230 prettier auto-fixable across 8 files (1 aggregate)
           review-code:     clean
           review-test:     1 missing edge case (empty order list)
           review-feature:  clean
@@ -152,7 +153,8 @@ claude: [/open-pr]
 | **Reviewing** | |
 | [`review-change`](./skills/review-change/) | Read-only audit of the working tree. Slice → fan-out to specialists → merge → verify. Emits findings; never edits. |
 | [`review-pr`](./skills/review-pr/) | Read-only audit of an open PR. Terminal report by default; `--comment` posts findings as PR comments. |
-| [`review-code`](./skills/review-code/) | Per-file quality. SRP, modularity, length, naming, lint, format. Emits findings. |
+| [`review-hygiene`](./skills/review-hygiene/) | Runs project linters / formatters / LSP diagnostics in check-only mode. One aggregate finding per tool with `auto:` fix — fix-applier runs the tool directly, not the LLM. |
+| [`review-code`](./skills/review-code/) | Per-file design judgment. SRP, modularity, length, naming, structural smells. Stays out of the linter's lane. Emits findings. |
 | [`review-feature`](./skills/review-feature/) | Feature logic against ADR / spec. Edge cases, error handling, side effects. Emits findings. |
 | [`review-test`](./skills/review-test/) | Test quality on touched files. Right level, real assertions, no mocking the unit under test. Emits findings. |
 | [`review-security`](./skills/review-security/) | Authz, secrets, input validation, dependency vulns, OWASP-top-10 smells. Emits findings. |
@@ -228,7 +230,7 @@ still has the policy locally. The canonical lives in
 After editing the canonical, propagate it manually:
 
 ```bash
-for d in review-code review-feature review-test review-security review-ux; do
+for d in review-hygiene review-code review-feature review-test review-security review-ux; do
   cp skills/drive-pr/references/trust-policy.md skills/$d/references/trust-policy.md
 done
 ```
@@ -263,6 +265,7 @@ skills with zero executable surface are safer to install.
     ├── write-spec/
     ├── review-change/
     ├── review-pr/
+    ├── review-hygiene/
     ├── review-code/
     ├── review-feature/
     ├── review-test/

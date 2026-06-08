@@ -80,7 +80,7 @@ On parse failure or timeout, emit a P0 meta-finding and fall back to single-slic
 
 For each slice (or whole diff in small/tiny mode), invoke read-only specialists in parallel via `Skill`:
 
-- Always: `/review-code`, `/review-test`, `/review-feature`, `/review-security`
+- Always: `/review-hygiene`, `/review-code`, `/review-test`, `/review-feature`, `/review-security`
 - Conditional: `/review-ux` (UI files touched), `/review-spec` (`.feature` or ADR files touched)
 
 Each specialist receives a change envelope scoped to its slice.
@@ -139,6 +139,6 @@ No `--comment` mode — this skill doesn't have a PR to comment on. Use `/review
 
 ## Composing with other skills
 
-- Calls: `/review-code`, `/review-test`, `/review-feature`, `/review-security`, `/review-ux` (conditionally), `/review-spec` (conditionally) — via `Skill`.
+- Calls: `/review-hygiene`, `/review-code`, `/review-test`, `/review-feature`, `/review-security`, `/review-ux` (conditionally), `/review-spec` (conditionally) — via `Skill`.
 - Invokes: `agents/orchestrate-slice.md`, `agents/orchestrate-merge.md`, `agents/orchestrate-verify.md` — via `Task`.
 - Sibling: `/review-pr` (PR audit), `/drive-change` (writes), `/drive-plan` (composes /review-change as its Phase 3).

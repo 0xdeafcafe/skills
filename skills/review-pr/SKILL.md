@@ -73,7 +73,7 @@ On parse failure or timeout, emit a P0 meta-finding (`tooling: slicer failed`) a
 
 For each slice (or the whole diff in small/tiny mode), invoke the read-only review specialists in parallel via the `Skill` tool:
 
-- Always: `/review-code`, `/review-test`, `/review-feature`, `/review-security`
+- Always: `/review-hygiene`, `/review-code`, `/review-test`, `/review-feature`, `/review-security`
 - Conditional: `/review-ux` when UI files are touched (`.tsx/.jsx/.vue/.svelte/.astro/.html/.css/.scss/.less`)
 - Conditional: `/review-spec` when `.feature` files or ADRs are touched
 
@@ -144,6 +144,6 @@ Never resolve threads. Never approve or request changes. Never edit the PR body 
 
 ## Composing with other skills
 
-- Calls: `/review-code`, `/review-test`, `/review-feature`, `/review-security`, `/review-ux` (conditionally), `/review-spec` (conditionally) — via `Skill`.
+- Calls: `/review-hygiene`, `/review-code`, `/review-test`, `/review-feature`, `/review-security`, `/review-ux` (conditionally), `/review-spec` (conditionally) — via `Skill`.
 - Invokes: `agents/orchestrate-slice.md`, `agents/orchestrate-merge.md`, `agents/orchestrate-verify.md` — via `Task`.
 - Sibling: `/review-change` (working-tree audit, same engine), `/drive-pr` (writes + GH ops).

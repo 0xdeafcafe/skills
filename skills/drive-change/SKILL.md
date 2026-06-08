@@ -126,7 +126,7 @@ Full pipeline: `orchestrate-slice` → per-slice fan-out → `orchestrate-merge`
 
 For each slice (or the whole diff in small mode), invoke read-only review specialists in parallel via `Skill`:
 
-- Always: `/review-code`, `/review-test`, `/review-feature`, `/review-security`
+- Always: `/review-hygiene`, `/review-code`, `/review-test`, `/review-feature`, `/review-security`
 - Conditional: `/review-ux` (Phase 2 decision), `/review-spec` (`.feature` or ADR files touched)
 
 Each specialist receives a change envelope scoped to its slice.
@@ -180,7 +180,7 @@ drive-change ran on <PR #N or working tree>.
 
   Mode: tiny | small | large
   Slices: <N>            (large only)
-  Specialists: review-code, review-test, review-feature, review-security[, review-ux][, review-spec]
+  Specialists: review-hygiene, review-code, review-test, review-feature, review-security[, review-ux][, review-spec]
 
 Findings, severity-ordered:
 
@@ -233,7 +233,7 @@ The user decides; the skill states the read.
 
 ## Composing with other skills
 
-- **Calls (via Skill):** `/review-code`, `/review-test`, `/review-feature`, `/review-security`, `/review-ux` (conditional), `/review-spec` (conditional).
+- **Calls (via Skill):** `/review-hygiene`, `/review-code`, `/review-test`, `/review-feature`, `/review-security`, `/review-ux` (conditional), `/review-spec` (conditional).
 - **Invokes (via Task):** `agents/orchestrate-slice.md`, `agents/orchestrate-merge.md`, `agents/orchestrate-verify.md`, `agents/fix-applier.md`.
 - **Before:** none directly — this is the entry point for unplanned changes. For planned changes, `/drive-plan` runs `/plan-change` → `/implement-change` → `/review-change` → here.
 - **After:** `/open-pr` (turn the change into a PR), then `/drive-pr` (drive the PR to mergeable).

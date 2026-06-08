@@ -22,10 +22,11 @@
     },
     {
       "title": "Reviewing",
-      "description": "Read-only audit suite. review-change / review-pr are aggregators that drive the diff through the agent pipeline (slice → fan-out → merge → verify) and emit findings without writing. The specialists (review-code, review-feature, review-test, review-security, review-ux) emit findings the orchestrators aggregate; callable directly when only one slice of audit signal is wanted. review-spec is a corpus-checker for new specs/ADRs against the existing set. All emit findings in finding-format.md schema; never edit files.",
+      "description": "Read-only audit suite. review-change / review-pr are aggregators that drive the diff through the agent pipeline (slice → fan-out → merge → verify) and emit findings without writing. The specialists (review-hygiene, review-code, review-feature, review-test, review-security, review-ux) emit findings the orchestrators aggregate; callable directly when only one slice of audit signal is wanted. review-hygiene handles deterministic linter / formatter / LSP-diagnostic output (one aggregate finding per tool with auto: fix); review-code handles design/shape judgment a tool can't make. review-spec is a corpus-checker for new specs/ADRs against the existing set. All emit findings in finding-format.md schema; never edit files.",
       "skills": [
         "review-change",
         "review-pr",
+        "review-hygiene",
         "review-code",
         "review-feature",
         "review-test",
