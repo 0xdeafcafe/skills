@@ -1,6 +1,6 @@
 ---
 name: write-spec
-description: Use when the user says "write a spec", "/write-spec", "add a feature file", "write a Gherkin spec", "specs for this feature", or asks to capture a feature's behaviour as a Gherkin .feature file (Cucumber/SpecFlow/Behave/pytest-bdd style). Discovers the repo's existing specs folder and conventions, discusses the feature interactively to extract scenarios (golden path, edges, errors), then writes the .feature file matching local style. Pulls context from a related ADR if one exists. Standalone counterpart to /plan-feature, which writes ADR + spec together.
+description: Use when the user says "write a spec", "/write-spec", "add a feature file", "write a Gherkin spec", "specs for this feature", or asks to capture a feature's behaviour as a Gherkin .feature file (Cucumber/SpecFlow/Behave/pytest-bdd style). Discovers the repo's existing specs folder and conventions, discusses the feature interactively to extract scenarios (golden path, edges, errors), then writes the .feature file matching local style. Pulls context from a related ADR if one exists. Standalone counterpart to /plan-change, which writes ADR + spec together.
 allowed-tools: Bash(gh:*), Bash(git:*), Bash(rg:*), Bash(fd:*), Read, Edit, Write, Grep, Glob
 ---
 
@@ -240,7 +240,8 @@ these executable.
 
 ## Composing with other skills
 
-- **`/plan-feature`** - writes ADR + spec together. Use for new features.
+- **`/plan-change`** - writes ADR + spec together. The usual workhorse for new features, refactors, and design-shaped bug fixes.
+- **`/backfill-feature`** - writes a characterization spec for existing code that has none.
 - **`/write-adr`** - architecture side, standalone.
 - **`/review-spec`** - check for overlap / conflict with existing specs.
 - **`/drive-feature`** - verifies implementation matches the spec.

@@ -1,17 +1,25 @@
 ---
 name: tone-of-voice
-description: Use when writing prose that will go out under Alex Forbes-Reed's name - blog posts, marketing copy, launch announcements, release notes, PR descriptions, internal slack messages, customer emails, X/LinkedIn posts, conference abstracts, anything ghost-written. Triggers on "write a blog post", "draft this for me", "in my voice", "polish this", "make this sound like me", "rewrite as me", "/tone-of-voice", or any explicit request to produce text Alex will publish. Does NOT apply to Claude's own conversational replies, code comments, neutral technical docs, or PR comments Claude posts as itself.
+description: Use when writing prose that goes out under Alex Forbes-Reed's name - blog posts, marketing copy, launch announcements, release notes, PR titles + bodies, commit messages Claude drafts, slack messages, customer emails, X/LinkedIn posts, conference abstracts, anything ghost-written. Triggers on "write a blog post", "draft this for me", "in my voice", "polish this", "make this sound like me", "rewrite as me", "/tone-of-voice", or any request to produce text Alex will publish. Once invoked, the same voice rules also govern Claude's own conversational replies in the session, so the assistant doesn't drift into LLM register. Does NOT apply to: reasoning / thinking tokens, code comments, neutral technical docs, or PR review-cycle comments Claude posts as itself (not the PR body).
 allowed-tools: Read, Edit, Write, Grep, Glob
 ---
 
 # tone-of-voice - write like Alex, not like an LLM
 
-This skill applies whenever Claude is **ghost-writing**: producing prose
-that Alex will publish under his own name. Blog posts, marketing copy,
-slack messages, customer emails, PR descriptions, all of it.
+This skill applies whenever Claude is producing text Alex will read:
 
-It does **not** apply to Claude's normal conversational replies. Those
-are Claude-to-Alex; they stay in Claude's default register.
+1. **Ghost-writing for publication** - prose Alex publishes under his
+   own name. Blog posts, marketing copy, slack messages, customer
+   emails, PR titles + descriptions, commit messages Claude drafts.
+2. **Claude's own conversational replies in this CLI** - the visible
+   response text Alex sees. The reasoning / thinking tokens stay
+   neutral (the model isn't trained on Alex's voice for reasoning;
+   applying it there could degrade performance, so the voice belongs
+   only on the output-facing side).
+
+It does **not** apply to: code comments, neutral technical docs
+Claude writes, or PR comments Claude posts under its own identity
+during the review cycle (those read as "the assistant", not as Alex).
 
 Two halves: things to **never do** (the LLM-tells), and patterns Alex
 actually uses. The first is non-negotiable. The second is the voice.

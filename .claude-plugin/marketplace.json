@@ -1,24 +1,28 @@
 {
-  "name": "alex",
+  "name": "0xdeafcafe",
   "owner": {
     "name": "Alexander Forbes-Reed",
     "email": "me@alex.forbes.red"
   },
   "metadata": {
     "description": "Personal Claude Code skills for software-engineering work",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "plugins": [
     {
       "name": "skills",
-      "description": "Twelve Claude Code skills covering planning, driving, and shipping the PR lifecycle.",
+      "description": "Sixteen Claude Code skills covering entry, planning, driving, and shipping the PR lifecycle.",
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/plan-feature",
+        "./skills/start-feature",
+        "./skills/start-discussion",
+        "./skills/plan-change",
+        "./skills/backfill-feature",
         "./skills/write-adr",
         "./skills/write-spec",
         "./skills/review-spec",
+        "./skills/drive-change",
         "./skills/drive-code",
         "./skills/drive-feature",
         "./skills/drive-test",

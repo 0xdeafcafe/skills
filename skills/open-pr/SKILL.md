@@ -21,8 +21,13 @@ gh pr view --json number,state 2>/dev/null  # does a PR already exist?
 
 Hard gates:
 
-- **Branch is not the main branch.** Refuse to open a PR from `main` /
-  `master` / `trunk`. The user is in the wrong branch.
+- **Branch is not the main branch.** Refuse to open a PR directly
+  from `main` / `master` / `trunk`. Don't just stop - offer the
+  recovery path: "Your commits are on `main`. Want me to (a) create
+  a feature branch from here, move the new commits onto it, and
+  reset `main` to `origin/main`, or (b) push `main` directly to a
+  remote feature branch via `git push origin main:feat/<name>` and
+  open the PR from there?" Either is reversible; the user picks.
 - **There are commits ahead of base.** A branch with no commits ahead
   has nothing to PR.
 - **A PR doesn't already exist for this branch.** If `gh pr view` finds
@@ -127,17 +132,27 @@ Use the project's `check` / `pre-push` script if one exists in
 `Justfile` / `Makefile` / `package.json` - the project's own
 definition of "ready" beats the generic toolchain detection.
 
-Three outcomes:
+Four outcomes - distinguish *failed* from *couldn't run*:
 
 - **All pass** -> continue.
-- **Lint / format / type / tslsp failures** -> stop. Suggest
-  `/drive-code` to fix lint and format automatically. Don't paper over.
+- **Checks failed** (lint flagged real issues, tests reported actual
+  failures, type-checker found errors) -> stop. The code is wrong.
+  Suggest `/drive-code` to fix lint and format automatically. Don't
+  paper over.
 - **Test failures from a `check` script** -> stop. Surface them.
-  Either the change is broken or the tests are; both are worth knowing
-  before reviewers see the PR.
+  Either the change is broken or the tests are; both are worth
+  knowing before reviewers see the PR.
+- **Checks couldn't run** (toolchain missing: no `node_modules`,
+  linter not installed, `tsc` not on PATH, `pyright` not found) ->
+  do not treat as failure. Surface what's missing, list which checks
+  ran and which didn't, and ask whether to proceed without them or
+  install the missing tool first. Most often a dev-environment
+  issue, not a code issue.
 
-The user can override with "open anyway, I know about that failure" -
-the PR opens as draft or with a `Known issues:` section.
+The user can override "checks failed" with "open anyway, I know about
+that failure" - the PR opens as draft or with a `Known issues:`
+section. "Couldn't run" doesn't need an override; it needs an
+explicit choice.
 
 ## Phase 3 - Draft the title and body
 
@@ -157,6 +172,24 @@ Drafting rules:
 - **Be honest about scope.** Call out what's intentionally not included.
 - **Don't apologise / hedge / pad.** No "this is a small change but...".
 - **Don't sign.** Author is in PR metadata; no "AFR / Claude" signatures.
+
+### Apply /tone-of-voice
+
+After drafting title + body, apply `/tone-of-voice` to both before
+showing the user. PR titles and descriptions go out under the author's
+name; they should sound like the author, not like an LLM. If
+`/tone-of-voice` is installed, invoke it via the Skill tool with the
+draft as input. If not installed, apply the basics inline:
+
+- No em-dashes. Use hyphens-with-spaces, parens, commas, or
+  restructure.
+- No "delve", "leverage", "unlock", "seamless", "robust",
+  "groundbreaking", "superpower", "it's not just X, it's Y".
+- British English if the repo uses it.
+- Open with the actual point, not "This PR..."
+- Cut hedge words ("just", "simply", "basically", "actually").
+
+Same applies to any commit messages Claude drafts during this skill.
 
 ## Phase 4 - Draft or ready
 

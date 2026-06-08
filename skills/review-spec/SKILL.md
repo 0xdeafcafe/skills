@@ -166,7 +166,10 @@ add manually (this skill doesn't edit).
 
 ## Composing with other skills
 
-- `/plan-feature` writes a fresh ADR + spec; run `/review-spec` after.
+- `/plan-change` writes a fresh ADR + spec; run `/review-spec` after.
+- `/backfill-feature` writes a retroactive ADR + characterization spec;
+  worth running `/review-spec` after that too to catch overlap with
+  existing docs.
 - `/write-spec`, `/write-adr` - fix what review-spec surfaces.
 - `/drive-feature` - run after `/review-spec` confirms the spec is
   coherent.

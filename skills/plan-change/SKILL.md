@@ -1,35 +1,43 @@
 ---
-name: plan-feature
-description: Use when the user says "plan a feature", "/plan-feature", "let's discuss this feature", "let's design X", "kick off feature Y", or wants Claude to drive a discussion that produces both an ADR (architecture decision record) and a Gherkin spec (.feature file) for a feature about to be built. Discovers the repo's ADR and specs conventions, holds an interactive discussion to extract scope + architecture + scenarios + edge cases, then writes both files cross-linked together. Composes /write-adr and /write-spec into the natural "I'm starting something" entry point.
+name: plan-change
+description: Use when the user says "plan a change", "/plan-change", "plan a feature", "let's design X", "let's discuss this change", "kick off feature/refactor/initiative Y", or wants Claude to drive a discussion that produces both an ADR (architecture decision record) and a Gherkin spec (.feature file) for a piece of work about to start - new feature, refactor, behaviour change, or significant bug fix. Discovers the repo's ADR and specs conventions, holds an interactive discussion to extract scope + architecture + scenarios + edge cases, then writes both files cross-linked together. Composes /write-adr and /write-spec into the natural "I'm starting something" workhorse. Usually arrived at via /start-feature; can be called directly when intent is clear.
 allowed-tools: Bash(gh:*), Bash(git:*), Bash(rg:*), Bash(fd:*), Read, Edit, Write, Grep, Glob, Skill
 ---
 
-# plan-feature - drive the discussion that produces the ADR + spec
+# plan-change - drive the discussion that produces the ADR + spec
 
-A new feature usually has two documents worth writing before code:
+A piece of work worth doing usually has two documents worth writing before code:
 
-- An **ADR** for the architectural choices the feature requires (new
+- An **ADR** for the architectural choices the change requires (new
   table, new service boundary, new dependency, new transport, new
-  pattern).
+  pattern, or a non-trivial refactor of an existing one).
 - A **Gherkin spec** for the *behaviour* - what the user does, what the
   system does back, what counts as success, what the edge cases are.
 
-`plan-feature` is the "I'm starting something" entry point. It drives an
+`plan-change` is the "I'm starting something" workhorse. It drives an
 interactive discussion to fill out both documents at the same time, then
 writes them cross-linked. It composes the same logic as `/write-adr` and
 `/write-spec` - you can use either of those standalone if you only need
 one half.
 
+Usually `/plan-change` is reached via `/start-feature` (which sorts new
+vs existing first, and runs `/backfill-feature` if the feature has no
+ADR yet). Call it directly when you already know it's the right tool.
+
 ## When to use which skill
 
 | Situation | Right skill |
 | --- | --- |
+| Not sure yet what kind of work this is | `/start-feature` (entry router) |
 | Pure architectural decision (DB choice, library swap, topology) - no new user-facing behaviour | `/write-adr` |
 | New user-visible feature, but no architectural decision (a new filter on an existing screen) | `/write-spec` |
-| New feature **with** architectural implications (new service, new data model, new external dependency) | `/plan-feature` (this one) |
+| New feature **with** architectural implications (new service, new data model, new external dependency) | `/plan-change` (this one) |
+| Refactor that changes architecture or contracts | `/plan-change` |
+| Bug fix that's actually a design change in disguise | `/plan-change` |
 | Iterating on a feature already shipped - adding a scenario to an existing spec | `/write-spec`, against the existing file |
+| Touching a feature that has no ADR yet | `/backfill-feature` first, then `/plan-change` |
 
-If the user invokes `/plan-feature` but only one document is actually
+If the user invokes `/plan-change` but only one document is actually
 called for, write only that one and explain - don't pad an ADR with a
 trivial decision just because the skill name says "plan".
 
@@ -156,5 +164,6 @@ After both files land, point the user at natural next moves: `/review-spec` to c
 
 ## Composing with other skills
 
-- **`/review-spec`** - after both documents land, checks for overlap / conflict against the rest of the corpus.
-- **`/drive-feature`** - once code exists, audits it against the spec written here.
+- **Before:** `/start-feature` is the usual entry. `/backfill-feature` runs first if the feature you're modifying has no ADR yet.
+- **After both documents land:** `/review-spec` checks for overlap / conflict against the rest of the corpus.
+- **Once code exists:** `/drive-feature` audits implementation against the spec written here. `/drive-change` runs the full audit suite.

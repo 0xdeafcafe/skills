@@ -3,10 +3,19 @@
   "notGrouped": "bottom",
   "groupings": [
     {
-      "title": "Planning",
-      "description": "Discussion-driven skills that produce ADRs and Gherkin specs before code starts.",
+      "title": "Entry",
+      "description": "Front doors. Pick start-feature when you know what you're doing; start-discussion when you're still working it out.",
       "skills": [
-        "plan-feature",
+        "start-feature",
+        "start-discussion"
+      ]
+    },
+    {
+      "title": "Planning",
+      "description": "Discussion-driven skills that produce ADRs, Gherkin specs, and (when the existing code lacks them) characterization tests, before code starts.",
+      "skills": [
+        "plan-change",
+        "backfill-feature",
         "write-adr",
         "write-spec",
         "review-spec"
@@ -14,8 +23,9 @@
     },
     {
       "title": "Driving",
-      "description": "Per-file audits during code: quality, feature logic, tests, security, UX.",
+      "description": "Audit suite for the work in progress. drive-change is the aggregator; the others can be called directly when only one slice is wanted.",
       "skills": [
+        "drive-change",
         "drive-code",
         "drive-feature",
         "drive-test",
@@ -33,7 +43,7 @@
     },
     {
       "title": "Cross-cutting",
-      "description": "Ghost-write in Alex's voice for anything published under his name.",
+      "description": "Ghost-write in Alex's voice for anything published under his name, including Claude's own conversational output.",
       "skills": [
         "tone-of-voice"
       ]

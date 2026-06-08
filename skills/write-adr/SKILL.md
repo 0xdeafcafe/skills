@@ -1,6 +1,6 @@
 ---
 name: write-adr
-description: Use when the user says "write an ADR", "/write-adr", "let's document this decision", "add an architecture decision record", or asks to capture a design/architecture decision in writing. Discovers the repo's existing ADR convention (location, numbering, format), discusses the decision interactively to draw out the context, alternatives, and consequences, then writes the ADR file matching the local style. Standalone counterpart to /plan-feature, which writes an ADR + a Gherkin spec together.
+description: Use when the user says "write an ADR", "/write-adr", "let's document this decision", "add an architecture decision record", or asks to capture a design/architecture decision in writing. Discovers the repo's existing ADR convention (location, numbering, format), discusses the decision interactively to draw out the context, alternatives, and consequences, then writes the ADR file matching the local style. Standalone counterpart to /plan-change, which writes an ADR + a Gherkin spec together.
 allowed-tools: Bash(gh:*), Bash(git:*), Bash(rg:*), Bash(fd:*), Read, Edit, Write, Grep, Glob
 ---
 
@@ -180,6 +180,7 @@ If the repo has an INDEX or README of ADRs (common in
 
 ## Composing with other skills
 
-- **`/plan-feature`** - writes ADR + Gherkin spec together; use it for new features. Use `/write-adr` for pure architectural decisions (database, library, topology).
+- **`/plan-change`** - writes ADR + Gherkin spec together; the usual workhorse for new features, refactors, and design-shaped bug fixes. Use `/write-adr` for pure architectural decisions (database, library, topology).
+- **`/backfill-feature`** - writes a retroactive ADR for existing code that has none.
 - **`/write-spec`** - Gherkin side, standalone.
 - **`/review-spec`** - run after writing to check overlap with existing decisions.
