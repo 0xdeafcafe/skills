@@ -116,3 +116,13 @@ Maintain a working block at the top of state so the workflow can resume if inter
 - Last /review-change run: <timestamp>, <P0/P1/P2/P3 counts>
 - Current phase: <0|1|2|3|4>
 ```
+
+
+## End of step
+
+Close every run with a short handoff. Two short lines:
+
+- **State**: one sentence — pass / fail / partial / blocked, key numbers if relevant.
+- **Next**: name one action — a downstream skill from "Composing with other skills" above (e.g. `/drive-pr` after `/drive-change`), a focused rerun (e.g. a single fixture instead of the suite), or a user action this skill can't take (read a draft, fix a credential, contact a reviewer).
+
+Pick one action. Mention an alternative in parens only when the wrong call is costly. Skip the handoff only when the response is genuinely terminal (one-word answer or a redirect away from this skill's scope).

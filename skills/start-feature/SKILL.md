@@ -166,3 +166,13 @@ implementation directly. Skip ADR / spec / characterization tests.
   `/plan-change`).
 - **Companion entry:** `/start-discussion` for exploratory work.
 - **After implementation:** `/drive-change` for the full audit pass.
+
+
+## End of step
+
+Close every run with a short handoff. Two short lines:
+
+- **State**: one sentence — pass / fail / partial / blocked, key numbers if relevant.
+- **Next**: name one action — a downstream skill from "Composing with other skills" above (e.g. `/drive-pr` after `/drive-change`), a focused rerun (e.g. a single fixture instead of the suite), or a user action this skill can't take (read a draft, fix a credential, contact a reviewer).
+
+Pick one action. Mention an alternative in parens only when the wrong call is costly. Skip the handoff only when the response is genuinely terminal (one-word answer or a redirect away from this skill's scope).

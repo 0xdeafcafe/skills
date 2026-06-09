@@ -238,3 +238,13 @@ The user decides; the skill states the read.
 - **Before:** none directly — this is the entry point for unplanned changes. For planned changes, `/drive-plan` runs `/plan-change` → `/implement-change` → `/review-change` → here.
 - **After:** `/open-pr` (turn the change into a PR), then `/drive-pr` (drive the PR to mergeable).
 - **Sibling:** `/drive-plan` (with formal planning), `/drive-pr` (post-open).
+
+
+## End of step
+
+Close every run with a short handoff. Two short lines:
+
+- **State**: one sentence — pass / fail / partial / blocked, key numbers if relevant.
+- **Next**: name one action — a downstream skill from "Composing with other skills" above (e.g. `/drive-pr` after `/drive-change`), a focused rerun (e.g. a single fixture instead of the suite), or a user action this skill can't take (read a draft, fix a credential, contact a reviewer).
+
+Pick one action. Mention an alternative in parens only when the wrong call is costly. Skip the handoff only when the response is genuinely terminal (one-word answer or a redirect away from this skill's scope).

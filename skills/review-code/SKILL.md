@@ -99,3 +99,13 @@ If the linter would say the same thing, let the linter say it. Your job is the p
 - Acted on by: `/drive-change` (which dispatches fix-applier agents on the findings via `orchestrate-merge`).
 
 `/review-code` and `/review-hygiene` are complements: `/review-hygiene` handles what tools know how to check, `/review-code` handles what they don't.
+
+
+## End of step
+
+Close every run with a short handoff. Two short lines:
+
+- **State**: one sentence — pass / fail / partial / blocked, key numbers if relevant.
+- **Next**: name one action — a downstream skill from "Composing with other skills" above (e.g. `/drive-pr` after `/drive-change`), a focused rerun (e.g. a single fixture instead of the suite), or a user action this skill can't take (read a draft, fix a credential, contact a reviewer).
+
+Pick one action. Mention an alternative in parens only when the wrong call is costly. Skip the handoff only when the response is genuinely terminal (one-word answer or a redirect away from this skill's scope).

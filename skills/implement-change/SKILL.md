@@ -135,3 +135,13 @@ Do **not** auto-invoke `/drive-change`. The user (or `/drive-plan` if that's the
 - Called by: `/drive-plan` (Phase 2). Also callable directly.
 - Calls: `agents/orchestrate-slice.md` and `agents/fix-applier.md` via `Task` (for large multi-domain implementations only).
 - Sibling: `/plan-change` (precedes), `/drive-change` (the no-spec implementation path), `/review-change` (audit-only).
+
+
+## End of step
+
+Close every run with a short handoff. Two short lines:
+
+- **State**: one sentence — pass / fail / partial / blocked, key numbers if relevant.
+- **Next**: name one action — a downstream skill from "Composing with other skills" above (e.g. `/drive-pr` after `/drive-change`), a focused rerun (e.g. a single fixture instead of the suite), or a user action this skill can't take (read a draft, fix a credential, contact a reviewer).
+
+Pick one action. Mention an alternative in parens only when the wrong call is costly. Skip the handoff only when the response is genuinely terminal (one-word answer or a redirect away from this skill's scope).
