@@ -171,5 +171,5 @@ add manually (this skill doesn't edit).
   worth running `/review-spec` after that too to catch overlap with
   existing docs.
 - `/write-spec`, `/write-adr` - fix what review-spec surfaces.
-- `/drive-feature` - run after `/review-spec` confirms the spec is
+- `/review-feature` - run after `/review-spec` confirms the spec is
   coherent.

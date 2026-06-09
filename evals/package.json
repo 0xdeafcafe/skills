@@ -1,0 +1,37 @@
+{
+  "name": "@0xdeafcafe/skills-evals",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Eval harness for the 0xdeafcafe-skills plugin. Two tiers: contract tests (no LLM) and pipeline fixtures (real SDK calls, optionally routed through langwatch's AI gateway).",
+  "type": "module",
+  "scripts": {
+    "tier1": "node runners/run-tier1.ts",
+    "tier2": "node --env-file-if-exists=../.env runners/run-pipeline.ts",
+    "tier3": "node --env-file-if-exists=../.env runners/run-tier3.ts",
+    "upload-dataset": "node --env-file-if-exists=../.env runners/upload-dataset.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "scenarios": "node --env-file-if-exists=../.env node_modules/vitest/vitest.mjs run --config scenarios/vitest.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.81",
+    "@anthropic-ai/claude-agent-sdk": "^0.3.169",
+    "@langwatch/scenario": "^0.4.12",
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/context-async-hooks": "^2.7.1",
+    "@opentelemetry/sdk-node": "^0.218.0",
+    "ajv": "^8.17.0",
+    "ajv-formats": "^3.0.0",
+    "langwatch": "^0.32.0"
+  },
+  "packageManager": "pnpm@10.15.1"
+}

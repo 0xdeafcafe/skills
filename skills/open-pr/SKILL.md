@@ -137,7 +137,7 @@ Four outcomes - distinguish *failed* from *couldn't run*:
 - **All pass** -> continue.
 - **Checks failed** (lint flagged real issues, tests reported actual
   failures, type-checker found errors) -> stop. The code is wrong.
-  Suggest `/drive-code` to fix lint and format automatically. Don't
+  Suggest `/review-code` to fix lint and format automatically. Don't
   paper over.
 - **Test failures from a `check` script** -> stop. Surface them.
   Either the change is broken or the tests are; both are worth
@@ -248,5 +248,5 @@ Then stop. The user picks.
 
 ## Composing with other skills
 
-- **Before:** `/drive-code` (lint/format), `/drive-test` (coverage), `/drive-feature` (spec audit).
-- **After (Phase 7 handoff):** `/drive-pr` (CI + review feedback loop to merge-ready), `/drive-ux` (screenshots for UI changes).
+- **Before:** `/review-code` (lint/format), `/review-test` (coverage), `/review-feature` (spec audit).
+- **After (Phase 7 handoff):** `/drive-pr` (CI + review feedback loop to merge-ready), `/review-ux` (screenshots for UI changes).

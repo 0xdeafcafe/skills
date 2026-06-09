@@ -1,0 +1,82 @@
+# Tier-3 pipeline runs the full `/drive-change` orchestrator against a
+# fixture, end-to-end. VERY EXPENSIVE — burns multiple LLM calls per run
+# (slicer + 4-6 reviewers + merger + verifier). Cost ceiling per run:
+# ~$5 (set via --max-budget-usd in the runner).
+#
+# Manual trigger ONLY. No PR label, no comment — this is a pre-release
+# smoke or a post-orchestration-change investigation, not something that
+# fires on every label. Run from the Actions tab when you actually
+# want to validate the orchestrator end-to-end.
+name: evals · tier-3
+
+# Reads + runs claude -p + logs to LangWatch. No writes to the repo, so
+# strip the default GHA write token.
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      fixture:
+        description: "Fixture name (default tiny-token-leak)"
+        required: false
+        default: "tiny-token-leak"
+      max_budget_usd:
+        description: "Hard cap per /drive-change run (default 5)"
+        required: false
+        default: "5"
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: evals
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - run: pnpm install --frozen-lockfile
+
+      # Same Claude Code CLI + gateway wiring as tier-2; /drive-change is
+      # just a different slash command resolved by the same harness.
+      - name: Install Claude Code CLI
+        # Pinned — see the tier-2 workflow for rationale.
+        run: npm install -g @anthropic-ai/claude-code@2.1.142
+
+      - name: Install the skill plugin under test
+        run: |
+          # See tier-2 for the rationale on local marketplace + no `|| true`.
+          claude --version
+          claude plugin marketplace add "$GITHUB_WORKSPACE"
+          claude plugin install skills@0xdeafcafe-skills
+
+      # Secrets are scoped to this step only — same pattern as tier-2 +
+      # scenarios. Don't propagate through $GITHUB_ENV.
+      - name: Run tier-3 smoke
+        env:
+          ANTHROPIC_BASE_URL: ${{ secrets.LANGWATCH_GATEWAY_URL }}
+          ANTHROPIC_AUTH_TOKEN: ${{ secrets.LANGWATCH_VIRTUAL_AI_KEY }}
+          LANGWATCH_GATEWAY_URL: ${{ secrets.LANGWATCH_GATEWAY_URL }}
+          LANGWATCH_VIRTUAL_AI_KEY: ${{ secrets.LANGWATCH_VIRTUAL_AI_KEY }}
+          LANGWATCH_PROJECT_ID: ${{ secrets.LANGWATCH_PROJECT_ID }}
+          LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
+          LANGWATCH_ENDPOINT: ${{ secrets.LANGWATCH_ENDPOINT }}
+          TIER3_FIXTURE: ${{ github.event.inputs.fixture }}
+          TIER3_BUDGET: ${{ github.event.inputs.max_budget_usd }}
+          TIER3_SUMMARY: ${{ github.workspace }}/tier3-summary.md
+        run: |
+          ARGS=(--summary-path "$TIER3_SUMMARY")
+          if [ -n "$TIER3_FIXTURE" ]; then ARGS+=(--fixture "$TIER3_FIXTURE"); fi
+          if [ -n "$TIER3_BUDGET" ]; then ARGS+=(--max-budget-usd "$TIER3_BUDGET"); fi
+          pnpm tier3 "${ARGS[@]}"
+
+          # Same step-summary handling as tier-2: surface pass/fail + cost to
+          # whoever dispatched the workflow without needing to read stdout.
+          if [ -f "$TIER3_SUMMARY" ]; then
+            cat "$TIER3_SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+          fi

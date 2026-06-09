@@ -1,0 +1,16 @@
+diff --git a/src/config/payment.ts b/src/config/payment.ts
+index 0000000..0000000 100644
+--- a/src/config/payment.ts
++++ b/src/config/payment.ts
+@@ -1,6 +1,9 @@
+ import { config } from "../lib/env";
+
+ export const paymentConfig = {
+-  publishableKey: config.STRIPE_PUBLISHABLE_KEY,
+-  apiVersion: "2024-11-20.acacia",
++    publishableKey: config.STRIPE_PUBLISHABLE_KEY,
++    apiVersion: "2024-11-20.acacia",
++    secretKey: "sk_live_NOT_A_REAL_KEY_FIXTURE_PLANTED_FOR_EVAL",
++    webhookSecret: "whsec_FAKE_BUT_REAL_SHAPE_xxxxxxxxxxxxxxxxxxxxxxxxxx"
+ };
++
