@@ -1,15 +1,24 @@
-// Spawn `claude` in non-interactive mode (`-p`) against a fixture's git state
-// and capture the output. Routes through the LangWatch AI Gateway via env
-// (ANTHROPIC_BASE_URL + ANTHROPIC_AUTH_TOKEN). The Claude Code CLI honours
-// those; gateway is API-compatible at /v1/messages.
+// Invoke `claude` non-interactively via `@anthropic-ai/claude-agent-sdk`'s
+// `query()` async generator. Routes through the LangWatch AI Gateway when
+// LANGWATCH_ENDPOINT + LANGWATCH_VIRTUAL_AI_KEY are set, otherwise direct
+// to Anthropic via LOCAL_ANTHROPIC_API_KEY. The SDK spawns claude-code as
+// a subprocess under the hood and inherits the env we build here, so the
+// gateway routing is wire-compatible with what the old `claude -p` shell-out
+// did — we just get structured messages instead of having to parse a JSON
+// envelope out of stdout.
 //
-// Why the CLI and not the Anthropic SDK: the plugin under test ships as a
-// Claude Code skill, so invoking `/review-security` etc. requires the CLI's
-// skill discovery + tool wiring + reference-file loading. The user already
-// has the plugin installed user-scope; `claude -p` resolves slash commands
-// from any cwd.
+// Why the Agent SDK and not the bare Anthropic SDK: the plugin under test
+// ships as Claude Code skills, so invoking `/review-security` etc. requires
+// the CLI's skill discovery + tool wiring + reference-file loading.
+// `query({ options: { plugins: [{type:'local', path}] } })` resolves slash
+// commands the same way `claude --plugin-dir ...` would.
 
-import { spawnSync } from "node:child_process";
+import {
+  AbortError,
+  query,
+  type Options,
+  type SDKResultMessage,
+} from "@anthropic-ai/claude-agent-sdk";
 
 const DEFAULT_TIMEOUT_MS = 5 * 60 * 1000;
 const DEFAULT_MAX_BUDGET_USD = 1.0;
@@ -29,7 +38,7 @@ const DEFAULT_MAX_BUDGET_USD = 1.0;
 //  - Edit/Write:  drive-change's fix-applier writes auto-fixes; reviewers
 //                 themselves don't write, but tier-3 leans on this
 //  - Todo*:       reviewers + orchestrator use the task tools for planning
-const DEFAULT_ALLOWED_TOOLS: readonly string[] = [
+export const DEFAULT_ALLOWED_TOOLS: readonly string[] = [
   "Bash",
   "Read",
   "Grep",
@@ -49,64 +58,44 @@ export type ClaudeInvokeOptions = {
   readonly cwd: string;
   readonly prompt: string;
   readonly timeoutMs?: number;
-  /** Per-call hard cap. The CLI fails fast if the run would exceed it. */
+  /** Per-call hard cap. The SDK fails fast if the run would exceed it. */
   readonly maxBudgetUsd?: number;
   /**
-   * Local plugin directory to load for the session (`--plugin-dir`). The
-   * eval runs in a temp fixture dir, so we can't rely on the user's
-   * globally-installed plugin (it may be a stale snapshot). Loading from
-   * the repo root pins the eval to the *current* skill code under test.
+   * Local plugin directory to load for the session. The eval runs in a
+   * temp fixture dir, so we can't rely on the user's globally-installed
+   * plugin (it may be a stale snapshot). Loading from the repo root pins
+   * the eval to the *current* skill code under test.
    */
   readonly pluginDir?: string;
   /**
-   * Explicit allow-list passed to `--allowed-tools`. The reviewers can't
-   * run to completion without their toolchain (Bash for rg/gitleaks/npm
-   * audit, WebFetch for ADR cross-refs), and we want a bounded surface —
-   * anything outside the list is denied at the CLI layer and surfaces as
-   * a finding gap rather than a silent escalation.
+   * Explicit allow-list passed to the SDK's `allowedTools` option. The
+   * reviewers can't run to completion without their toolchain (Bash for
+   * rg/gitleaks/npm audit, WebFetch for ADR cross-refs), and we want a
+   * bounded surface — anything outside the list is denied at the SDK
+   * layer and surfaces as a finding gap rather than a silent escalation.
    */
   readonly allowedTools?: readonly string[];
 };
 
 export type ClaudeInvokeResult = {
-  /** The assistant's final response text (parsed out of the JSON envelope). */
+  /** The assistant's final response text (from the SDK's `result` message). */
   readonly response: string;
-  /** Full stdout in case the caller wants to debug. */
-  readonly rawStdout: string;
-  readonly stderr: string;
+  /** Errors the SDK reported on a non-success terminal result. */
+  readonly errors: readonly string[];
+  /** 0 on success, 1 on SDK error result, -1 on timeout / no result. */
   readonly exitCode: number;
   readonly timedOut: boolean;
-  /** Token usage as reported by the CLI's JSON envelope, when available. */
+  /** Token usage as reported by the SDK's result message, when available. */
   readonly tokens: { readonly input: number; readonly output: number } | null;
-  /** Approximate USD spent on this call, per the envelope. */
+  /** Approximate USD spent on this call, per the result message. */
   readonly costUsd: number | null;
 };
 
 /**
- * The shape `claude -p --output-format json` returns. Captured here so we
- * fail loud (not silently) if the envelope changes.
- */
-type ClaudeJsonEnvelope = {
-  readonly type: "result";
-  readonly subtype?: string;
-  readonly result?: string;
-  readonly is_error?: boolean;
-  readonly num_turns?: number;
-  readonly usage?: {
-    readonly input_tokens?: number;
-    readonly output_tokens?: number;
-  };
-  readonly total_cost_usd?: number;
-};
-
-const MAX_STDOUT_BYTES = 50 * 1024 * 1024;
-const STDOUT_NEAR_LIMIT_BYTES = Math.floor(MAX_STDOUT_BYTES * 0.9);
-
-/**
  * Exported for unit testing. The branching here (gateway vs. ANTHROPIC_* vs.
- * LOCAL_ANTHROPIC_API_KEY vs. throw) silently determines whether `claude -p`
- * talks to LangWatch's gateway or directly to Anthropic, so the contract is
- * worth locking down in tests.
+ * LOCAL_ANTHROPIC_API_KEY vs. throw) silently determines whether the SDK
+ * subprocess talks to LangWatch's gateway or directly to Anthropic, so the
+ * contract is worth locking down in tests.
  */
 export const buildSubprocessEnv = (env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv => {
   const baseUrl = env.ANTHROPIC_BASE_URL ?? env.LANGWATCH_ENDPOINT;
@@ -133,96 +122,82 @@ export const buildSubprocessEnv = (env: NodeJS.ProcessEnv = process.env): NodeJS
   );
 };
 
-export const invokeClaude = ({
+export const invokeClaude = async ({
   cwd,
   prompt,
   timeoutMs = DEFAULT_TIMEOUT_MS,
   maxBudgetUsd = DEFAULT_MAX_BUDGET_USD,
   pluginDir,
   allowedTools = DEFAULT_ALLOWED_TOOLS,
-}: ClaudeInvokeOptions): ClaudeInvokeResult => {
+}: ClaudeInvokeOptions): Promise<ClaudeInvokeResult> => {
   const env = buildSubprocessEnv();
+  const abortController = new AbortController();
+  const timeoutId = setTimeout(() => abortController.abort(), timeoutMs);
 
-  const args = [
-    "-p",
-    prompt,
-    "--output-format",
-    "json",
-    "--max-budget-usd",
-    String(maxBudgetUsd),
-    "--allowed-tools",
-    allowedTools.join(" "),
-  ];
-  if (pluginDir) {
-    args.push("--plugin-dir", pluginDir);
-  }
-
-  const result = spawnSync("claude", args, {
+  const options: Options = {
     cwd,
+    allowedTools: [...allowedTools],
+    maxBudgetUsd,
     env,
-    encoding: "utf8",
-    timeout: timeoutMs,
-    maxBuffer: MAX_STDOUT_BYTES,
-  });
+    abortController,
+    ...(pluginDir ? { plugins: [{ type: "local", path: pluginDir }] } : {}),
+  };
 
-  const rawStdout = result.stdout ?? "";
-  const stderr = result.stderr ?? "";
-  const exitCode = result.status ?? -1;
-  const timedOut = result.signal === "SIGTERM" && result.status === null;
+  let result: SDKResultMessage | null = null;
+  let timedOut = false;
 
-  // spawnSync silently truncates at maxBuffer. Surface near-limit output so a
-  // missing finding doesn't get attributed to the reviewer skill when the
-  // real cause was a truncated stream.
-  if (rawStdout.length >= STDOUT_NEAR_LIMIT_BYTES) {
-    console.warn(
-      `! claude -p stdout is ${rawStdout.length} bytes (limit ${MAX_STDOUT_BYTES}); ` +
-        "findings may be missing if the stream was truncated",
-    );
+  try {
+    for await (const message of query({ prompt, options })) {
+      if (message.type === "result") {
+        result = message;
+        break;
+      }
+    }
+  } catch (err) {
+    if (err instanceof AbortError) {
+      timedOut = true;
+    } else {
+      throw err;
+    }
+  } finally {
+    clearTimeout(timeoutId);
   }
 
-  if (timedOut || exitCode !== 0 || !rawStdout) {
+  if (timedOut || result === null) {
     return {
       response: "",
-      rawStdout,
-      stderr,
-      exitCode,
+      errors: timedOut ? ["timeout"] : ["no result message received"],
+      exitCode: -1,
       timedOut,
       tokens: null,
       costUsd: null,
     };
   }
 
-  // The CLI streams partial JSON during the run; the final result line is the
-  // assistant's response envelope. Parse from the last `{` that starts a top-
-  // level JSON object — defensive against any prefix logging.
-  const lastJsonStart = rawStdout.lastIndexOf("\n{");
-  const candidate = lastJsonStart === -1 ? rawStdout : rawStdout.slice(lastJsonStart + 1);
+  const tokens = {
+    input: result.usage.input_tokens,
+    output: result.usage.output_tokens,
+  };
 
-  try {
-    const envelope = JSON.parse(candidate) as ClaudeJsonEnvelope;
+  if (result.subtype === "success") {
     return {
-      response: envelope.result ?? "",
-      rawStdout,
-      stderr,
-      exitCode,
+      response: result.result,
+      errors: [],
+      exitCode: 0,
       timedOut: false,
-      tokens: envelope.usage
-        ? {
-            input: envelope.usage.input_tokens ?? 0,
-            output: envelope.usage.output_tokens ?? 0,
-          }
-        : null,
-      costUsd: envelope.total_cost_usd ?? null,
-    };
-  } catch (_e) {
-    return {
-      response: rawStdout, // fall back to raw — caller can still try to parse
-      rawStdout,
-      stderr,
-      exitCode,
-      timedOut: false,
-      tokens: null,
-      costUsd: null,
+      tokens,
+      costUsd: result.total_cost_usd,
     };
   }
+
+  // SDKResultError: error_during_execution / error_max_turns /
+  // error_max_budget_usd / error_max_structured_output_retries
+  return {
+    response: "",
+    errors: result.errors,
+    exitCode: 1,
+    timedOut: false,
+    tokens,
+    costUsd: result.total_cost_usd,
+  };
 };

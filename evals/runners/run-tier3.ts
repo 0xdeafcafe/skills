@@ -96,12 +96,12 @@ type RunOutcome = {
   readonly tokens: { readonly input: number; readonly output: number } | null;
 };
 
-const runDriveChange = (
+const runDriveChange = async (
   cwd: string,
   expected: ExpectedDriveChange,
   maxBudgetUsd: number,
-): RunOutcome => {
-  const invoke = invokeClaude({
+): Promise<RunOutcome> => {
+  const invoke = await invokeClaude({
     cwd,
     prompt: "/drive-change",
     maxBudgetUsd,
@@ -163,7 +163,7 @@ const main = async (): Promise<void> => {
 
   if (!process.env.LANGWATCH_API_KEY) {
     console.log("◦ LANGWATCH_API_KEY unset — running without experiment / telemetry");
-    const outcome = runDriveChange(repo.path, expected, args.maxBudgetUsd);
+    const outcome = await runDriveChange(repo.path, expected, args.maxBudgetUsd);
     await emitSummary(args, outcome);
     reportOutcome(outcome);
     process.exit(outcome.overall_pass ? 0 : 1);
@@ -178,7 +178,7 @@ const main = async (): Promise<void> => {
   // outer-`let` + null-cast dance.
   const outcomes: RunOutcome[] = [];
   await experiment.run([{ fixture: args.fixture }], async ({ index }) => {
-    const result = runDriveChange(repo.path, expected, args.maxBudgetUsd);
+    const result = await runDriveChange(repo.path, expected, args.maxBudgetUsd);
     outcomes.push(result);
     experiment.log("invoked_ok", { index, passed: result.invoked_ok });
     experiment.log("mode_match", { index, passed: result.mode_match });

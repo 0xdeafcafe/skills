@@ -182,8 +182,13 @@ type RunOutcome = {
   readonly tokens: { readonly input: number; readonly output: number } | null;
 };
 
-const runSingle = (cwd: string, reviewer: string, runIndex: number, expected: ExpectedFindings): RunOutcome => {
-  const invoke = invokeClaude({ cwd, prompt: `/${reviewer}`, pluginDir: PLUGIN_DIR });
+const runSingle = async (
+  cwd: string,
+  reviewer: string,
+  runIndex: number,
+  expected: ExpectedFindings,
+): Promise<RunOutcome> => {
+  const invoke = await invokeClaude({ cwd, prompt: `/${reviewer}`, pluginDir: PLUGIN_DIR });
 
   if (invoke.timedOut || invoke.exitCode !== 0 || !invoke.response) {
     return {
@@ -267,7 +272,7 @@ const runOneCell = async (
 
   for (let i = 0; i < args.runs; i++) {
     console.log(`  ◦ run ${i + 1}/${args.runs}`);
-    const outcome = runSingle(repo.path, row.reviewer_skill, i, expected);
+    const outcome = await runSingle(repo.path, row.reviewer_skill, i, expected);
     outcomes.push(outcome);
     emit(`run_${i}_overall_pass`, { passed: outcome.overall_pass });
     emit(`run_${i}_findings_count`, { score: outcome.findings_count });

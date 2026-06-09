@@ -18,6 +18,6 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["lib/**/*", "runners/**/*", "fixtures/**/*.ts"],
+  "include": ["lib/**/*", "runners/**/*", "fixtures/**/*.ts", "scenarios/**/*.ts"],
   "exclude": ["node_modules", ".trigger-log.jsonl"]
 }
