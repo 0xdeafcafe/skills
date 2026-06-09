@@ -138,11 +138,6 @@ jobs:
     defaults:
       run:
         working-directory: evals
-    env:
-      LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
-      LANGWATCH_PROJECT_ID: ${{ secrets.LANGWATCH_PROJECT_ID }}
-      LANGWATCH_ENDPOINT: ${{ secrets.LANGWATCH_ENDPOINT }}
-      LANGWATCH_VIRTUAL_AI_KEY: ${{ secrets.LANGWATCH_VIRTUAL_AI_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -162,13 +157,9 @@ jobs:
       # ANTHROPIC_AUTH_TOKEN.
       - name: Install Claude Code CLI
         # Pinned so a malicious postinstall in a hot-published version can't
-        # exfil the LANGWATCH_* secrets that are in scope at install time.
-        # Bump deliberately when you want a newer CLI.
+        # see secrets. No LANGWATCH_* in scope here — they're scoped down
+        # to the run-pipeline step below.
         run: npm install -g @anthropic-ai/claude-code@2.1.142
-      - name: Configure gateway env for claude
-        run: |
-          echo "ANTHROPIC_BASE_URL=$LANGWATCH_ENDPOINT" >> "$GITHUB_ENV"
-          echo "ANTHROPIC_AUTH_TOKEN=$LANGWATCH_VIRTUAL_AI_KEY" >> "$GITHUB_ENV"
 
       - name: Install the skill plugin under test
         run: |
@@ -178,8 +169,18 @@ jobs:
           claude plugin marketplace add "$GITHUB_WORKSPACE" || true
           claude plugin install skills@0xdeafcafe-skills || true
 
+      # Secrets are scoped to this step only. claude-code (subprocess of
+      # the SDK) reads ANTHROPIC_BASE_URL + ANTHROPIC_AUTH_TOKEN; the
+      # runner code also reads LANGWATCH_* for trace attribution.
       - name: Run tier-2 pipeline
         env:
+          ANTHROPIC_BASE_URL: ${{ secrets.LANGWATCH_GATEWAY_URL }}
+          ANTHROPIC_AUTH_TOKEN: ${{ secrets.LANGWATCH_VIRTUAL_AI_KEY }}
+          LANGWATCH_GATEWAY_URL: ${{ secrets.LANGWATCH_GATEWAY_URL }}
+          LANGWATCH_VIRTUAL_AI_KEY: ${{ secrets.LANGWATCH_VIRTUAL_AI_KEY }}
+          LANGWATCH_PROJECT_ID: ${{ secrets.LANGWATCH_PROJECT_ID }}
+          LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
+          LANGWATCH_ENDPOINT: ${{ secrets.LANGWATCH_ENDPOINT }}
           TIER2_FIXTURE: ${{ github.event.inputs.fixture }}
           TIER2_REVIEWER: ${{ github.event.inputs.reviewer }}
           TIER2_RUNS: ${{ github.event.inputs.runs }}

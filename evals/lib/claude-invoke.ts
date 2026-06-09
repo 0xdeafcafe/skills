@@ -1,7 +1,7 @@
 // Invoke `claude` non-interactively via `@anthropic-ai/claude-agent-sdk`'s
 // `query()` async generator. Routes through the LangWatch AI Gateway when
-// LANGWATCH_ENDPOINT + LANGWATCH_VIRTUAL_AI_KEY are set, otherwise direct
-// to Anthropic via LOCAL_ANTHROPIC_API_KEY. The SDK spawns claude-code as
+// LANGWATCH_GATEWAY_URL + LANGWATCH_VIRTUAL_AI_KEY are set, otherwise
+// direct to Anthropic via LOCAL_ANTHROPIC_API_KEY. The SDK spawns claude-code as
 // a subprocess under the hood and inherits the env we build here, so the
 // gateway routing is wire-compatible with what the old `claude -p` shell-out
 // did — we just get structured messages instead of having to parse a JSON
@@ -98,7 +98,13 @@ export type ClaudeInvokeResult = {
  * contract is worth locking down in tests.
  */
 export const buildSubprocessEnv = (env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv => {
-  const baseUrl = env.ANTHROPIC_BASE_URL ?? env.LANGWATCH_ENDPOINT;
+  // LANGWATCH_GATEWAY_URL is the AI gateway base (e.g.
+  // https://gateway.langwatch.ai). LANGWATCH_ENDPOINT is the dashboard /
+  // governance API origin (https://app.langwatch.ai) — a different
+  // service. Don't conflate them: requests sent to the dashboard URL
+  // 200-back the SPA's index.html and look like silent success until you
+  // try to parse the response.
+  const baseUrl = env.ANTHROPIC_BASE_URL ?? env.LANGWATCH_GATEWAY_URL;
   const authToken = env.ANTHROPIC_AUTH_TOKEN ?? env.LANGWATCH_VIRTUAL_AI_KEY;
 
   const out: NodeJS.ProcessEnv = { ...env };
@@ -117,7 +123,7 @@ export const buildSubprocessEnv = (env: NodeJS.ProcessEnv = process.env): NodeJS
   }
 
   throw new Error(
-    "no Claude credentials: set LANGWATCH_ENDPOINT + LANGWATCH_VIRTUAL_AI_KEY (preferred), " +
+    "no Claude credentials: set LANGWATCH_GATEWAY_URL + LANGWATCH_VIRTUAL_AI_KEY (preferred), " +
       "ANTHROPIC_BASE_URL + ANTHROPIC_AUTH_TOKEN, or LOCAL_ANTHROPIC_API_KEY",
   );
 };

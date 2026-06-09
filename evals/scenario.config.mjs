@@ -6,7 +6,7 @@
 //
 // Routing mirrors evals/lib/claude-invoke.ts's buildSubprocessEnv():
 //
-//   1. LANGWATCH_ENDPOINT + LANGWATCH_VIRTUAL_AI_KEY → gateway
+//   1. LANGWATCH_GATEWAY_URL + LANGWATCH_VIRTUAL_AI_KEY → gateway
 //      (preferred — gets us per-trace cost + every simulator/judge
 //      turn shows up alongside the agent-under-test turns in the
 //      LangWatch dashboard).
@@ -14,6 +14,13 @@
 //      (for users who set their own gateway).
 //   3. LOCAL_ANTHROPIC_API_KEY or ANTHROPIC_API_KEY → direct to
 //      api.anthropic.com (bypass; useful for local dev).
+//
+// Why LANGWATCH_GATEWAY_URL and not LANGWATCH_ENDPOINT: the dashboard /
+// governance origin (app.langwatch.ai) and the AI gateway origin
+// (gateway.langwatch.ai) are different services. The dashboard happily
+// 200s an SPA index.html for `<dashboard>/v1/messages` requests, which
+// looks like silent success until @ai-sdk fails to parse the HTML as
+// JSON. Keep them separate.
 //
 // Project attribution on the gateway path:
 //
@@ -40,13 +47,28 @@
 // The agent under test (the Claude Code session running /start-discussion
 // etc.) is driven through @anthropic-ai/claude-agent-sdk with its own
 // env wiring — see scenarios/lib/claude-code-adapter.ts.
+//
+// Why this file lives at evals/ (not evals/scenarios/): @langwatch/scenario's
+// config loader only looks for `scenario.config.{js,mjs}` at `process.cwd()`
+// (see src/config/load.ts in the package). vitest runs from evals/, so the
+// config has to sit alongside package.json, not next to the tests.
 
 import { defineConfig } from "@langwatch/scenario";
 import { createAnthropic } from "@ai-sdk/anthropic";
 
-const baseUrl = process.env.ANTHROPIC_BASE_URL ?? process.env.LANGWATCH_ENDPOINT;
+const rawBaseUrl = process.env.ANTHROPIC_BASE_URL ?? process.env.LANGWATCH_GATEWAY_URL;
 const gatewayToken = process.env.ANTHROPIC_AUTH_TOKEN ?? process.env.LANGWATCH_VIRTUAL_AI_KEY;
 const projectId = process.env.LANGWATCH_PROJECT_ID;
+
+// claude-code appends `/v1/messages` to ANTHROPIC_BASE_URL itself, so the
+// CLI-side env var omits the version segment. @ai-sdk/anthropic does NOT —
+// it POSTs to `<baseURL>/messages` directly. So we need to add `/v1` here
+// (and only here), otherwise requests land at `<gateway>/messages` which
+// the gateway treats as the session-management endpoint, not the chat one.
+// Symptom if you forget: `{"error":"Invalid or missing session ID"}` 400s.
+const baseUrl = rawBaseUrl
+  ? rawBaseUrl.replace(/\/+$/, "") + (rawBaseUrl.endsWith("/v1") ? "" : "/v1")
+  : undefined;
 
 const providerConfig =
   baseUrl && gatewayToken
@@ -64,7 +86,7 @@ const providerConfig =
 if (providerConfig === null) {
   throw new Error(
     "no Claude credentials for scenario judge/simulator: set " +
-      "LANGWATCH_ENDPOINT + LANGWATCH_VIRTUAL_AI_KEY (preferred — see " +
+      "LANGWATCH_GATEWAY_URL + LANGWATCH_VIRTUAL_AI_KEY (preferred — see " +
       "scenario.config.mjs for project-scoped key setup), " +
       "ANTHROPIC_BASE_URL + ANTHROPIC_AUTH_TOKEN, " +
       "LOCAL_ANTHROPIC_API_KEY, or ANTHROPIC_API_KEY",

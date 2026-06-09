@@ -133,11 +133,6 @@ jobs:
     defaults:
       run:
         working-directory: evals
-    env:
-      LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
-      LANGWATCH_PROJECT_ID: ${{ secrets.LANGWATCH_PROJECT_ID }}
-      LANGWATCH_ENDPOINT: ${{ secrets.LANGWATCH_ENDPOINT }}
-      LANGWATCH_VIRTUAL_AI_KEY: ${{ secrets.LANGWATCH_VIRTUAL_AI_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -158,17 +153,6 @@ jobs:
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code@2.1.142
 
-      # Two routing surfaces, one config:
-      #   - Claude Code subprocess (the agent under test) reads
-      #     ANTHROPIC_BASE_URL + ANTHROPIC_AUTH_TOKEN.
-      #   - The simulator + judge use @ai-sdk/anthropic via
-      #     scenarios/scenario.config.mjs, which reads the same pair
-      #     plus LANGWATCH_PROJECT_ID for the x-project-id header.
-      - name: Configure gateway env for claude
-        run: |
-          echo "ANTHROPIC_BASE_URL=$LANGWATCH_ENDPOINT" >> "$GITHUB_ENV"
-          echo "ANTHROPIC_AUTH_TOKEN=$LANGWATCH_VIRTUAL_AI_KEY" >> "$GITHUB_ENV"
-
       - name: Install the skill plugin under test
         run: |
           # The plugin under test is the repo itself. The scenarios
@@ -179,9 +163,22 @@ jobs:
           claude plugin marketplace add "$GITHUB_WORKSPACE" || true
           claude plugin install skills@0xdeafcafe-skills || true
 
+      # Secrets are scoped to this step only. Keep them out of $GITHUB_ENV
+      # and out of any earlier step — claude-code (subprocess of the SDK)
+      # reads ANTHROPIC_BASE_URL + ANTHROPIC_AUTH_TOKEN at process spawn;
+      # scenario.config.mjs reads LANGWATCH_GATEWAY_URL +
+      # LANGWATCH_VIRTUAL_AI_KEY plus LANGWATCH_PROJECT_ID for the
+      # x-project-id header.
       - name: Run scenarios
         id: run
         env:
+          ANTHROPIC_BASE_URL: ${{ secrets.LANGWATCH_GATEWAY_URL }}
+          ANTHROPIC_AUTH_TOKEN: ${{ secrets.LANGWATCH_VIRTUAL_AI_KEY }}
+          LANGWATCH_GATEWAY_URL: ${{ secrets.LANGWATCH_GATEWAY_URL }}
+          LANGWATCH_VIRTUAL_AI_KEY: ${{ secrets.LANGWATCH_VIRTUAL_AI_KEY }}
+          LANGWATCH_PROJECT_ID: ${{ secrets.LANGWATCH_PROJECT_ID }}
+          LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
+          LANGWATCH_ENDPOINT: ${{ secrets.LANGWATCH_ENDPOINT }}
           SCENARIO_FILTER: ${{ github.event.inputs.scenario }}
           SUMMARY_FILE: ${{ github.workspace }}/scenarios-summary.md
           OUTPUT_FILE: ${{ github.workspace }}/scenarios-output.txt
