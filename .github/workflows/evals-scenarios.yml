@@ -155,13 +155,21 @@ jobs:
 
       - name: Install the skill plugin under test
         run: |
-          # The plugin under test is the repo itself. The scenarios
-          # adapter loads it via plugins: [{type:"local", path}], but the
-          # CLI also needs the marketplace entry so claude-code itself
-          # resolves slash commands consistently.
+          # The plugin under test is the repo itself. marketplace.json
+          # has `"source": "./"` so adding $GITHUB_WORKSPACE as a
+          # marketplace makes `install` resolve the SKILL.md files from
+          # the just-checked-out repo — no remote fetch.
+          #
+          # The scenarios adapter ALSO passes plugins: [{type:"local"}]
+          # to the SDK directly, which is the authoritative path. This
+          # CLI install is belt-and-suspenders for any claude-code
+          # subprocess paths that bypass the SDK's plugin list.
+          #
+          # No `|| true` — masking install failures hides real breakage
+          # (CI starts fresh, there's no idempotence problem to absorb).
           claude --version
-          claude plugin marketplace add "$GITHUB_WORKSPACE" || true
-          claude plugin install skills@0xdeafcafe-skills || true
+          claude plugin marketplace add "$GITHUB_WORKSPACE"
+          claude plugin install skills@0xdeafcafe-skills
 
       # Secrets are scoped to this step only. Keep them out of $GITHUB_ENV
       # and out of any earlier step — claude-code (subprocess of the SDK)

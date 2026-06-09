@@ -163,11 +163,13 @@ jobs:
 
       - name: Install the skill plugin under test
         run: |
-          # The plugin under test is the repo itself. Install the marketplace
-          # entry so /review-* slash commands resolve under `claude -p`.
+          # marketplace.json has `"source": "./"` so adding $GITHUB_WORKSPACE
+          # as a marketplace resolves /review-* SKILL.md files from the
+          # just-checked-out repo. No remote fetch. No `|| true` — fail
+          # loudly if the install breaks.
           claude --version
-          claude plugin marketplace add "$GITHUB_WORKSPACE" || true
-          claude plugin install skills@0xdeafcafe-skills || true
+          claude plugin marketplace add "$GITHUB_WORKSPACE"
+          claude plugin install skills@0xdeafcafe-skills
 
       # Secrets are scoped to this step only. claude-code (subprocess of
       # the SDK) reads ANTHROPIC_BASE_URL + ANTHROPIC_AUTH_TOKEN; the

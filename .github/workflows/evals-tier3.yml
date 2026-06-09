@@ -50,9 +50,10 @@ jobs:
 
       - name: Install the skill plugin under test
         run: |
+          # See tier-2 for the rationale on local marketplace + no `|| true`.
           claude --version
-          claude plugin marketplace add "$GITHUB_WORKSPACE" || true
-          claude plugin install skills@0xdeafcafe-skills || true
+          claude plugin marketplace add "$GITHUB_WORKSPACE"
+          claude plugin install skills@0xdeafcafe-skills
 
       # Secrets are scoped to this step only — same pattern as tier-2 +
       # scenarios. Don't propagate through $GITHUB_ENV.
