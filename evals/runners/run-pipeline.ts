@@ -23,9 +23,16 @@ import { LangWatch } from "langwatch";
 import { setupObservability } from "langwatch/observability/node";
 
 import { invokeClaude } from "../lib/claude-invoke.ts";
+import { flagPresent, flagValue, numericFlag } from "../lib/cli-args.ts";
+import type { DatasetRow } from "../lib/dataset-types.ts";
 import { parseFindingBlock, splitTranscript } from "../lib/finding-parser.ts";
 import { type ExpectedFindings, scoreFixture } from "../lib/scoring.ts";
 import { type Finding, validateFinding } from "../lib/schema.ts";
+import {
+  type CellSummary,
+  passRateLabel,
+  renderTier2Summary,
+} from "../lib/summary-markdown.ts";
 
 const SERVICE_NAME = "skills-evals";
 const EXPERIMENT_NAME = "skills-reviewer-eval";
@@ -51,27 +58,17 @@ type Args = {
   readonly summaryPath: string | null;
 };
 
-type Row = {
-  readonly fixture_name: string;
-  readonly reviewer_skill: string;
-  readonly expected_findings: string; // JSON-encoded ExpectedFindings
-  readonly notes: string;
-  readonly fixture_version: string;
-};
+type Row = DatasetRow;
 
 const parseArgs = (argv: readonly string[]): Args => {
   const args = argv.slice(2);
-  const flagValue = (name: string): string | null => {
-    const idx = args.indexOf(name);
-    return idx === -1 ? null : args[idx + 1] ?? null;
-  };
   return {
-    fixtureFilter: flagValue("--fixture"),
-    reviewerFilter: flagValue("--reviewer"),
-    dryRun: args.includes("--dry-run"),
-    local: args.includes("--local"),
-    runs: Number(flagValue("--runs") ?? DEFAULT_RUNS_PER_CELL),
-    summaryPath: flagValue("--summary-path"),
+    fixtureFilter: flagValue(args, "--fixture"),
+    reviewerFilter: flagValue(args, "--reviewer"),
+    dryRun: flagPresent(args, "--dry-run"),
+    local: flagPresent(args, "--local"),
+    runs: numericFlag(args, "--runs", DEFAULT_RUNS_PER_CELL),
+    summaryPath: flagValue(args, "--summary-path"),
   };
 };
 
@@ -114,13 +111,16 @@ const loadLocalRows = async (): Promise<readonly Row[]> => {
   for (const name of names) {
     const dir = join(FIXTURES_DIR, name);
     const raw = await readFile(join(dir, "expected.findings.json"), "utf8");
+    const diff_patch = await readFile(join(dir, "diff.patch"), "utf8").catch(() => "");
     const notes = await readFile(join(dir, "notes.md"), "utf8").catch(() => "");
     const expected = JSON.parse(raw) as { by_reviewer: Record<string, unknown> };
     for (const [reviewer_skill, slice] of Object.entries(expected.by_reviewer)) {
       rows.push({
         fixture_name: name,
         reviewer_skill,
+        diff_patch,
         expected_findings: JSON.stringify(slice),
+        planted_smells: "[]",
         notes,
         fixture_version: "local",
       });
@@ -226,21 +226,6 @@ const stddev = (xs: readonly number[]): number => {
   return Math.sqrt(xs.reduce((acc, x) => acc + (x - m) ** 2, 0) / (xs.length - 1));
 };
 
-type CellSummary = {
-  readonly fixture_name: string;
-  readonly reviewer_skill: string;
-  readonly run_count: number;
-  readonly pass_rate: number;
-  readonly mean_findings_count: number;
-  readonly stddev_findings_count: number;
-  readonly mean_extra_findings: number;
-  readonly mean_missing_specs: number;
-  readonly mean_drifted: number;
-  readonly mean_matched: number;
-  readonly total_cost_usd: number;
-  readonly invocation_failures: number;
-};
-
 const summarise = (
   row: Row,
   outcomes: readonly RunOutcome[],
@@ -258,12 +243,6 @@ const summarise = (
   total_cost_usd: outcomes.reduce((acc, o) => acc + (o.cost_usd ?? 0), 0),
   invocation_failures: outcomes.filter((o) => !o.invoked_ok).length,
 });
-
-const passRateLabel = (rate: number): string => {
-  if (rate === 1) return "✓"; // 3/3 — green
-  if (rate >= 2 / 3) return "~"; // 2/3 — flaky
-  return "✗"; // <2/3 — broken
-};
 
 const runOneCell = async (
   row: Row,
@@ -368,10 +347,9 @@ type SummaryMeta = {
 };
 
 /**
- * Renders the per-PR tier-2 comment. The workflow pipes this straight to
- * `gh pr comment --body-file` (with a marker tag so re-runs edit the same
- * comment instead of stacking new ones). No JSON intermediate — the
- * runner has the data, the runner builds the markdown.
+ * Pipe the rendered markdown to disk — the tier-2 workflow then feeds it
+ * into `gh pr comment --body-file`. Pure rendering lives in
+ * `lib/summary-markdown.ts` so it's snapshot-testable.
  */
 const writeSummary = async (
   args: Args,
@@ -379,40 +357,12 @@ const writeSummary = async (
   meta: SummaryMeta,
 ): Promise<void> => {
   if (!args.summaryPath) return;
-  const totalCost = cells.reduce((acc, c) => acc + c.total_cost_usd, 0);
-  const passing = cells.filter((c) => c.pass_rate === 1).length;
-  const flaky = cells.filter((c) => c.pass_rate > 0 && c.pass_rate < 1).length;
-  const broken = cells.filter((c) => c.pass_rate === 0).length;
-
-  const rows = cells
-    .map((c) => {
-      const passes = Math.round(c.pass_rate * c.run_count);
-      const passLabel = passRateLabel(c.pass_rate);
-      return `| \`${c.fixture_name}\` | \`${c.reviewer_skill}\` | ${passes}/${c.run_count} ${passLabel} | ${c.mean_findings_count.toFixed(1)} | ${c.mean_extra_findings.toFixed(1)} | $${c.total_cost_usd.toFixed(4)} |`;
-    })
-    .join("\n");
-
-  // Marker lets `gh pr comment --edit-last` (or the workflow's
-  // find-comment step) target the same comment on re-runs.
-  const lines = [
-    "<!-- evals-tier2-result -->",
-    "## Tier 2 eval results",
-    "",
-    meta.dashboardUrl
-      ? `[Open experiment in LangWatch](${meta.dashboardUrl})`
-      : "_LangWatch dashboard URL not captured for this run._",
-    "",
-    `**${passing} green · ${flaky} flaky · ${broken} broken** · ${cells.length} cells × ${args.runs} runs · total cost $${totalCost.toFixed(4)}${args.dryRun ? " · *dry-run*" : ""}`,
-    "",
-    "| fixture | reviewer | pass rate | mean findings | mean extras | cost |",
-    "|---|---|:--:|--:|--:|--:|",
-    rows,
-    "",
-    "_Legend: ✓ 3/3 · ~ 2/3 (flaky) · ✗ <2/3 (broken)._",
-    "",
-  ];
-
-  await writeFile(args.summaryPath, `${lines.join("\n")}\n`, "utf8");
+  const markdown = renderTier2Summary(cells, {
+    runsPerCell: args.runs,
+    dryRun: args.dryRun,
+    dashboardUrl: meta.dashboardUrl,
+  });
+  await writeFile(args.summaryPath, markdown, "utf8");
   console.log(`◦ summary written to ${args.summaryPath}`);
 };
 

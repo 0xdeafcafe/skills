@@ -18,28 +18,12 @@ import { join } from "node:path";
 
 import { LangWatch } from "langwatch";
 
+import { DATASET_COLUMNS, type DatasetRow } from "../lib/dataset-types.ts";
+
 const FIXTURES_DIR = new URL("../fixtures/", import.meta.url).pathname;
 const DATASET_NAME = "skills-eval-fixtures";
 
-const COLUMN_TYPES: readonly { readonly name: string; readonly type: string }[] = [
-  { name: "fixture_name", type: "string" },
-  { name: "reviewer_skill", type: "string" },
-  { name: "diff_patch", type: "string" },
-  { name: "expected_findings", type: "string" },
-  { name: "planted_smells", type: "string" },
-  { name: "notes", type: "string" },
-  { name: "fixture_version", type: "string" },
-];
-
-type FixtureRow = {
-  readonly fixture_name: string;
-  readonly reviewer_skill: string;
-  readonly diff_patch: string;
-  readonly expected_findings: string;
-  readonly planted_smells: string;
-  readonly notes: string;
-  readonly fixture_version: string;
-};
+type FixtureRow = DatasetRow;
 
 type ReviewerExpected = {
   readonly findings?: readonly { readonly category?: string }[];
@@ -134,7 +118,7 @@ const main = async (): Promise<void> => {
     );
   } catch {
     console.log(`◦ creating dataset "${DATASET_NAME}"`);
-    await lw.datasets.create({ name: DATASET_NAME, columnTypes: [...COLUMN_TYPES] });
+    await lw.datasets.create({ name: DATASET_NAME, columnTypes: [...DATASET_COLUMNS] });
   }
 
   await lw.datasets.createRecords(DATASET_NAME, [...rows]);

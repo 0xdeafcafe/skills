@@ -99,23 +99,32 @@ type ClaudeJsonEnvelope = {
   readonly total_cost_usd?: number;
 };
 
-const buildSubprocessEnv = (): NodeJS.ProcessEnv => {
-  const baseUrl = process.env.ANTHROPIC_BASE_URL ?? process.env.LANGWATCH_ENDPOINT;
-  const authToken = process.env.ANTHROPIC_AUTH_TOKEN ?? process.env.LANGWATCH_VIRTUAL_AI_KEY;
+const MAX_STDOUT_BYTES = 50 * 1024 * 1024;
+const STDOUT_NEAR_LIMIT_BYTES = Math.floor(MAX_STDOUT_BYTES * 0.9);
 
-  const env: NodeJS.ProcessEnv = { ...process.env };
+/**
+ * Exported for unit testing. The branching here (gateway vs. ANTHROPIC_* vs.
+ * LOCAL_ANTHROPIC_API_KEY vs. throw) silently determines whether `claude -p`
+ * talks to LangWatch's gateway or directly to Anthropic, so the contract is
+ * worth locking down in tests.
+ */
+export const buildSubprocessEnv = (env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv => {
+  const baseUrl = env.ANTHROPIC_BASE_URL ?? env.LANGWATCH_ENDPOINT;
+  const authToken = env.ANTHROPIC_AUTH_TOKEN ?? env.LANGWATCH_VIRTUAL_AI_KEY;
+
+  const out: NodeJS.ProcessEnv = { ...env };
 
   if (baseUrl && authToken) {
-    env.ANTHROPIC_BASE_URL = baseUrl;
-    env.ANTHROPIC_AUTH_TOKEN = authToken;
-    return env;
+    out.ANTHROPIC_BASE_URL = baseUrl;
+    out.ANTHROPIC_AUTH_TOKEN = authToken;
+    return out;
   }
 
-  if (process.env.LOCAL_ANTHROPIC_API_KEY) {
-    env.ANTHROPIC_API_KEY = process.env.LOCAL_ANTHROPIC_API_KEY;
-    delete env.ANTHROPIC_BASE_URL;
-    delete env.ANTHROPIC_AUTH_TOKEN;
-    return env;
+  if (env.LOCAL_ANTHROPIC_API_KEY) {
+    out.ANTHROPIC_API_KEY = env.LOCAL_ANTHROPIC_API_KEY;
+    delete out.ANTHROPIC_BASE_URL;
+    delete out.ANTHROPIC_AUTH_TOKEN;
+    return out;
   }
 
   throw new Error(
@@ -153,13 +162,23 @@ export const invokeClaude = ({
     env,
     encoding: "utf8",
     timeout: timeoutMs,
-    maxBuffer: 50 * 1024 * 1024,
+    maxBuffer: MAX_STDOUT_BYTES,
   });
 
   const rawStdout = result.stdout ?? "";
   const stderr = result.stderr ?? "";
   const exitCode = result.status ?? -1;
   const timedOut = result.signal === "SIGTERM" && result.status === null;
+
+  // spawnSync silently truncates at maxBuffer. Surface near-limit output so a
+  // missing finding doesn't get attributed to the reviewer skill when the
+  // real cause was a truncated stream.
+  if (rawStdout.length >= STDOUT_NEAR_LIMIT_BYTES) {
+    console.warn(
+      `! claude -p stdout is ${rawStdout.length} bytes (limit ${MAX_STDOUT_BYTES}); ` +
+        "findings may be missing if the stream was truncated",
+    );
+  }
 
   if (timedOut || exitCode !== 0 || !rawStdout) {
     return {

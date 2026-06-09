@@ -14,12 +14,16 @@
 //   node runners/run-tier3.ts --dry-run                 # skip claude call
 //   node runners/run-tier3.ts --max-budget-usd 8        # raise ceiling
 
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+import { LangWatch } from "langwatch";
+import { setupObservability } from "langwatch/observability/node";
+
 import { invokeClaude } from "../lib/claude-invoke.ts";
+import { flagPresent, flagValue, numericFlag } from "../lib/cli-args.ts";
 import { parseDriveChangeReport } from "../lib/drive-change-parser.ts";
 import {
   type ExpectedDriveChange,
@@ -37,18 +41,17 @@ type Args = {
   readonly fixture: string;
   readonly dryRun: boolean;
   readonly maxBudgetUsd: number;
+  /** Optional path the runner writes a markdown rollup to (mirrors tier-2). */
+  readonly summaryPath: string | null;
 };
 
 const parseArgs = (argv: readonly string[]): Args => {
   const args = argv.slice(2);
-  const flagValue = (name: string): string | null => {
-    const idx = args.indexOf(name);
-    return idx === -1 ? null : args[idx + 1] ?? null;
-  };
   return {
-    fixture: flagValue("--fixture") ?? DEFAULT_FIXTURE,
-    dryRun: args.includes("--dry-run"),
-    maxBudgetUsd: Number(flagValue("--max-budget-usd") ?? DEFAULT_BUDGET_USD),
+    fixture: flagValue(args, "--fixture") ?? DEFAULT_FIXTURE,
+    dryRun: flagPresent(args, "--dry-run"),
+    maxBudgetUsd: numericFlag(args, "--max-budget-usd", DEFAULT_BUDGET_USD),
+    summaryPath: flagValue(args, "--summary-path"),
   };
 };
 
@@ -161,20 +164,22 @@ const main = async (): Promise<void> => {
   if (!process.env.LANGWATCH_API_KEY) {
     console.log("◦ LANGWATCH_API_KEY unset — running without experiment / telemetry");
     const outcome = runDriveChange(repo.path, expected, args.maxBudgetUsd);
+    await emitSummary(args, outcome);
     reportOutcome(outcome);
     process.exit(outcome.overall_pass ? 0 : 1);
   }
 
-  const { setupObservability } = await import("langwatch/observability/node");
-  const { LangWatch } = await import("langwatch");
   setupObservability({ serviceName: SERVICE_NAME });
   const lw = new LangWatch();
   const experiment = await lw.experiments.init(EXPERIMENT_NAME);
 
-  let outcome: RunOutcome | null = null;
+  // experiment.run's callback always fires once for a 1-row input. Collect
+  // the outcome into an array we read after — clearer than the
+  // outer-`let` + null-cast dance.
+  const outcomes: RunOutcome[] = [];
   await experiment.run([{ fixture: args.fixture }], async ({ index }) => {
     const result = runDriveChange(repo.path, expected, args.maxBudgetUsd);
-    outcome = result;
+    outcomes.push(result);
     experiment.log("invoked_ok", { index, passed: result.invoked_ok });
     experiment.log("mode_match", { index, passed: result.mode_match });
     experiment.log("specialists_match", { index, passed: result.specialists_match });
@@ -188,10 +193,42 @@ const main = async (): Promise<void> => {
     if (result.cost_usd !== null) experiment.log("cost_usd", { index, score: result.cost_usd });
   });
 
-  if (outcome === null) throw new Error("experiment.run did not invoke its callback");
+  const [outcome] = outcomes;
+  if (!outcome) throw new Error("experiment.run did not invoke its callback");
+  await emitSummary(args, outcome);
   reportOutcome(outcome);
   console.log("\n✓ tier-3 run logged — see the LangWatch dashboard");
-  process.exit((outcome as RunOutcome).overall_pass ? 0 : 1);
+  process.exit(outcome.overall_pass ? 0 : 1);
+};
+
+/**
+ * Markdown rollup mirroring tier-2's shape, but for the single-row tier-3
+ * smoke. The workflow appends this to `$GITHUB_STEP_SUMMARY` so the
+ * dispatcher gets a one-glance view of mode/specialists/findings/cost.
+ */
+const emitSummary = async (args: Args, o: RunOutcome): Promise<void> => {
+  if (!args.summaryPath) return;
+  const lines = [
+    "<!-- evals-tier3-result -->",
+    "## Tier 3 drive-change smoke",
+    "",
+    `fixture: \`${args.fixture}\``,
+    "",
+    `- ${o.invoked_ok ? "✓" : "✗"} invoked_ok`,
+    `- ${o.mode_match ? "✓" : "✗"} mode_match`,
+    `- ${o.specialists_match ? "✓" : "✗"} specialists_match`,
+    `- ${o.count_in_range ? "✓" : "✗"} count_in_range (findings=${o.findings_count})`,
+    `- ${o.expected_findings_matched === 1 ? "✓" : "✗"} all expected findings matched (${(o.expected_findings_matched * 100).toFixed(0)}%)`,
+    `- extra findings: ${o.extra_findings_count}`,
+    `- missing specs: ${o.missing_specs_count}`,
+    `- unparsed lines: ${o.unparsed_lines_count}`,
+    o.cost_usd !== null ? `- cost: $${o.cost_usd.toFixed(4)}` : "- cost: (not reported)",
+    "",
+    `**${o.overall_pass ? "PASS" : "FAIL"}**`,
+    "",
+  ];
+  await writeFile(args.summaryPath, `${lines.join("\n")}\n`, "utf8");
+  console.log(`◦ summary written to ${args.summaryPath}`);
 };
 
 const reportOutcome = (o: RunOutcome): void => {

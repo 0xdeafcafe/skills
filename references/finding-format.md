@@ -148,3 +148,16 @@ Schema rules for aggregate findings:
 The merger treats aggregate findings differently from individual ones: it doesn't dedup by `file:line` (no two reviewers should emit the same tool's aggregate for the same paths), and it doesn't apply-validate (the tool runs in Phase 5 and self-validates). The fix-applier sees the `auto:` fix and runs the command across `files_affected`, then re-runs the tool in check-mode to confirm zero remaining violations.
 
 If aggregate-mode tooling can't fix something (a lint rule that needs human judgment, an unused-import the tool refuses to auto-delete), emit those as **individual** findings alongside the aggregate. The user sees "230 auto-fixed + 4 manual" rather than 234 lines of detail.
+
+## Reading the eval fixtures (`$`-prefixed meta fields)
+
+The eval-harness fixture files (`evals/fixtures/*/expected.findings.json`, `evals/fixtures/*/expected.drive_change.json`) follow this shape but layer expectation-matching on top — they're the *spec a reviewer's output must satisfy*, not a finding itself. To keep that meta layer visually distinct from the contract-shaped fields, any key starting with `$` is documentation for the reader and is ignored by the schema validator + the scorer.
+
+Conventions in use:
+
+- `$comment` — a top-of-file note explaining the fixture's shape. The schema/scorer skips it.
+- `$match` — a stable key per expected finding so test failures can name the slot ("the `security-secret-leak` spec didn't match"). Not part of the finding contract.
+- `$why_*` / `$why_zero_expected` — prose rationale for *why* the fixture expects this shape (e.g. why a count_max of 0 is the right call for a particular reviewer). Reads like commit-message context next to the cells they describe.
+- `$count_tolerance_note` — explains the chosen `count_min` / `count_max` bounds.
+
+If you're authoring a new fixture, prefer documenting these decisions inline via `$`-fields over external notes — they live with the data they describe and travel with PRs. The scorer treats them as no-ops.

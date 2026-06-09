@@ -67,8 +67,15 @@ jobs:
         env:
           TIER3_FIXTURE: ${{ github.event.inputs.fixture }}
           TIER3_BUDGET: ${{ github.event.inputs.max_budget_usd }}
+          TIER3_SUMMARY: ${{ github.workspace }}/tier3-summary.md
         run: |
-          ARGS=()
+          ARGS=(--summary-path "$TIER3_SUMMARY")
           if [ -n "$TIER3_FIXTURE" ]; then ARGS+=(--fixture "$TIER3_FIXTURE"); fi
           if [ -n "$TIER3_BUDGET" ]; then ARGS+=(--max-budget-usd "$TIER3_BUDGET"); fi
           pnpm tier3 "${ARGS[@]}"
+
+          # Same step-summary handling as tier-2: surface pass/fail + cost to
+          # whoever dispatched the workflow without needing to read stdout.
+          if [ -f "$TIER3_SUMMARY" ]; then
+            cat "$TIER3_SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+          fi
