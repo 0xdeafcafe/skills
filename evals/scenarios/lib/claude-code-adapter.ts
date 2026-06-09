@@ -40,6 +40,17 @@ export type ClaudeCodeAdapterOptions = {
    * (e.g. `/start-discussion`). Prepended to the first user message.
    */
   readonly slashCommand: string;
+  /**
+   * Names of skills to load into the session. Pass the single skill
+   * we want to evaluate to prevent claude-code's auto-discovery from
+   * picking a different skill based on the user's natural language
+   * (e.g. "I want to add X" would otherwise trigger /plan-change's
+   * description, ignoring the `/start-feature` slash prefix).
+   *
+   * Use exact SKILL.md `name:` values. Omit to load all discovered
+   * skills (default claude-code behaviour).
+   */
+  readonly skills?: readonly string[];
   readonly allowedTools?: readonly string[];
   readonly maxBudgetUsd?: number;
   readonly turnTimeoutMs?: number;
@@ -95,6 +106,7 @@ export class ClaudeCodeAdapter extends AgentAdapter {
       env,
       abortController,
       plugins: [{ type: "local", path: this.opts.pluginDir }],
+      ...(this.opts.skills ? { skills: [...this.opts.skills] } : {}),
       ...(this.sessionId ? { resume: this.sessionId } : {}),
     };
 

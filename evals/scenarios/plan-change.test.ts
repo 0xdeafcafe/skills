@@ -82,6 +82,10 @@ describe("/plan-change", () => {
           cwd,
           pluginDir: PLUGIN_DIR,
           slashCommand: "/plan-change",
+          // Lock to plan-change so the agent doesn't get sidetracked into
+          // /write-adr or /write-spec via auto-discovery on natural-language
+          // phrasing in the simulator's turns.
+          skills: ["plan-change"],
         });
 
         const result = await scenario.run({

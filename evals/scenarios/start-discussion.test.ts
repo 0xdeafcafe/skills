@@ -31,6 +31,9 @@ describe("/start-discussion", () => {
           cwd,
           pluginDir: PLUGIN_DIR,
           slashCommand: "/start-discussion",
+          // Lock to start-discussion so auto-discovery can't pick a sibling
+          // skill based on the simulator's natural-language opener.
+          skills: ["start-discussion"],
         });
 
         const result = await scenario.run({

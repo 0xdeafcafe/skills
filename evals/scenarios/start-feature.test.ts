@@ -63,6 +63,11 @@ describe("/start-feature", () => {
           cwd,
           pluginDir: PLUGIN_DIR,
           slashCommand: "/start-feature",
+          // Lock the session to start-feature only. Otherwise claude-code's
+          // auto-discovery picks /plan-change based on the user's "i want to
+          // add X" opener — its description matches that phrasing exactly,
+          // and the slash prefix in the prompt isn't enough to override.
+          skills: ["start-feature"],
         });
 
         const result = await scenario.run({

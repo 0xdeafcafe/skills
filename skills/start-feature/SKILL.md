@@ -6,6 +6,14 @@ allowed-tools: Bash(gh:*), Bash(git:*), Bash(rg:*), Bash(fd:*), Read, Grep, Glob
 
 # start-feature - entry point for known code work
 
+> **You are a router, not a designer.** Your job is to identify
+> the work, find the existing ADR landscape, name the next skill,
+> and hand off. You do NOT discuss architecture options. You do
+> NOT ask about counter algorithms, storage shapes, edge cases,
+> forcing functions, scope, or anything else that belongs to
+> `/plan-change`. If you find yourself asking a design question,
+> stop — that's a sign you've drifted into the wrong skill.
+
 A piece of work walks in the door. You know what you want to do but
 you might not know what scaffolding belongs around it. `/start-feature`
 sorts that out and routes you into the right next skill.
@@ -16,16 +24,24 @@ the intent isn't clear yet, use `/start-discussion` instead.
 
 ## What this skill does
 
-1. Asks at most two short questions to pin down the work.
-2. Inspects the codebase for any existing ADR / spec for the area.
-3. Decides which next skill should run: `/plan-change`,
-   `/backfill-feature` + `/plan-change`, or "skip the scaffolding -
-   too small."
-4. Hands off via the Skill tool with the context already populated.
+This is a **four-step routing skill**. Nothing more.
+
+1. Asks at most two short questions to pin down the work
+   (one-sentence summary + new-vs-existing). Stop asking once
+   you have both answers.
+2. Inspects the codebase for any existing ADR / spec for the area
+   — runs the discovery commands in Phase 1.
+3. States the routing decision back to the user
+   (which next skill, why). One short block. Then waits 0 turns.
+4. Hands off via the Skill tool. The handoff is the deliverable.
+
+Anything beyond these four steps belongs to the downstream skill.
 
 ## Phase 0 - Pin the work
 
-Ask the user:
+You need exactly two answers before you can route. Get them and
+move on. Do not ask any third question here — anything more belongs
+to the downstream skill, not this one.
 
 1. **What's the work?** One sentence is fine. ("Add CSV export on the
    orders page", "fix the bug where invoices print the wrong total
@@ -42,6 +58,12 @@ Ask the user:
 If the user opened with enough detail that you can answer both
 yourself, summarise back in one sentence and ask "is that right?"
 rather than asking from scratch.
+
+**Do not ask about design.** Forcing function, scope, alternatives,
+algorithms, storage shape, edge cases, golden path — all of that
+belongs to `/plan-change`. If you catch yourself drafting a numbered
+list of design forks, you've drifted into the wrong skill; stop and
+route.
 
 ## Phase 1 - Find the ADR landscape
 
@@ -90,7 +112,11 @@ touching, or is there nothing yet?"
 choice = trivial. Two-sentence description with follow-up questions =
 not.
 
-State the route back before invoking:
+State the route back before invoking. The routing block is your
+deliverable — without it you have not done this skill's job. Even
+when the user's first message already implies the answer (new
+feature, no prior ADR), still print this block and then call the
+skill. Don't skip the announcement.
 
 ```
 Routing:
@@ -111,6 +137,15 @@ implementation directly. Skip ADR / spec / characterization tests.
 
 ## Operating rules
 
+- **You are a router, not a designer.** This is the most common
+  failure mode. The temptation to "be helpful" by listing
+  architectural options is wrong here — that's exactly what
+  `/plan-change` is for. Route to it; don't impersonate it.
+- **No design discussion. Period.** Do not list storage options, do
+  not enumerate algorithms, do not lay out forcing functions, do not
+  draft anchor questions, do not produce numbered lists of
+  "decisions to make". If any of those appear in your response,
+  delete them and replace with the routing block.
 - **Don't write any files.** This skill routes; it doesn't author.
   Downstream skills (`/plan-change`, `/backfill-feature`) do the
   writing.
@@ -119,7 +154,11 @@ implementation directly. Skip ADR / spec / characterization tests.
   the context. Don't re-ask.
 - **Trust the user's "trivial" claim, but sanity-check it.** If they
   say "just a copy change" but the diff spans 12 files, ask once.
-- **One question per turn where possible.** Don't dump a list.
+- **One question per turn where possible.** Don't dump a list. And
+  never ask more than two questions total before routing.
+- **Always print the routing block.** Even when the answer is
+  obvious. Even when you handed off to the next skill in the same
+  response. The block is what makes the routing legible.
 
 ## Composing with other skills
 
