@@ -3,9 +3,10 @@
 // Mirrors lib/scoring.ts's shape (greedy matcher + per-spec checks) so the
 // runner can reuse the same metric vocabulary across tier-2 and tier-3.
 // Tier-3 adds reviewer + mode + specialists checks that don't exist at the
-// per-reviewer level.
+// per-reviewer level. The greedy matcher itself lives in lib/match.ts.
 
 import type { DriveChangeFinding, DriveChangeMode, DriveChangeReport } from "./drive-change-parser.ts";
+import { greedyMatchSpecs, matches, type SpecMatch } from "./match.ts";
 
 export type ExpectedDriveChangeSpec = {
   readonly $match: string;
@@ -25,12 +26,7 @@ export type ExpectedDriveChange = {
   readonly findings: readonly ExpectedDriveChangeSpec[];
 };
 
-export type DriveChangeSpecScore = {
-  readonly $match: string;
-  readonly matched_index: number | null;
-  readonly checks: Readonly<Record<string, boolean>>;
-  readonly all_passed: boolean;
-};
+export type DriveChangeSpecScore = SpecMatch;
 
 export type DriveChangeScore = {
   readonly mode_match: boolean;
@@ -42,19 +38,6 @@ export type DriveChangeScore = {
   readonly missing_specs_count: number;
   readonly unparsed_lines_count: number;
   readonly overall_pass: boolean;
-};
-
-const matches = (pattern: string | undefined, value: string | undefined): boolean => {
-  if (pattern === undefined) return true;
-  if (value === undefined) return false;
-  try {
-    const inline = /^\(\?([imsu]+)\)/.exec(pattern);
-    const flags = inline?.[1] ?? "";
-    const body = inline ? pattern.slice(inline[0].length) : pattern;
-    return new RegExp(body, flags).test(value);
-  } catch {
-    return false;
-  }
 };
 
 const checkSpecAgainst = (
@@ -77,9 +60,6 @@ const checkSpecAgainst = (
   return checks;
 };
 
-const countTruthy = (record: Readonly<Record<string, boolean>>): number =>
-  Object.values(record).filter(Boolean).length;
-
 export const scoreDriveChange = (
   report: DriveChangeReport,
   expected: ExpectedDriveChange,
@@ -96,33 +76,11 @@ export const scoreDriveChange = (
     (expected.count_min === undefined || report.findings.length >= expected.count_min) &&
     (expected.count_max === undefined || report.findings.length <= expected.count_max);
 
-  const used = new Set<number>();
-  const per_spec: DriveChangeSpecScore[] = [];
-
-  for (const spec of expected.findings) {
-    let best: { index: number; checks: Readonly<Record<string, boolean>>; passed: number } | null = null;
-    for (let i = 0; i < report.findings.length; i++) {
-      if (used.has(i)) continue;
-      const actual = report.findings[i];
-      if (actual === undefined) continue;
-      const checks = checkSpecAgainst(spec, actual);
-      const passed = countTruthy(checks);
-      if (best === null || passed > best.passed) best = { index: i, checks, passed };
-    }
-
-    if (best === null) {
-      per_spec.push({ $match: spec.$match, matched_index: null, checks: {}, all_passed: false });
-      continue;
-    }
-    used.add(best.index);
-    per_spec.push({
-      $match: spec.$match,
-      matched_index: best.index,
-      checks: best.checks,
-      all_passed:
-        Object.keys(best.checks).length > 0 && Object.values(best.checks).every(Boolean),
-    });
-  }
+  const { per_spec, used } = greedyMatchSpecs(
+    expected.findings,
+    report.findings,
+    checkSpecAgainst,
+  );
 
   const matched_count = per_spec.filter((s) => s.all_passed).length;
   const expected_findings_matched =

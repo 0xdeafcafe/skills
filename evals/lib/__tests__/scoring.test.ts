@@ -121,7 +121,7 @@ describe("scoreFixture — failure modes", () => {
     expect(result.overall_pass).toBe(false);
     expect(result.missing_specs_count).toBe(1);
     expect(result.expected_findings_matched).toBe(0.5);
-    expect(result.per_spec[1]?.matched_actual_index).toBe(null);
+    expect(result.per_spec[1]?.matched_index).toBe(null);
   });
 
   it("flags count_in_range failure when fewer than count_min", () => {

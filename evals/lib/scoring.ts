@@ -8,8 +8,10 @@
 // Matching strategy: greedy by file + category. For each expected spec, find
 // an unused actual finding with matching file + category, score it against
 // every other criterion. Findings unmatched by any spec count as "extra";
-// specs unmatched by any actual count as "missing".
+// specs unmatched by any actual count as "missing". The greedy loop itself
+// lives in lib/match.ts — shared with drive-change-scoring.ts.
 
+import { greedyMatchSpecs, matches, type SpecMatch } from "./match.ts";
 import type { Finding } from "./schema.ts";
 
 export type ExpectedSpec = {
@@ -35,12 +37,7 @@ export type ExpectedFindings = {
   readonly count_max?: number;
 };
 
-export type SpecScore = {
-  readonly $match: string;
-  readonly matched_actual_index: number | null;
-  readonly checks: Readonly<Record<string, boolean>>;
-  readonly all_passed: boolean;
-};
+export type SpecScore = SpecMatch;
 
 export type FixtureScore = {
   readonly per_spec: readonly SpecScore[];
@@ -50,26 +47,6 @@ export type FixtureScore = {
   readonly extra_findings_count: number;
   readonly missing_specs_count: number;
   readonly overall_pass: boolean;
-};
-
-/**
- * Pattern test that understands inline flags like `(?i)` at the start of the
- * pattern — JavaScript's RegExp doesn't natively support them. Our fixtures
- * write `(?i)(stripe.*secret)`-style patterns because they originated as
- * Python-style; we parse the prefix and pass the flags to the constructor's
- * second arg.
- */
-const matches = (pattern: string | undefined, value: string | undefined): boolean => {
-  if (pattern === undefined) return true; // no constraint
-  if (value === undefined) return false;
-  try {
-    const inline = /^\(\?([imsu]+)\)/.exec(pattern);
-    const flags = inline?.[1] ?? "";
-    const body = inline ? pattern.slice(inline[0].length) : pattern;
-    return new RegExp(body, flags).test(value);
-  } catch {
-    return false;
-  }
 };
 
 const checkSpecAgainstActual = (
@@ -111,62 +88,16 @@ const checkSpecAgainstActual = (
   return checks;
 };
 
-const countTruthy = (record: Readonly<Record<string, boolean>>): number =>
-  Object.values(record).filter(Boolean).length;
-
-/**
- * Greedy matcher. For each spec in order, finds the unused actual finding that
- * passes the most checks against this spec. Marks that actual as used; moves on.
- */
-const matchSpecs = (
-  specs: readonly ExpectedSpec[],
-  actuals: readonly Finding[],
-): { readonly per_spec: readonly SpecScore[]; readonly used: ReadonlySet<number> } => {
-  const used = new Set<number>();
-  const per_spec: SpecScore[] = [];
-
-  for (const spec of specs) {
-    let best: { index: number; checks: Readonly<Record<string, boolean>>; passed: number } | null = null;
-
-    for (let i = 0; i < actuals.length; i++) {
-      if (used.has(i)) continue;
-      const actual = actuals[i];
-      if (actual === undefined) continue;
-      const checks = checkSpecAgainstActual(spec, actual);
-      const passed = countTruthy(checks);
-      if (best === null || passed > best.passed) {
-        best = { index: i, checks, passed };
-      }
-    }
-
-    if (best === null) {
-      per_spec.push({
-        $match: spec.$match,
-        matched_actual_index: null,
-        checks: {},
-        all_passed: false,
-      });
-      continue;
-    }
-
-    used.add(best.index);
-    per_spec.push({
-      $match: spec.$match,
-      matched_actual_index: best.index,
-      checks: best.checks,
-      all_passed: Object.keys(best.checks).length > 0 && Object.values(best.checks).every(Boolean),
-    });
-  }
-
-  return { per_spec, used };
-};
-
 export const scoreFixture = (
   actuals: readonly Finding[],
   expected: ExpectedFindings,
   schemaValidity: { readonly all_valid: boolean },
 ): FixtureScore => {
-  const { per_spec, used } = matchSpecs(expected.findings, actuals);
+  const { per_spec, used } = greedyMatchSpecs(
+    expected.findings,
+    actuals,
+    checkSpecAgainstActual,
+  );
 
   const count_in_range =
     (expected.count_min === undefined || actuals.length >= expected.count_min) &&
@@ -182,7 +113,7 @@ export const scoreFixture = (
     all_findings_schema_valid: schemaValidity.all_valid,
     expected_findings_matched,
     extra_findings_count: actuals.length - used.size,
-    missing_specs_count: per_spec.filter((s) => s.matched_actual_index === null).length,
+    missing_specs_count: per_spec.filter((s) => s.matched_index === null).length,
     overall_pass:
       count_in_range &&
       schemaValidity.all_valid &&
