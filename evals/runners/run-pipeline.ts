@@ -14,10 +14,13 @@
 //   node runners/run-pipeline.ts --runs 1                 # override 3 runs
 //   node runners/run-pipeline.ts --local                  # local fixtures only
 
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+
+import { LangWatch } from "langwatch";
+import { setupObservability } from "langwatch/observability/node";
 
 import { invokeClaude } from "../lib/claude-invoke.ts";
 import { parseFindingBlock, splitTranscript } from "../lib/finding-parser.ts";
@@ -40,6 +43,12 @@ type Args = {
   readonly dryRun: boolean;
   readonly local: boolean;
   readonly runs: number;
+  /**
+   * Optional path the runner writes a machine-readable summary to after
+   * the run completes. The tier-2 workflow reads this to render the PR
+   * comment preview.
+   */
+  readonly summaryPath: string | null;
 };
 
 type Row = {
@@ -62,20 +71,37 @@ const parseArgs = (argv: readonly string[]): Args => {
     dryRun: args.includes("--dry-run"),
     local: args.includes("--local"),
     runs: Number(flagValue("--runs") ?? DEFAULT_RUNS_PER_CELL),
+    summaryPath: flagValue("--summary-path"),
   };
 };
 
-const fetchDatasetRows = (): readonly Row[] => {
-  const r = spawnSync("langwatch", ["dataset", "get", DATASET_SLUG, "--format", "json"], {
-    encoding: "utf8",
-  });
-  if (r.status !== 0) {
-    throw new Error(`langwatch dataset get failed: ${r.stderr || r.stdout}`);
+/**
+ * The SDK's runUrl property is private; the only way to obtain the
+ * dashboard URL today is to intercept the "Follow results at: <url>" line
+ * the SDK prints during init. Wrap stdout for the duration of the call.
+ */
+const captureDashboardUrl = async <T,>(work: () => Promise<T>): Promise<{ value: T; url: string | null }> => {
+  let captured: string | null = null;
+  const origWrite = process.stdout.write.bind(process.stdout);
+  process.stdout.write = ((chunk: unknown, ...rest: unknown[]) => {
+    if (typeof chunk === "string") {
+      const m = chunk.match(/Follow results at:\s+(https?:\/\/\S+)/);
+      if (m?.[1]) captured = m[1];
+    }
+    return (origWrite as (c: unknown, ...r: unknown[]) => boolean)(chunk, ...rest);
+  }) as typeof process.stdout.write;
+  try {
+    const value = await work();
+    return { value, url: captured };
+  } finally {
+    process.stdout.write = origWrite;
   }
-  const parsed = JSON.parse(r.stdout) as {
-    readonly entries?: readonly { readonly entry: Row }[];
-  };
-  return (parsed.entries ?? []).map((e) => e.entry);
+};
+
+const fetchDatasetRows = async (): Promise<readonly Row[]> => {
+  const lw = new LangWatch();
+  const dataset = await lw.datasets.get<Row>(DATASET_SLUG);
+  return dataset.entries.map((e) => e.entry);
 };
 
 const loadLocalRows = async (): Promise<readonly Row[]> => {
@@ -291,7 +317,7 @@ const main = async (): Promise<void> => {
     throw new Error(`--runs must be a positive integer; got ${args.runs}`);
   }
 
-  const rows: readonly Row[] = args.local ? await loadLocalRows() : fetchDatasetRows();
+  const rows: readonly Row[] = args.local ? await loadLocalRows() : await fetchDatasetRows();
   const filtered = rows.filter((r) =>
     (!args.fixtureFilter || r.fixture_name === args.fixtureFilter) &&
     (!args.reviewerFilter || r.reviewer_skill === args.reviewerFilter),
@@ -302,6 +328,8 @@ const main = async (): Promise<void> => {
   }
   console.log(`◦ running ${filtered.length} cell(s) × ${args.runs} run(s) = ${filtered.length * args.runs} total invocation(s)`);
 
+  const cells: CellSummary[] = [];
+
   // Dry-runs always skip the LangWatch experiment wrapper too — an empty
   // experiment record clutters the dashboard with rows that have no metrics.
   if (!process.env.LANGWATCH_API_KEY || args.dryRun) {
@@ -311,24 +339,81 @@ const main = async (): Promise<void> => {
       console.log("◦ LANGWATCH_API_KEY unset — running without experiment / telemetry");
     }
     for (const row of filtered) {
-      await runOneCell(row, args, () => {});
+      cells.push(await runOneCell(row, args, () => {}));
     }
+    await writeSummary(args, cells, { dashboardUrl: null, runId: null });
     return;
   }
 
-  const { setupObservability } = await import("langwatch/observability/node");
-  const { LangWatch } = await import("langwatch");
   setupObservability({ serviceName: SERVICE_NAME });
   const lw = new LangWatch();
-  const experiment = await lw.experiments.init(EXPERIMENT_NAME);
+  const { value: experiment, url: dashboardUrl } = await captureDashboardUrl(() =>
+    lw.experiments.init(EXPERIMENT_NAME),
+  );
 
   await experiment.run([...filtered], async ({ item, index }) => {
-    await runOneCell(item, args, (key, body) =>
+    const cell = await runOneCell(item, args, (key, body) =>
       experiment.log(key, { index, ...body }),
     );
+    cells.push(cell);
   });
 
+  await writeSummary(args, cells, { dashboardUrl, runId: experiment.runId });
   console.log("\n✓ experiment run complete — see the LangWatch dashboard");
+};
+
+type SummaryMeta = {
+  readonly dashboardUrl: string | null;
+  readonly runId: string | null;
+};
+
+/**
+ * Renders the per-PR tier-2 comment. The workflow pipes this straight to
+ * `gh pr comment --body-file` (with a marker tag so re-runs edit the same
+ * comment instead of stacking new ones). No JSON intermediate — the
+ * runner has the data, the runner builds the markdown.
+ */
+const writeSummary = async (
+  args: Args,
+  cells: readonly CellSummary[],
+  meta: SummaryMeta,
+): Promise<void> => {
+  if (!args.summaryPath) return;
+  const totalCost = cells.reduce((acc, c) => acc + c.total_cost_usd, 0);
+  const passing = cells.filter((c) => c.pass_rate === 1).length;
+  const flaky = cells.filter((c) => c.pass_rate > 0 && c.pass_rate < 1).length;
+  const broken = cells.filter((c) => c.pass_rate === 0).length;
+
+  const rows = cells
+    .map((c) => {
+      const passes = Math.round(c.pass_rate * c.run_count);
+      const passLabel = passRateLabel(c.pass_rate);
+      return `| \`${c.fixture_name}\` | \`${c.reviewer_skill}\` | ${passes}/${c.run_count} ${passLabel} | ${c.mean_findings_count.toFixed(1)} | ${c.mean_extra_findings.toFixed(1)} | $${c.total_cost_usd.toFixed(4)} |`;
+    })
+    .join("\n");
+
+  // Marker lets `gh pr comment --edit-last` (or the workflow's
+  // find-comment step) target the same comment on re-runs.
+  const lines = [
+    "<!-- evals-tier2-result -->",
+    "## Tier 2 eval results",
+    "",
+    meta.dashboardUrl
+      ? `[Open experiment in LangWatch](${meta.dashboardUrl})`
+      : "_LangWatch dashboard URL not captured for this run._",
+    "",
+    `**${passing} green · ${flaky} flaky · ${broken} broken** · ${cells.length} cells × ${args.runs} runs · total cost $${totalCost.toFixed(4)}${args.dryRun ? " · *dry-run*" : ""}`,
+    "",
+    "| fixture | reviewer | pass rate | mean findings | mean extras | cost |",
+    "|---|---|:--:|--:|--:|--:|",
+    rows,
+    "",
+    "_Legend: ✓ 3/3 · ~ 2/3 (flaky) · ✗ <2/3 (broken)._",
+    "",
+  ];
+
+  await writeFile(args.summaryPath, `${lines.join("\n")}\n`, "utf8");
+  console.log(`◦ summary written to ${args.summaryPath}`);
 };
 
 await main().catch((err: unknown) => {

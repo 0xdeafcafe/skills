@@ -1,7 +1,7 @@
 // Uploads every (fixture × reviewer) pair in evals/fixtures/ as a separate
 // row in a LangWatch dataset. Why per-pair, not per-fixture: tier-2 invokes
 // each /review-* skill in isolation against a fixture, so the natural eval
-// row is one combination — `evaluation.run(rows, callback)` iterates them
+// row is one combination — `experiment.run(rows, callback)` iterates them
 // directly without us having to expand on the runner side.
 //
 // One fixture with N reviewer slices in expected.findings.json → N rows.
@@ -16,17 +16,19 @@ import { readFile, readdir } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 
+import { LangWatch } from "langwatch";
+
 const FIXTURES_DIR = new URL("../fixtures/", import.meta.url).pathname;
 const DATASET_NAME = "skills-eval-fixtures";
 
-const COLUMNS: readonly string[] = [
-  "fixture_name:string",
-  "reviewer_skill:string",
-  "diff_patch:string",
-  "expected_findings:string",
-  "planted_smells:string",
-  "notes:string",
-  "fixture_version:string",
+const COLUMN_TYPES: readonly { readonly name: string; readonly type: string }[] = [
+  { name: "fixture_name", type: "string" },
+  { name: "reviewer_skill", type: "string" },
+  { name: "diff_patch", type: "string" },
+  { name: "expected_findings", type: "string" },
+  { name: "planted_smells", type: "string" },
+  { name: "notes", type: "string" },
+  { name: "fixture_version", type: "string" },
 ];
 
 type FixtureRow = {
@@ -94,40 +96,6 @@ const buildRowsForFixture = async (name: string): Promise<readonly FixtureRow[]>
   }));
 };
 
-type CliResult = { readonly ok: boolean; readonly stdout: string; readonly stderr: string };
-
-const lw = (args: readonly string[]): CliResult => {
-  const r = spawnSync("langwatch", [...args], { encoding: "utf8" });
-  return {
-    ok: r.status === 0,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? "",
-  };
-};
-
-const datasetExists = (slug: string): boolean =>
-  lw(["dataset", "get", slug, "--format", "json"]).ok;
-
-const createDataset = (): void => {
-  console.log(`◦ creating dataset "${DATASET_NAME}"`);
-  const r = lw([
-    "dataset",
-    "create",
-    DATASET_NAME,
-    "--columns",
-    COLUMNS.join(","),
-    "--format",
-    "json",
-  ]);
-  if (!r.ok) throw new Error(`dataset create failed:\n${r.stderr || r.stdout}`);
-};
-
-const addRecords = (slug: string, records: readonly FixtureRow[]): void => {
-  console.log(`◦ adding ${records.length} records to ${slug}`);
-  const r = lw(["dataset", "records", "add", slug, "--json", JSON.stringify(records)]);
-  if (!r.ok) throw new Error(`records add failed:\n${r.stderr || r.stdout}`);
-};
-
 const main = async (): Promise<void> => {
   const dryRun = process.argv.includes("--dry-run");
 
@@ -137,10 +105,10 @@ const main = async (): Promise<void> => {
   if (fixtures.length === 0) throw new Error(`no fixtures in ${FIXTURES_DIR}`);
 
   const rows = (await Promise.all(fixtures.map(buildRowsForFixture))).flat();
-  const summary = rows
-    .reduce<Map<string, number>>((acc, r) => acc.set(r.fixture_name, (acc.get(r.fixture_name) ?? 0) + 1), new Map())
-    .entries();
-  for (const [fixture, count] of summary) {
+  for (const [fixture, count] of rows.reduce<Map<string, number>>(
+    (acc, r) => acc.set(r.fixture_name, (acc.get(r.fixture_name) ?? 0) + 1),
+    new Map(),
+  )) {
     console.log(`◦ ${fixture}: ${count} reviewer row(s)`);
   }
   console.log(`◦ ${rows.length} total row(s)`);
@@ -155,16 +123,21 @@ const main = async (): Promise<void> => {
     throw new Error("LANGWATCH_API_KEY unset — load .env or export it");
   }
 
-  if (!datasetExists(DATASET_NAME)) {
-    createDataset();
-  } else {
+  const lw = new LangWatch();
+
+  // datasets.get throws when the slug doesn't exist; treat that as "create".
+  try {
+    await lw.datasets.get(DATASET_NAME);
     console.log(
       `◦ dataset "${DATASET_NAME}" exists; records will be appended ` +
-        `(run \`langwatch dataset delete ${DATASET_NAME}\` first to start fresh)`,
+        `(delete it first via the dashboard to start fresh)`,
     );
+  } catch {
+    console.log(`◦ creating dataset "${DATASET_NAME}"`);
+    await lw.datasets.create({ name: DATASET_NAME, columnTypes: [...COLUMN_TYPES] });
   }
 
-  addRecords(DATASET_NAME, rows);
+  await lw.datasets.createRecords(DATASET_NAME, [...rows]);
   console.log(`✓ uploaded ${rows.length} row(s)`);
 };
 

@@ -45,6 +45,7 @@ jobs:
     outputs:
       should_run: ${{ steps.gate.outputs.should_run }}
       ref: ${{ steps.gate.outputs.ref }}
+      pr_number: ${{ steps.gate.outputs.pr_number }}
     steps:
       - name: Decide whether to run
         id: gate
@@ -95,6 +96,7 @@ jobs:
               }
               core.setOutput("should_run", "true");
               core.setOutput("ref", context.payload.pull_request.head.sha);
+              core.setOutput("pr_number", String(context.payload.pull_request.number));
               return;
             }
 
@@ -115,6 +117,7 @@ jobs:
               const ref = await refForPr(context.payload.issue.number);
               core.setOutput("should_run", "true");
               core.setOutput("ref", ref);
+              core.setOutput("pr_number", String(context.payload.issue.number));
 
               // Acknowledge so the human knows it kicked off.
               await github.rest.reactions.createForIssueComment({
@@ -180,9 +183,50 @@ jobs:
           TIER2_FIXTURE: ${{ github.event.inputs.fixture }}
           TIER2_REVIEWER: ${{ github.event.inputs.reviewer }}
           TIER2_RUNS: ${{ github.event.inputs.runs }}
+          # Workflow always asks for a summary; the comment step below only
+          # uses it when there's a PR to post to (workflow_dispatch has none).
+          TIER2_SUMMARY: ${{ github.workspace }}/tier2-summary.md
         run: |
-          ARGS=()
+          ARGS=(--summary-path "$TIER2_SUMMARY")
           if [ -n "$TIER2_FIXTURE" ]; then ARGS+=(--fixture "$TIER2_FIXTURE"); fi
           if [ -n "$TIER2_REVIEWER" ]; then ARGS+=(--reviewer "$TIER2_REVIEWER"); fi
           if [ -n "$TIER2_RUNS" ]; then ARGS+=(--runs "$TIER2_RUNS"); fi
           pnpm tier2 "${ARGS[@]}"
+
+          # Surface cost / pass-rate to whoever triggered the run without
+          # making them dig through stdout. Step Summary renders on the
+          # workflow run's main view.
+          if [ -f "$TIER2_SUMMARY" ]; then
+            cat "$TIER2_SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # Render results inline on the PR if this was a PR-triggered run.
+      # Re-runs edit the same comment (marker tag) so the timeline doesn't
+      # fill with eval rollups. Failures here don't fail the job — the
+      # eval result is in the workflow log + LangWatch regardless.
+      - name: Post / update PR comment with results
+        if: always() && needs.guard.outputs.pr_number != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ needs.guard.outputs.pr_number }}
+          SUMMARY_FILE: ${{ github.workspace }}/tier2-summary.md
+          REPO: ${{ github.repository }}
+        working-directory: ${{ github.workspace }}
+        run: |
+          if [ ! -s "$SUMMARY_FILE" ]; then
+            echo "no summary file — nothing to post"
+            exit 0
+          fi
+          MARKER='<!-- evals-tier2-result -->'
+          EXISTING_ID=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --paginate \
+            --jq "[.[] | select(.body | startswith(\"$MARKER\"))] | first | .id // empty")
+          if [ -n "$EXISTING_ID" ]; then
+            echo "editing existing comment $EXISTING_ID"
+            gh api -X PATCH "repos/$REPO/issues/comments/$EXISTING_ID" \
+              -F body=@"$SUMMARY_FILE"
+          else
+            echo "creating new comment"
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file "$SUMMARY_FILE"
+          fi
