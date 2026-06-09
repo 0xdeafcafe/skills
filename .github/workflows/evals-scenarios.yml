@@ -1,0 +1,253 @@
+# Scenarios eval runs @langwatch/scenario multi-turn tests against the
+# conversational planning skills (/start-discussion, /plan-change,
+# /start-feature). Each scenario spins up a UserSimulatorAgent + a
+# JudgeAgent against a real Claude Code session loading the plugin —
+# meaning every run burns gateway / Anthropic credits AND time (per-test
+# timeout is 300s). Gated three ways so it never runs by accident:
+#
+#  1. PR label "run-scenarios" — collaborator-only; the workflow only
+#     fires when a write-permission user attaches the label.
+#  2. Issue comment "/eval scenarios" on a PR — quick repl-style trigger
+#     for collaborators while reviewing. Same write-perm check.
+#  3. workflow_dispatch — manual run from the Actions tab. Pre-release
+#     check or ad-hoc smoke.
+#
+# Public-repo forks never trigger this (label / comment gates check
+# repository permission level, not just who authored the comment).
+name: evals · scenarios
+
+# Reads code, runs the SDK, logs to LangWatch. No writes back to the repo
+# beyond the PR-comment step (which uses GITHUB_TOKEN scoped to issues).
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  pull_request:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: "Scenario file pattern (blank = all). e.g. plan-change"
+        required: false
+        default: ""
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.gate.outputs.should_run }}
+      ref: ${{ steps.gate.outputs.ref }}
+      pr_number: ${{ steps.gate.outputs.pr_number }}
+    steps:
+      - name: Decide whether to run
+        id: gate
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const event = context.eventName;
+            const actor = context.actor;
+
+            // For label + comment events, verify the actor has write
+            // access. workflow_dispatch already enforces this.
+            const hasWritePerm = async (login) => {
+              try {
+                const r = await github.rest.repos.getCollaboratorPermissionLevel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  username: login,
+                });
+                return ["admin", "maintain", "write"].includes(r.data.permission);
+              } catch {
+                return false;
+              }
+            };
+
+            const refForPr = async (prNumber) => {
+              const pr = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+              });
+              return pr.data.head.sha;
+            };
+
+            if (event === "workflow_dispatch") {
+              core.setOutput("should_run", "true");
+              core.setOutput("ref", context.sha);
+              return;
+            }
+
+            if (event === "pull_request") {
+              if (context.payload.label?.name !== "run-scenarios") {
+                core.setOutput("should_run", "false");
+                return;
+              }
+              if (!(await hasWritePerm(actor))) {
+                core.setFailed(`@${actor} added the run-scenarios label but lacks write permission`);
+                return;
+              }
+              core.setOutput("should_run", "true");
+              core.setOutput("ref", context.payload.pull_request.head.sha);
+              core.setOutput("pr_number", String(context.payload.pull_request.number));
+              return;
+            }
+
+            if (event === "issue_comment") {
+              if (!context.payload.issue.pull_request) {
+                core.setOutput("should_run", "false");
+                return;
+              }
+              const body = (context.payload.comment.body || "").trim();
+              if (!/^\/eval\s+scenarios\b/i.test(body)) {
+                core.setOutput("should_run", "false");
+                return;
+              }
+              if (!(await hasWritePerm(actor))) {
+                core.setFailed(`@${actor} ran /eval scenarios but lacks write permission`);
+                return;
+              }
+              const ref = await refForPr(context.payload.issue.number);
+              core.setOutput("should_run", "true");
+              core.setOutput("ref", ref);
+              core.setOutput("pr_number", String(context.payload.issue.number));
+
+              // Acknowledge so the human knows it kicked off.
+              await github.rest.reactions.createForIssueComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: context.payload.comment.id,
+                content: "rocket",
+              });
+              return;
+            }
+
+            core.setOutput("should_run", "false");
+
+  scenarios:
+    needs: guard
+    if: needs.guard.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: evals
+    env:
+      LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
+      LANGWATCH_PROJECT_ID: ${{ secrets.LANGWATCH_PROJECT_ID }}
+      LANGWATCH_ENDPOINT: ${{ secrets.LANGWATCH_ENDPOINT }}
+      LANGWATCH_VIRTUAL_AI_KEY: ${{ secrets.LANGWATCH_VIRTUAL_AI_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.guard.outputs.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - run: pnpm install --frozen-lockfile
+
+      # The Agent SDK (@anthropic-ai/claude-agent-sdk) spawns claude-code
+      # as a subprocess to actually drive the plugin under test. Same
+      # pinned install as tier-2 — bump deliberately when you want a
+      # newer CLI. Without this the scenario adapter would fail at
+      # `query()` time with ENOENT.
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@2.1.142
+
+      # Two routing surfaces, one config:
+      #   - Claude Code subprocess (the agent under test) reads
+      #     ANTHROPIC_BASE_URL + ANTHROPIC_AUTH_TOKEN.
+      #   - The simulator + judge use @ai-sdk/anthropic via
+      #     scenarios/scenario.config.mjs, which reads the same pair
+      #     plus LANGWATCH_PROJECT_ID for the x-project-id header.
+      - name: Configure gateway env for claude
+        run: |
+          echo "ANTHROPIC_BASE_URL=$LANGWATCH_ENDPOINT" >> "$GITHUB_ENV"
+          echo "ANTHROPIC_AUTH_TOKEN=$LANGWATCH_VIRTUAL_AI_KEY" >> "$GITHUB_ENV"
+
+      - name: Install the skill plugin under test
+        run: |
+          # The plugin under test is the repo itself. The scenarios
+          # adapter loads it via plugins: [{type:"local", path}], but the
+          # CLI also needs the marketplace entry so claude-code itself
+          # resolves slash commands consistently.
+          claude --version
+          claude plugin marketplace add "$GITHUB_WORKSPACE" || true
+          claude plugin install skills@0xdeafcafe-skills || true
+
+      - name: Run scenarios
+        id: run
+        env:
+          SCENARIO_FILTER: ${{ github.event.inputs.scenario }}
+          SUMMARY_FILE: ${{ github.workspace }}/scenarios-summary.md
+          OUTPUT_FILE: ${{ github.workspace }}/scenarios-output.txt
+        run: |
+          # Capture the full vitest output so we can post a tail of it to
+          # the PR. The job's exit code still comes from vitest itself.
+          set -o pipefail
+          if [ -n "$SCENARIO_FILTER" ]; then
+            pnpm scenarios -- "$SCENARIO_FILTER" 2>&1 | tee "$OUTPUT_FILE"
+          else
+            pnpm scenarios 2>&1 | tee "$OUTPUT_FILE"
+          fi
+          STATUS=$?
+
+          # Build a markdown summary for the PR comment + step summary.
+          # We grab vitest's terminal summary lines (Test Files / Tests /
+          # Duration), which sit at the tail of the output. If the run
+          # errored out before vitest's summary printed, fall back to
+          # the last 80 lines so the human still sees what blew up.
+          {
+            echo "<!-- evals-scenarios-result -->"
+            echo "## scenarios eval results"
+            echo
+            echo "Commit: \`${GITHUB_SHA::8}\` · status: $([ $STATUS -eq 0 ] && echo "passed" || echo "failed")"
+            echo
+            echo '<details><summary>vitest output (tail)</summary>'
+            echo
+            echo '```'
+            tail -80 "$OUTPUT_FILE" || true
+            echo '```'
+            echo
+            echo '</details>'
+            echo
+            echo "Full traces in the LangWatch dashboard."
+          } > "$SUMMARY_FILE"
+
+          cat "$SUMMARY_FILE" >> "$GITHUB_STEP_SUMMARY"
+          exit $STATUS
+
+      # Render results inline on the PR if this was a PR-triggered run.
+      # Re-runs edit the same comment (marker tag) so the timeline doesn't
+      # fill with eval rollups. `if: always()` so a failed scenario still
+      # gets reported back rather than disappearing silently.
+      - name: Post / update PR comment with results
+        if: always() && needs.guard.outputs.pr_number != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ needs.guard.outputs.pr_number }}
+          SUMMARY_FILE: ${{ github.workspace }}/scenarios-summary.md
+          REPO: ${{ github.repository }}
+        working-directory: ${{ github.workspace }}
+        run: |
+          if [ ! -s "$SUMMARY_FILE" ]; then
+            echo "no summary file — nothing to post"
+            exit 0
+          fi
+          MARKER='<!-- evals-scenarios-result -->'
+          EXISTING_ID=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --paginate \
+            --jq "[.[] | select(.body | startswith(\"$MARKER\"))] | first | .id // empty")
+          if [ -n "$EXISTING_ID" ]; then
+            echo "editing existing comment $EXISTING_ID"
+            gh api -X PATCH "repos/$REPO/issues/comments/$EXISTING_ID" \
+              -F body=@"$SUMMARY_FILE"
+          else
+            echo "creating new comment"
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file "$SUMMARY_FILE"
+          fi
