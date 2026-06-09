@@ -89,6 +89,7 @@ describe("/plan-change", () => {
         });
 
         const result = await scenario.run({
+          setId: "planning-skills",
           name: "in-house feature flag service",
           description:
             "An engineer wants to add a feature-flag service to their " +

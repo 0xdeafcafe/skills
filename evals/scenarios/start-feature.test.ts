@@ -71,6 +71,7 @@ describe("/start-feature", () => {
         });
 
         const result = await scenario.run({
+          setId: "planning-skills",
           name: "new rate-limiting feature",
           description:
             "An engineer has a clear new feature to build (per-API-key " +

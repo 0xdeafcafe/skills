@@ -37,6 +37,10 @@ describe("/start-discussion", () => {
         });
 
         const result = await scenario.run({
+          // Groups all three planning-skill scenarios (start-discussion,
+          // start-feature, plan-change) under one "Simulation Set" in
+          // the LangWatch dashboard. Same name across files = same set.
+          setId: "planning-skills",
           name: "vague auth refactor idea",
           description:
             "An engineer wants to think out loud about whether to refactor " +
