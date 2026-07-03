@@ -46,10 +46,11 @@
     },
     {
       "title": "Shipping",
-      "description": "Open the PR, iterate it to merge-ready.",
+      "description": "Open the PR, iterate it to merge-ready. pr-lgtm is a one-shot: a short, funny LGTM comment on someone else's PR, ghost-written in Alex's voice; never approves, never leaves a review.",
       "skills": [
         "open-pr",
-        "drive-pr"
+        "drive-pr",
+        "pr-lgtm"
       ]
     },
     {

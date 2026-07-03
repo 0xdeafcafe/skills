@@ -2,7 +2,7 @@
 
 [![skills.sh](https://skills.sh/b/0xdeafcafe/skills)](https://skills.sh/0xdeafcafe/skills)
 
-Twenty-one Claude Code skills for the parts of shipping software I'd
+Twenty-two Claude Code skills for the parts of shipping software I'd
 rather not do myself. The ADR. The Gherkin spec. The audit pass. The
 PR description. The back-and-forth on review comments. Tedious enough
 to skip, important enough that skipping bites a quarter later.
@@ -167,6 +167,7 @@ claude: [/open-pr]
 | **Shipping** | |
 | [`open-pr`](./skills/open-pr/) | Composes title and body, runs final checks, opens via `gh pr create`. Wires `tone-of-voice` so the body sounds like the author. |
 | [`drive-pr`](./skills/drive-pr/) | Iterates the open PR until trusted comments are resolved and CI is green. Calls `/review-pr` upfront, dispatches comment-driven edits through the agent pipeline. |
+| [`pr-lgtm`](./skills/pr-lgtm/) | Drops a short, funny LGTM comment on someone else's PR. Reads the diff for a hook, drafts, runs it through `tone-of-voice`, confirms, posts. Never approves, never reviews. |
 | **Cross-cutting** | |
 | [`tone-of-voice`](./skills/tone-of-voice/) | Ghost-writes in my voice. Applies to PR bodies, commit messages, and Claude's own conversational replies. |
 
@@ -277,6 +278,7 @@ skills with zero executable surface are safer to install.
     ├── implement-change/
     ├── open-pr/
     ├── drive-pr/
+    ├── pr-lgtm/
     └── tone-of-voice/
 ```
 
