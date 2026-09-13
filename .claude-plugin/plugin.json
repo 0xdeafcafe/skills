@@ -1,0 +1,11 @@
+{
+  "name": "skills",
+  "version": "2.0.0-alpha.1",
+  "description": "Intent-led software work: 28 reusable skills and four agents for shaping, coordinating, building, and reviewing.",
+  "author": {
+    "name": "Alexander Forbes-Reed",
+    "email": "me@alex.forbes.red"
+  },
+  "repository": "https://github.com/0xdeafcafe/skills",
+  "license": "MIT"
+}

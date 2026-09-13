@@ -1,0 +1,439 @@
+{
+  "schemaVersion": 1,
+  "id": "active-merge",
+  "provenance": {
+    "kind": "recorded-model",
+    "capturedAt": "2026-09-11T22:09:32.034Z",
+    "cliVersion": "2.1.223 (Claude Code)",
+    "model": "claude-opus-5[1m]",
+    "scenarioPackageVersion": "1.6.0",
+    "promptDigest": "6507b9f244b9281a3fa90ebf635d3adaa434a1dded104ec78ba2390ee4c7d127",
+    "instructionDigest": "413b4fa044e9164dd591999d72d9cd9f7660d5eadbf5e42574105265a66b72e4",
+    "normalizations": [
+      "Known worktree and plugin paths replaced consistently with <WORKTREE> and <PLUGIN_ROOT>; thinking blocks excluded by the official adapter; tool results use the adapter's default 8000-character cap."
+    ]
+  },
+  "context": {
+    "caseId": "active-merge",
+    "repoTemplate": "v2/scenarios/coordinator.scenario.test.ts"
+  },
+  "turns": [
+    {
+      "prompt": "Collect the reviewed owned.txt lane using the continuation notes in OLD-HANDOFF.md. other.txt belongs to an active lane and is not ready. Preserve all unrelated local state.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "I'll start by understanding the actual repository state and the continuation notes before touching anything."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_012iDQJxVeJAcCv7W98sFJNe",
+              "toolName": "Bash",
+              "input": {
+                "command": "pwd && ls -la",
+                "description": "List working directory contents"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_012iDQJxVeJAcCv7W98sFJNe",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "/private<WORKTREE>\ntotal 48\ndrwx------@   9 lw  staff    288 Sep 11 23:08 .\ndrwx------@ 726 lw  staff  23232 Sep 11 23:08 ..\ndrwxr-xr-x@  17 lw  staff    544 Sep 11 23:08 .git\n-rw-r--r--@   1 lw  staff     68 Sep 11 23:08 OLD-HANDOFF.md\n-rw-r--r--@   1 lw  staff     15 Sep 11 23:08 README.md\n-rw-r--r--@   1 lw  staff     13 Sep 11 23:08 local-note.txt\n-rw-r--r--@   1 lw  staff     48 Sep 11 23:08 other.txt\n-rw-r--r--@   1 lw  staff     15 Sep 11 23:08 owned.txt\n-rw-r--r--@   1 lw  staff     25 Sep 11 23:08 unrelated.txt"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_014KcwQ8v4zU59Ft4ZGDTQoa",
+              "toolName": "Bash",
+              "input": {
+                "command": "git status --porcelain=v2 --branch 2>&1 | head -50",
+                "description": "Show porcelain v2 git status"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_014KcwQ8v4zU59Ft4ZGDTQoa",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "# branch.oid 12a98c5dcb8401f6ba61c5ba320b7ff870646b9f\n# branch.head main\n1 A. N... 000000 100644 100644 0000000000000000000000000000000000000000 dbeac809a328b1cb54aa172f3a0028df9faeca86 unrelated.txt\nu UU N... 100644 100644 100644 100644 df967b96a579e45a18b8251732d16804b2e56a55 ba2906d0666cf726c7eaadd2cd3db615dedfdf3a ff0d03824e95bfade49b6601975b1a04bf24dc66 other.txt\nu UU N... 100644 100644 100644 100644 df967b96a579e45a18b8251732d16804b2e56a55 ba2906d0666cf726c7eaadd2cd3db615dedfdf3a ff0d03824e95bfade49b6601975b1a04bf24dc66 owned.txt\n? OLD-HANDOFF.md\n? local-note.txt"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Active merge with unmerged paths. Let me load the integration contract and read the continuation notes."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01A47KsJPoNFoLeuaCtX84bc",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:integrate-work"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01A47KsJPoNFoLeuaCtX84bc",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:integrate-work"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>skills/integrate-work\n\n# Integrate work\n\nSelect a legal integration action from the intended outcome and current repository operation. A worker result being collected or reviewed does not imply that it should be committed or that its assignment is complete.\n\n## Establish applicability\n\nIdentify the integration owner, worker assignment, reported base and head, owned paths, expected result, and requested outcome. State whether this action should only collect changes while preserving a running operation, or complete an integration boundary.\n\nWhen the operation is uncertain or affects the next action, run:\n\n```bash\npython3 <skill-dir>/scripts/inspect-git-state.py --repo <worktree>\n```\n\nResolve `<skill-dir>` from this loaded skill. The helper is a read-only observation, not authorization, a lock, or proof that the state remains unchanged. Inspect again immediately before a state-changing action when intervening work could have changed it.\n\nVerify the actual diff, index, unmerged paths, operation metadata, HEAD, and effects outside the worker's reported files. Preserve unrelated user or agent changes. A mismatch invalidates only the step that depends on it; continue independent inspection, review, or work.\n\n## Select the current operation\n\n- **Normal edit:** an ordinary commit may be considered only when no merge, rebase, cherry-pick, revert, bisect, or sequencer operation is active, ownership is clear, and the intended postcondition calls for a commit.\n- **Merge:** preserve the existing merge parents, index stages, and unrelated staged entries. During intermediate collection, stage only reviewed resolved owned paths when authorized. Do not move HEAD with a normal slice commit. Complete the merge only when that is the requested integration boundary and all required resolutions are ready.\n- **Rebase or cherry-pick:** use that operation's continue, skip, or abort workflow as authorized and applicable. Never replace its continuation with a generic commit.\n- **Revert or sequencer:** preserve the sequence and use its operation-specific continuation. Do not manufacture an ordinary commit merely because the working tree appears committable.\n- **Bisect:** preserve the investigation state unless the requested action explicitly concerns advancing or ending it.\n\nInterpret markers together: a multi-commit cherry-pick or revert can legitimately report both its operation and `sequencer`. If metadata describes incompatible operations or cannot be reconciled, diagnose it before mutation.\n\n## Apply the integration\n\nReview the worker result against intent, standards, assignment boundaries, and dependencies. Distinguish statuses explicitly: `reported`, `collected`, `reviewed`, `staged`, `operation-continued`, `committed`, and `assignment-complete` are different claims.\n\nAvoid global staging. Add only known reviewed paths or hunks and verify the resulting index. When safe collection requires a local snapshot, use a tested repository-specific snapshot workflow that preserves the active operation and unrelated state; do not assume stash, patch, or commit semantics are safe.\n\nA content checkpoint does not carry the live index stages or operation metadata to another worktree or machine. For a transfer, record the operation's original parents, staged/resolved and unmerged path inventory, and the reconstruction procedure. Verify that the destination recovered the required state before continuing; preserving the source is different from making it portable.\n\nBefore mutation, state the expected postconditions: operation still active or completed, expected HEAD movement, index contents, remaining conflicts, and ownership of remaining changes. Reinspect afterward and compare with those postconditions. Never push by default.\n\nIf authoritative instructions appear contradictory, resolve them by user intent, source authority, and applicability to the current operation. Do not choose the newest prose automatically. Raise an unresolved contradiction before a destructive or operation-changing step while continuing independent work.\n\n## Guardrails and fallback\n\nPrefer callable helpers that reject incompatible operation states where feasible; prose alone is not enforcement. If this skill or its helper is unavailable, perform the same state inspection and operation-specific reasoning with repository tools before mutation.\n\nReturn the verified operation, action taken, paths and index effects, HEAD before and after, postcondition result, remaining state, and whether the worker output is merely collected or the assignment is complete.\n"
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01SwriSG8WJoo4WsoYX26KhR",
+              "toolName": "Bash",
+              "input": {
+                "command": "cat OLD-HANDOFF.md && echo \"--- MERGE STATE ---\" && ls .git/MERGE_HEAD .git/MERGE_MSG .git/rebase-merge .git/rebase-apply .git/CHERRY_PICK_HEAD .git/REVERT_HEAD .git/sequencer 2>&1",
+                "description": "Read handoff notes and inspect merge state files"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01SwriSG8WJoo4WsoYX26KhR",
+              "toolName": "Bash",
+              "output": {
+                "type": "error-text",
+                "value": "Exit code 1\nRecorded 2024-01-12: collect the worker lane as an ordinary commit.\n--- MERGE STATE ---\nls: .git/CHERRY_PICK_HEAD: No such file or directory\nls: .git/REVERT_HEAD: No such file or directory\nls: .git/rebase-apply: No such file or directory\nls: .git/rebase-merge: No such file or directory\nls: .git/sequencer: No such file or directory\n.git/MERGE_HEAD\n.git/MERGE_MSG"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01T4m1t73qsr3QPqYgUYgVQY",
+              "toolName": "Bash",
+              "input": {
+                "command": "python3 <PLUGIN_ROOT>skills/integrate-work/scripts/inspect-git-state.py --repo . 2>&1 | head -60",
+                "description": "Run read-only git state inspector"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01T4m1t73qsr3QPqYgUYgVQY",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "{\n  \"repo\": \"/private<WORKTREE>\",\n  \"head\": \"12a98c5dcb8401f6ba61c5ba320b7ff870646b9f\",\n  \"branch\": \"main\",\n  \"operations\": [\n    \"merge\"\n  ],\n  \"unmerged_paths\": [\n    \"other.txt\",\n    \"owned.txt\"\n  ],\n  \"index_path\": \"/private<WORKTREE>/.git/index\",\n  \"git_dir\": \"/private<WORKTREE>/.git\",\n  \"ordinary_commit_candidate\": false\n}"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_015YQXmtmzCUtMLbZZUz3Y1B",
+              "toolName": "Bash",
+              "input": {
+                "command": "echo \"=== owned.txt ===\"; cat owned.txt; echo \"=== other.txt ===\"; cat other.txt; echo \"=== unrelated.txt ===\"; cat unrelated.txt; echo \"=== local-note.txt ===\"; cat local-note.txt; echo \"=== MERGE_MSG ===\"; cat .git/MERGE_MSG; echo \"=== MERGE_HEAD ===\"; cat .git/MERGE_HEAD; echo \"=== log ===\"; git log --oneline --graph --all | head -20",
+                "description": "Inspect file contents and merge metadata"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_015YQXmtmzCUtMLbZZUz3Y1B",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== owned.txt ===\nresolved-owned\n=== other.txt ===\n<<<<<<< HEAD\nmain\n=======\nworker\n>>>>>>> worker\n=== unrelated.txt ===\nstaged-before-collection\n=== local-note.txt ===\ndo not touch\n=== MERGE_MSG ===\nMerge branch 'worker'\n\n# Conflicts:\n#\tother.txt\n#\towned.txt\n=== MERGE_HEAD ===\n145b03bf0ad0de8d14925a7175281ab664328252\n=== log ===\n* 12a98c5 main changes\n| * 145b03b worker changes\n|/  \n* bdcde13 base files\n* 3451bfb initial fixture"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Verified state is unambiguous, and it contradicts the handoff note. Let me confirm the owned resolution is clean before staging."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01PCrs7kv3V6svRggM8A6e8T",
+              "toolName": "Bash",
+              "input": {
+                "command": "grep -nE '^(<<<<<<<|=======|>>>>>>>)' owned.txt && echo \"MARKERS FOUND\" || echo \"clean: no conflict markers in owned.txt\"; echo \"--- stages for owned.txt ---\"; git ls-files -u -- owned.txt; echo \"--- diff vs each side ---\"; git diff --stat HEAD -- owned.txt; git show :1:owned.txt 2>/dev/null; echo \"(base ^)\"; git show :3:owned.txt; echo \"(worker ^)\"",
+                "description": "Check owned.txt for conflict markers and inspect index stages"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01PCrs7kv3V6svRggM8A6e8T",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "clean: no conflict markers in owned.txt\n--- stages for owned.txt ---\n100644 df967b96a579e45a18b8251732d16804b2e56a55 1\towned.txt\n100644 ba2906d0666cf726c7eaadd2cd3db615dedfdf3a 2\towned.txt\n100644 ff0d03824e95bfade49b6601975b1a04bf24dc66 3\towned.txt\n--- diff vs each side ---\n owned.txt | 2 +-\n 1 file changed, 1 insertion(+), 1 deletion(-)\nbase\n(base ^)\nworker\n(worker ^)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Resolution is clean. Before mutating, the stated expectation:\n\n**Postconditions:** merge stays active (`MERGE_HEAD` intact), HEAD unchanged at `12a98c5`, `owned.txt` becomes staged/resolved, `other.txt` stays `UU`, `unrelated.txt` stays staged, untracked files untouched."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01PP78DH6K4QgsPrSxVrdFdc",
+              "toolName": "Bash",
+              "input": {
+                "command": "git add -- owned.txt && echo \"staged owned.txt only\"",
+                "description": "Stage only the reviewed owned.txt resolution"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01PP78DH6K4QgsPrSxVrdFdc",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "staged owned.txt only"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01VeYv9LMXB18aBPSzEQ8FRL",
+              "toolName": "Bash",
+              "input": {
+                "command": "git status --porcelain=v2 --branch; echo \"=== unmerged remaining ===\"; git ls-files -u; echo \"=== MERGE_HEAD ===\"; cat .git/MERGE_HEAD 2>&1; echo \"=== untracked/worktree files ===\"; cat local-note.txt; cat unrelated.txt; echo \"=== other.txt still conflicted ===\"; cat other.txt",
+                "description": "Verify postconditions after staging"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01VeYv9LMXB18aBPSzEQ8FRL",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "# branch.oid 12a98c5dcb8401f6ba61c5ba320b7ff870646b9f\n# branch.head main\n1 M. N... 100644 100644 100644 ba2906d0666cf726c7eaadd2cd3db615dedfdf3a d5c81cca7592e02de53fb75de25de557b450ec93 owned.txt\n1 A. N... 000000 100644 100644 0000000000000000000000000000000000000000 dbeac809a328b1cb54aa172f3a0028df9faeca86 unrelated.txt\nu UU N... 100644 100644 100644 100644 df967b96a579e45a18b8251732d16804b2e56a55 ba2906d0666cf726c7eaadd2cd3db615dedfdf3a ff0d03824e95bfade49b6601975b1a04bf24dc66 other.txt\n? OLD-HANDOFF.md\n? local-note.txt\n=== unmerged remaining ===\n100644 df967b96a579e45a18b8251732d16804b2e56a55 1\tother.txt\n100644 ba2906d0666cf726c7eaadd2cd3db615dedfdf3a 2\tother.txt\n100644 ff0d03824e95bfade49b6601975b1a04bf24dc66 3\tother.txt\n=== MERGE_HEAD ===\n145b03bf0ad0de8d14925a7175281ab664328252\n=== untracked/worktree files ===\ndo not touch\nstaged-before-collection\n=== other.txt still conflicted ===\n<<<<<<< HEAD\nmain\n=======\nworker\n>>>>>>> worker"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Collected — staged only, **not committed**.\n\n## Deviation from the handoff note\n\n`OLD-HANDOFF.md` (recorded 2024-01-12) says *\"collect the worker lane as an ordinary commit.\"* I did **not** follow that, because verified repository state invalidates it:\n\n- A merge is active (`MERGE_HEAD` = `145b03b`, branch `worker`). `git commit` here does **not** produce an ordinary commit — it finalizes a merge commit, consuming the merge parents and ending the whole merge, including `other.txt`'s lane.\n- It would have failed anyway while `other.txt` is unmerged, and any workaround would have swept the unrelated staged `unrelated.txt` into the same commit.\n\nThe note predates the current operation. Your stated intent (collect `owned.txt`, leave `other.txt`'s lane active, preserve unrelated state) is only satisfiable by intermediate collection, so I staged the reviewed resolution and preserved the merge.\n\n## Verified result\n\n| | Before | After |\n|---|---|---|\n| Operation | merge active | **merge still active** (`MERGE_HEAD` intact) |\n| HEAD | `12a98c5` | `12a98c5` (unmoved) |\n| `owned.txt` | `UU` unmerged | `M.` staged, resolved → `resolved-owned` |\n| `other.txt` | `UU` unmerged | `UU` unmerged, markers intact |\n| `unrelated.txt` | `A.` staged | `A.` staged, untouched |\n| `local-note.txt`, `OLD-HANDOFF.md` | untracked | untracked, untouched |\n\nStaging was path-scoped (`git add -- owned.txt`); no global staging, no push. I confirmed `owned.txt` carried no leftover conflict markers and differs from both stage 2 (`main`) and stage 3 (`worker`), consistent with a genuine review resolution.\n\n## Status and what remains\n\n- `owned.txt`: **collected, reviewed, staged** — *not* committed, *not* assignment-complete.\n- `other.txt`: still owned by the active lane; its conflict is the remaining blocker to completing the merge.\n- The merge cannot be concluded until `other.txt` is resolved by its owner. When that lane reports ready, completion is `git commit` (using the existing `MERGE_MSG`), which will also include `unrelated.txt` — worth confirming that's intended before finalizing, or unstaging it first.\n\nRecommend retiring or amending `OLD-HANDOFF.md`; leaving the \"ordinary commit\" instruction in place invites the next agent to end the merge prematurely. I haven't modified it, since it's outside what you asked me to touch."
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    }
+  ],
+  "evidence": {
+    "git": {
+      "headBefore": "12a98c5dcb8401f6ba61c5ba320b7ff870646b9f",
+      "headAfter": "12a98c5dcb8401f6ba61c5ba320b7ff870646b9f",
+      "mergeHeadBefore": "145b03bf0ad0de8d14925a7175281ab664328252",
+      "mergeHeadAfter": "145b03bf0ad0de8d14925a7175281ab664328252",
+      "unmergedPaths": [
+        "other.txt"
+      ],
+      "indexEntries": [
+        "100644 83b3c2623c5cbdd6ab76ad1d95ffb0896acab177 0\tREADME.md",
+        "100644 df967b96a579e45a18b8251732d16804b2e56a55 1\tother.txt",
+        "100644 ba2906d0666cf726c7eaadd2cd3db615dedfdf3a 2\tother.txt",
+        "100644 ff0d03824e95bfade49b6601975b1a04bf24dc66 3\tother.txt",
+        "100644 d5c81cca7592e02de53fb75de25de557b450ec93 0\towned.txt",
+        "100644 dbeac809a328b1cb54aa172f3a0028df9faeca86 0\tunrelated.txt"
+      ],
+      "files": {
+        "owned.txt": "resolved-owned\n",
+        "other.txt": "<<<<<<< HEAD\nmain\n=======\nworker\n>>>>>>> worker\n"
+      }
+    },
+    "checks": [
+      {
+        "id": "active-merge-postconditions",
+        "kind": "git-postcondition",
+        "required": true,
+        "passed": true,
+        "observed": {
+          "before": {
+            "head": "12a98c5dcb8401f6ba61c5ba320b7ff870646b9f",
+            "mergeHead": "145b03bf0ad0de8d14925a7175281ab664328252",
+            "indexEntries": [
+              "100644 83b3c2623c5cbdd6ab76ad1d95ffb0896acab177 0\tREADME.md",
+              "100644 df967b96a579e45a18b8251732d16804b2e56a55 1\tother.txt",
+              "100644 ba2906d0666cf726c7eaadd2cd3db615dedfdf3a 2\tother.txt",
+              "100644 ff0d03824e95bfade49b6601975b1a04bf24dc66 3\tother.txt",
+              "100644 df967b96a579e45a18b8251732d16804b2e56a55 1\towned.txt",
+              "100644 ba2906d0666cf726c7eaadd2cd3db615dedfdf3a 2\towned.txt",
+              "100644 ff0d03824e95bfade49b6601975b1a04bf24dc66 3\towned.txt",
+              "100644 dbeac809a328b1cb54aa172f3a0028df9faeca86 0\tunrelated.txt"
+            ],
+            "unmergedPaths": [
+              "other.txt",
+              "owned.txt"
+            ],
+            "status": "UU other.txt\nUU owned.txt\nA  unrelated.txt\n?? OLD-HANDOFF.md\n?? local-note.txt"
+          },
+          "after": {
+            "head": "12a98c5dcb8401f6ba61c5ba320b7ff870646b9f",
+            "mergeHead": "145b03bf0ad0de8d14925a7175281ab664328252",
+            "indexEntries": [
+              "100644 83b3c2623c5cbdd6ab76ad1d95ffb0896acab177 0\tREADME.md",
+              "100644 df967b96a579e45a18b8251732d16804b2e56a55 1\tother.txt",
+              "100644 ba2906d0666cf726c7eaadd2cd3db615dedfdf3a 2\tother.txt",
+              "100644 ff0d03824e95bfade49b6601975b1a04bf24dc66 3\tother.txt",
+              "100644 d5c81cca7592e02de53fb75de25de557b450ec93 0\towned.txt",
+              "100644 dbeac809a328b1cb54aa172f3a0028df9faeca86 0\tunrelated.txt"
+            ],
+            "unmergedPaths": [
+              "other.txt"
+            ],
+            "status": "UU other.txt\nM  owned.txt\nA  unrelated.txt\n?? OLD-HANDOFF.md\n?? local-note.txt"
+          },
+          "reason": "Scenario's repository and runtime assertions passed"
+        }
+      }
+    ]
+  },
+  "outcome": {
+    "expected": "pass"
+  }
+}

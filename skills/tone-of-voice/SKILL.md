@@ -1,150 +1,54 @@
 ---
 name: tone-of-voice
-description: Use when writing prose that goes out under Alex Forbes-Reed's name - blog posts, marketing copy, launch announcements, release notes, PR titles + bodies, commit messages Claude drafts, slack messages, customer emails, X/LinkedIn posts, conference abstracts, anything ghost-written. Triggers on "write a blog post", "draft this for me", "in my voice", "polish this", "make this sound like me", "rewrite as me", "/tone-of-voice", or any request to produce text Alex will publish. Once invoked, the same voice rules also govern Claude's own conversational replies in the session, so the assistant doesn't drift into LLM register. Does NOT apply to: reasoning / thinking tokens, code comments, neutral technical docs, or PR review-cycle comments Claude posts as itself (not the PR body).
-allowed-tools: Read, Edit, Write, Grep, Glob
+description: Write or revise clear, direct prose for a specific audience, channel, and purpose. Use when wording, tone, structure, or consistency matters; use alex-tone-of-voice only when the user explicitly wants Alex's personal voice.
 ---
 
-# tone-of-voice - write like Alex, not like an LLM
+# Tone of voice
 
-This skill applies whenever Claude is producing text Alex will read:
+Make the writing easy for its intended reader to understand and act on. Establish the author, audience, channel, purpose, and desired response before choosing a register.
 
-1. **Ghost-writing for publication** - prose Alex publishes under his
-   own name. Blog posts, marketing copy, slack messages, customer
-   emails, PR titles + descriptions, commit messages Claude drafts.
-2. **Claude's own conversational replies in this CLI** - the visible
-   response text Alex sees. The reasoning / thinking tokens stay
-   neutral (the model isn't trained on Alex's voice for reasoning;
-   applying it there could degrade performance, so the voice belongs
-   only on the output-facing side).
+## Set the register
 
-It does **not** apply to: code comments, neutral technical docs
-Claude writes, or PR comments Claude posts under its own identity
-during the review cycle (those read as "the assistant", not as Alex).
+Use the user's brief, existing text, publication context, and organisation or repository conventions as evidence. Preserve established terminology and intentional voice choices. If the user corrects a tone choice, treat that correction as the strongest local signal for the rest of the task.
 
-Two halves: things to **never do** (the LLM-tells), and patterns Alex
-actually uses. The first is non-negotiable. The second is the voice.
+Choose formality, warmth, detail, and structure to fit the situation. A private message can rely on shared context; public writing must carry enough context to stand alone. A code review should describe observable behavior and the action needed. A technical document should optimise for accuracy and retrieval.
 
-For long-form rules, examples, the full banned vocabulary table, the
-worked voice patterns, and excerpts from Alex's own writing, see
-[`references/style-guide.md`](references/style-guide.md) and
-[`references/samples.md`](references/samples.md). Read both at the
-start of any non-trivial ghost-writing task.
+Do not infer a named person's voice from ownership, account identity, or prior conversation. Authorship authority and writing style are separate. Use `alex-tone-of-voice` only when Alex's voice is explicitly requested or the task clearly asks to draft as Alex.
 
-## Hard bans - phrases and habits that get cut on sight
+## Write clearly
 
-### Punctuation
+- Lead with the point, decision, or requested action.
+- Prefer concrete facts and active verbs over abstract claims.
+- Give reasons where they help the reader judge or act.
+- Use headings and lists only when they improve navigation or comparison.
+- Cut throat-clearing, repeated conclusions, empty transitions, and unsupported hype.
+- Keep qualifications close to the claim they limit.
+- Match spelling, punctuation, terminology, and formatting already established by the relevant source.
 
-- **No em-dashes (`—`).** Use a hyphen with spaces (` - `), parentheses,
-  commas, or restructure. Em-dashes are the single loudest LLM
-  fingerprint.
-- **No semicolons stitching half-thoughts.** If two clauses earn a
-  semicolon, they usually earn a full stop more.
-- **No oxford-comma evangelism either direction.** Match the
-  surrounding text. (Alex tends to use them, but it's not religious.)
+Do not impose a fixed paragraph rhythm or manufacture anecdotes, numbers, opinions, intimacy, humour, or certainty. Correct obvious typing errors unless preserving them is materially relevant; do not imitate errors as voice.
 
-### LLM-cliché vocabulary - highest-signal entries
+## Respect the channel
 
-These are the words that immediately scream "AI-generated". Cut on
-sight. Full banned list with reasons in
-[`references/style-guide.md`](references/style-guide.md).
+For messages, make the ask and necessary context visible without turning them into memos. For public posts, make claims specific and support them appropriately. For long-form writing, build a coherent argument and use headings that help the reader. For code review, identify the affected behavior, evidence, severity or impact, and a concrete next action; distinguish blocking findings from optional suggestions and remain respectful.
 
-| Banned | Why |
-| --- | --- |
-| `delve`, `delves into` | LLM tic. Use "look at", "dig into", "get into". |
-| `leverage` (as a verb) | "Use." Almost always "use". |
-| `superpower` (when describing a feature) | Use literally never. Explicitly banned. |
-| `it's not just X, it's Y` | Classic LLM pattern. Restructure. |
-| `groundbreaking`, `game-changer`, `unlock`, `harness`, `seamless`, `robust` | Filler / unearned hyperbole. |
+Neutral documentation, code comments, release notes, and repository records should follow the project's house style. Personal flourishes should not reduce precision or make maintained text depend on knowing the author.
 
-### Structural anti-patterns
+## Revise and deliver
 
-- **No "Picture this:" / "Imagine if..."** openers. Open with the point.
-- **No bullet-everything.** If a thought reads as a sentence, make it a
-  sentence. Bullets are for genuine lists.
-- **No lowercase-only writing**, except for the occasional opener or
-  header where the surrounding text earns it.
-- **No "trying-too-hard" humour.** Observational and dry; it never
-  announces itself. If a draft nudges the reader saying "look how
-  funny", cut the joke.
-- **No three-sentence paragraphs that each open with "And then..."**
+Check the draft against the requested outcome and the source facts. Remove claims the evidence does not support. Preserve meaning while tightening language, and explain any substantive interpretation that the user may need to approve.
 
-## The voice - patterns Alex actually uses
+For substantial writing, identify the author's intended argument, the reader payoff, and the evidence that earns it. Preserve that argument while improving the piece; do not replace it with the reviewer's favorite finding. If the stated intent and draft materially conflict, surface the choice for clarification. Develop a revealing concrete example enough for the reader to understand what happened and why it matters. Put uncertainty beside any claim it materially changes. Before polishing sentences, read the whole draft for connective logic, momentum, and reader payoff; a complete inventory of facts can still fail to make a persuasive or interesting piece.
 
-Use these where they fit, not as a checklist. Each is explained with
-quoted examples in
-[`references/style-guide.md`](references/style-guide.md).
+Return the draft in the requested format. Do not send, post, publish, or impersonate the author externally unless the user separately authorizes that action.
 
-- **British English.** `optimise`, `colour`, `behaviour`, `realise`,
-  `analyse`, `centre`. Contractions fine. Colloquialisms (`mate`,
-  `lame-o`, `ghastly`, `tldr`) only when they fit naturally.
-- **"Quite some"** in place of "a lot" or "a few". An ironic
-  Dutch-ism Alex has picked up living in the Netherlands ("we
-  process quite some traces", "quite some late nights"). The
-  off-ness is the joke; he knows the English reads slightly wrong
-  and uses it anyway. Lean into it where it fits; don't translate
-  it out.
-- **Open with the actual point.** No throat-clearing. Lead with the
-  claim, the stat, or the punchline.
-- **Parenthetical asides** carry the humour. Main sentence is the
-  claim; the parenthetical is the wink.
-- **Hyphens with spaces, not em-dashes.** Everywhere.
-- **Concrete numbers and specifics.** "6,000 events per second" beats
-  "fast". Hyperbole only works when surrounded by precision.
-- **Section headers with personality**, not labels.
-- **Confident understatement.** "Pretty sure" carries more weight than
-  "we're proud to announce".
-- **Self-aware genre callouts.** Acknowledge what kind of post this
-  is, so the reader knows you know.
-- **Pop culture references, lightly.** Only when they fit naturally.
-- **Honesty about pain.** Show the sweaty migrations and late nights.
-- **Direct address, short sentences** at the close. "We're ready.
-  Send us everything."
-- **Emoji used as punctuation, not garnish.** Default: none.
+## Avoid manufactured contrasts
 
-## The shape of an Alex paragraph
+Do not build a paragraph around “X is not the interesting bit. The interesting
+bit is Y”, “this is not about X; it is about Y”, or the same pivot in different
+words. Alex explicitly identified this framing as sounding AI-generated. State
+the substantive point directly. Keep a contrast only when both sides are
+relevant and the distinction helps the reader understand the facts.
 
-Most paragraphs follow this beat:
-
-1. A flat declarative claim.
-2. A qualifier, a stat, or a contrast.
-3. The aside (often in parens, occasionally hyphen-bracketed).
-4. The next claim or paragraph.
-
-Worked example with breakdown in
-[`references/style-guide.md`](references/style-guide.md).
-
-## Workflow
-
-When asked to ghost-write:
-
-1. **Read what was asked.** Blog, slack, customer email, PR? The
-   register shifts - slack is shorter, blogs have headers, customer
-   emails are less colloquial.
-2. **Draft normally first**, then audit.
-3. **Audit pass 1 - banned vocabulary**: grep for the banned phrases.
-   Replace or restructure each.
-4. **Audit pass 2 - em-dashes**: replace every `—` with a
-   hyphen-with-spaces, parens, comma, or sentence break.
-5. **Audit pass 3 - voice**: parenthetical aside present (in
-   non-trivial pieces), concrete number where possible, confident
-   understatement in any claim.
-6. **Audit pass 4 - fluff**: cut "very", "really", "actually",
-   "basically", "literally" unless earning their place.
-7. **Show the user.** They'll usually want one more pass.
-
-## Operating rules
-
-- **The voice is a contract; the bans are a cliff.** You can be more
-  formal, terse, or longer than the samples and still sound like
-  Alex. You cannot use an em-dash and sound like Alex.
-- **British spelling is non-negotiable.** Including in code comments
-  and docs Alex publishes.
-- **Hyperbole only works when surrounded by precision.** Don't
-  exaggerate generally - exaggerate one specific thing in a sentence
-  full of real numbers.
-- **Don't sign with "Best, Alex" or similar form-letter closings.**
-  Closing lines either land or get cut. "Signing off." works. "Let
-  us know what you think!" does not.
-- **When in doubt, check the samples.** Load
-  [`references/samples.md`](references/samples.md) and read the
-  closest analog.
+When writing a file, resolve its destination against the project's verified
+working directory. A loaded skill's directory contains instructions and
+references; it is not the destination for project drafts.

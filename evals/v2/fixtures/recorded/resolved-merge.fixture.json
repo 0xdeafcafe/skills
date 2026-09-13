@@ -1,0 +1,326 @@
+{
+  "schemaVersion": 1,
+  "id": "resolved-merge",
+  "provenance": {
+    "kind": "recorded-model",
+    "capturedAt": "2026-09-11T22:10:10.795Z",
+    "cliVersion": "2.1.223 (Claude Code)",
+    "model": "claude-opus-5[1m]",
+    "scenarioPackageVersion": "1.6.0",
+    "promptDigest": "b63fca490d001febc679a0b777ea781f1b139c035dbc80d343130be8e24a6507",
+    "instructionDigest": "413b4fa044e9164dd591999d72d9cd9f7660d5eadbf5e42574105265a66b72e4",
+    "normalizations": [
+      "Known worktree and plugin paths replaced consistently with <WORKTREE> and <PLUGIN_ROOT>; thinking blocks excluded by the official adapter; tool results use the adapter's default 8000-character cap."
+    ]
+  },
+  "context": {
+    "caseId": "resolved-merge",
+    "repoTemplate": "v2/scenarios/coordinator.scenario.test.ts"
+  },
+  "turns": [
+    {
+      "prompt": "Collect the reviewed resolution in owned.txt. This is an intermediate collection boundary; the integration owner will complete the merge later.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "I'll start by verifying the actual repository state before any collection action."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01NWrx8Snh5fKmcqCw8kzBjU",
+              "toolName": "Bash",
+              "input": {
+                "command": "pwd && git status && echo \"--- HEAD ---\" && git log --oneline -3",
+                "description": "Check repository and merge state"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01NWrx8Snh5fKmcqCw8kzBjU",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "/private<WORKTREE>\nOn branch main\nYou have unmerged paths.\n  (fix conflicts and run \"git commit\")\n  (use \"git merge --abort\" to abort the merge)\n\nUnmerged paths:\n  (use \"git add <file>...\" to mark resolution)\n\tboth modified:   owned.txt\n\nno changes added to commit (use \"git add\" and/or \"git commit -a\")\n--- HEAD ---\n7faf309 main\ne49b786 base\n8dbd71a initial fixture"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "This is an active merge with an unmerged path — exactly the integration boundary case. Let me load the skill that governs it."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01UJprM8tHtpnFkkRntPAfTV",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:integrate-work",
+                "args": "Collect reviewed resolution in owned.txt as intermediate collection; preserve active merge for the integration owner to complete later."
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01UJprM8tHtpnFkkRntPAfTV",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:integrate-work"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>skills/integrate-work\n\n# Integrate work\n\nSelect a legal integration action from the intended outcome and current repository operation. A worker result being collected or reviewed does not imply that it should be committed or that its assignment is complete.\n\n## Establish applicability\n\nIdentify the integration owner, worker assignment, reported base and head, owned paths, expected result, and requested outcome. State whether this action should only collect changes while preserving a running operation, or complete an integration boundary.\n\nWhen the operation is uncertain or affects the next action, run:\n\n```bash\npython3 <skill-dir>/scripts/inspect-git-state.py --repo <worktree>\n```\n\nResolve `<skill-dir>` from this loaded skill. The helper is a read-only observation, not authorization, a lock, or proof that the state remains unchanged. Inspect again immediately before a state-changing action when intervening work could have changed it.\n\nVerify the actual diff, index, unmerged paths, operation metadata, HEAD, and effects outside the worker's reported files. Preserve unrelated user or agent changes. A mismatch invalidates only the step that depends on it; continue independent inspection, review, or work.\n\n## Select the current operation\n\n- **Normal edit:** an ordinary commit may be considered only when no merge, rebase, cherry-pick, revert, bisect, or sequencer operation is active, ownership is clear, and the intended postcondition calls for a commit.\n- **Merge:** preserve the existing merge parents, index stages, and unrelated staged entries. During intermediate collection, stage only reviewed resolved owned paths when authorized. Do not move HEAD with a normal slice commit. Complete the merge only when that is the requested integration boundary and all required resolutions are ready.\n- **Rebase or cherry-pick:** use that operation's continue, skip, or abort workflow as authorized and applicable. Never replace its continuation with a generic commit.\n- **Revert or sequencer:** preserve the sequence and use its operation-specific continuation. Do not manufacture an ordinary commit merely because the working tree appears committable.\n- **Bisect:** preserve the investigation state unless the requested action explicitly concerns advancing or ending it.\n\nInterpret markers together: a multi-commit cherry-pick or revert can legitimately report both its operation and `sequencer`. If metadata describes incompatible operations or cannot be reconciled, diagnose it before mutation.\n\n## Apply the integration\n\nReview the worker result against intent, standards, assignment boundaries, and dependencies. Distinguish statuses explicitly: `reported`, `collected`, `reviewed`, `staged`, `operation-continued`, `committed`, and `assignment-complete` are different claims.\n\nAvoid global staging. Add only known reviewed paths or hunks and verify the resulting index. When safe collection requires a local snapshot, use a tested repository-specific snapshot workflow that preserves the active operation and unrelated state; do not assume stash, patch, or commit semantics are safe.\n\nA content checkpoint does not carry the live index stages or operation metadata to another worktree or machine. For a transfer, record the operation's original parents, staged/resolved and unmerged path inventory, and the reconstruction procedure. Verify that the destination recovered the required state before continuing; preserving the source is different from making it portable.\n\nBefore mutation, state the expected postconditions: operation still active or completed, expected HEAD movement, index contents, remaining conflicts, and ownership of remaining changes. Reinspect afterward and compare with those postconditions. Never push by default.\n\nIf authoritative instructions appear contradictory, resolve them by user intent, source authority, and applicability to the current operation. Do not choose the newest prose automatically. Raise an unresolved contradiction before a destructive or operation-changing step while continuing independent work.\n\n## Guardrails and fallback\n\nPrefer callable helpers that reject incompatible operation states where feasible; prose alone is not enforcement. If this skill or its helper is unavailable, perform the same state inspection and operation-specific reasoning with repository tools before mutation.\n\nReturn the verified operation, action taken, paths and index effects, HEAD before and after, postcondition result, remaining state, and whether the worker output is merely collected or the assignment is complete.\n\n\nARGUMENTS: Collect reviewed resolution in owned.txt as intermediate collection; preserve active merge for the integration owner to complete later."
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01Mf8WTy9hgqDRefTCTkkBKs",
+              "toolName": "Bash",
+              "input": {
+                "command": "python3 <PLUGIN_ROOT>skills/integrate-work/scripts/inspect-git-state.py --repo \"$(pwd)\" 2>&1 | head -60",
+                "description": "Inspect git operation state with skill helper"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01Mf8WTy9hgqDRefTCTkkBKs",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "{\n  \"repo\": \"/private<WORKTREE>\",\n  \"head\": \"7faf3094d44eedb63bc1bbac52f47ac3417aba1d\",\n  \"branch\": \"main\",\n  \"operations\": [\n    \"merge\"\n  ],\n  \"unmerged_paths\": [\n    \"owned.txt\"\n  ],\n  \"index_path\": \"/private<WORKTREE>/.git/index\",\n  \"git_dir\": \"/private<WORKTREE>/.git\",\n  \"ordinary_commit_candidate\": false\n}"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01Mw77XF3W59rTR5FBbipDqj",
+              "toolName": "Bash",
+              "input": {
+                "command": "echo \"=== ls-files -u (unmerged stages) ===\" && git ls-files -u && echo \"=== MERGE_HEAD ===\" && cat .git/MERGE_HEAD 2>/dev/null && echo \"=== owned.txt worktree content ===\" && cat owned.txt && echo \"=== other files status (porcelain) ===\" && git status --porcelain",
+                "description": "Inspect merge stages and file content"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01Mw77XF3W59rTR5FBbipDqj",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== ls-files -u (unmerged stages) ===\n100644 df967b96a579e45a18b8251732d16804b2e56a55 1\towned.txt\n100644 ba2906d0666cf726c7eaadd2cd3db615dedfdf3a 2\towned.txt\n100644 ff0d03824e95bfade49b6601975b1a04bf24dc66 3\towned.txt\n=== MERGE_HEAD ===\n872e2dbfc44eaac59f7976b9003ff0c555d93474\n=== owned.txt worktree content ===\nresolved\n=== other files status (porcelain) ===\nUU owned.txt"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "State confirmed: active merge, `ordinary_commit_candidate: false`. Let me verify the resolution content itself before staging."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01N4HHq1h1qwXAhsQE4tnfVW",
+              "toolName": "Bash",
+              "input": {
+                "command": "echo \"=== stage1 base ===\" && git cat-file -p df967b96a579e45a18b8251732d16804b2e56a55 && echo \"=== stage2 ours ===\" && git cat-file -p ba2906d0666cf726c7eaadd2cd3db615dedfdf3a && echo \"=== stage3 theirs ===\" && git cat-file -p ff0d03824e95bfade49b6601975b1a04bf24dc66 && echo \"=== conflict marker check ===\" && (grep -nE '^(<{7}|={7}|>{7})' owned.txt && echo \"MARKERS FOUND\" || echo \"no conflict markers\")",
+                "description": "Compare merge stages and check for leftover conflict markers"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01N4HHq1h1qwXAhsQE4tnfVW",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== stage1 base ===\nbase\n=== stage2 ours ===\nmain\n=== stage3 theirs ===\nworker\n=== conflict marker check ===\nno conflict markers"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Resolution is clean (no markers, content `resolved`), and it's the only unmerged path.\n\n**Expected postconditions:** merge stays active (`MERGE_HEAD` intact), HEAD unchanged at `7faf309`, `owned.txt` at stage 0, zero unmerged paths, **no commit created**."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01LJvegGqixxnpdaTFREoBtR",
+              "toolName": "Bash",
+              "input": {
+                "command": "git add -- owned.txt && echo \"staged\" && echo \"=== HEAD after ===\" && git rev-parse HEAD && echo \"=== MERGE_HEAD after ===\" && cat .git/MERGE_HEAD && echo \"=== unmerged paths (should be empty) ===\" && git ls-files -u && echo \"(end)\" && echo \"=== index entry ===\" && git ls-files -s -- owned.txt && echo \"=== status ===\" && git status --porcelain && echo \"--- long ---\" && git status | head -12 && echo \"=== log (HEAD unmoved) ===\" && git log --oneline -2",
+                "description": "Stage reviewed resolution and verify postconditions"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01LJvegGqixxnpdaTFREoBtR",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "staged\n=== HEAD after ===\n7faf3094d44eedb63bc1bbac52f47ac3417aba1d\n=== MERGE_HEAD after ===\n872e2dbfc44eaac59f7976b9003ff0c555d93474\n=== unmerged paths (should be empty) ===\n(end)\n=== index entry ===\n100644 2ab19ae607aabda796309682e0448237aab03047 0\towned.txt\n=== status ===\nM  owned.txt\n--- long ---\nOn branch main\nAll conflicts fixed but you are still merging.\n  (use \"git commit\" to conclude merge)\n\nChanges to be committed:\n\tmodified:   owned.txt\n\n=== log (HEAD unmoved) ===\n7faf309 main\ne49b786 base"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "All postconditions match. The reviewed resolution is collected and staged, and the merge is preserved intact for the integration owner.\n\n## Result\n\n**Verified operation:** active merge — `HEAD` `7faf309` (main) merging `MERGE_HEAD` `872e2db`. The skill helper reported `ordinary_commit_candidate: false`, so a normal slice commit was never a legal action here.\n\n**Action taken:** staged the single reviewed owned path via `git add -- owned.txt`. No global staging, no commit, no push, no `--continue`.\n\n**Review evidence before staging:**\n- Three-stage conflict confirmed: base `base`, ours `main`, theirs `worker`.\n- Working-tree resolution is `resolved`, with no leftover `<<<<<<<`/`=======`/`>>>>>>>` markers.\n- `owned.txt` was the only unmerged path; `git status --porcelain` showed no unrelated modified or untracked files, so nothing outside the worker's reported scope was collected.\n\n**Index and HEAD effects:**\n\n| Postcondition | Expected | Actual |\n|---|---|---|\n| HEAD | unchanged `7faf309` | `7faf309` ✓ |\n| `MERGE_HEAD` | still present | `872e2db` ✓ |\n| Unmerged paths | none | none ✓ |\n| `owned.txt` index | stage 0 | `2ab19ae` stage 0 ✓ |\n| New commit | none | none ✓ |\n\nGit now reports *\"All conflicts fixed but you are still merging\"* — the intended intermediate state.\n\n**Status of the worker output:** `reviewed` and `staged`. Explicitly **not** `committed` and **not** `assignment-complete`. The merge remains open by design.\n\n**Remaining state and ownership:** the integration owner retains the merge. Concluding it requires `git commit` in this worktree, which will create the merge commit preserving both parents (`7faf309`, `872e2db`). Two things worth flagging for whoever picks this up:\n\n- The staged resolution `resolved` discards both sides' literal content (`main` and `worker`). That was accepted here as the reviewed resolution, but if the intent was to combine the two sides, it should be corrected before the merge is concluded.\n- The staged index stages are live local state. They won't survive transfer to another worktree or machine — if the owner is a different session elsewhere, they'll need the merge parents and resolution recorded explicitly rather than assuming the index travels."
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    }
+  ],
+  "evidence": {
+    "git": {
+      "headBefore": "7faf3094d44eedb63bc1bbac52f47ac3417aba1d",
+      "headAfter": "7faf3094d44eedb63bc1bbac52f47ac3417aba1d",
+      "mergeHeadBefore": "872e2dbfc44eaac59f7976b9003ff0c555d93474",
+      "mergeHeadAfter": "872e2dbfc44eaac59f7976b9003ff0c555d93474",
+      "unmergedPaths": [],
+      "indexEntries": [
+        "100644 d8cbf491f75b94c5ad1244411ac72ea984dd54de 0\tREADME.md",
+        "100644 2ab19ae607aabda796309682e0448237aab03047 0\towned.txt"
+      ],
+      "files": {
+        "owned.txt": "resolved\n"
+      }
+    },
+    "checks": [
+      {
+        "id": "resolved-merge-postconditions",
+        "kind": "git-postcondition",
+        "required": true,
+        "passed": true,
+        "observed": {
+          "before": {
+            "head": "7faf3094d44eedb63bc1bbac52f47ac3417aba1d",
+            "mergeHead": "872e2dbfc44eaac59f7976b9003ff0c555d93474",
+            "indexEntries": [
+              "100644 d8cbf491f75b94c5ad1244411ac72ea984dd54de 0\tREADME.md",
+              "100644 df967b96a579e45a18b8251732d16804b2e56a55 1\towned.txt",
+              "100644 ba2906d0666cf726c7eaadd2cd3db615dedfdf3a 2\towned.txt",
+              "100644 ff0d03824e95bfade49b6601975b1a04bf24dc66 3\towned.txt"
+            ],
+            "unmergedPaths": [
+              "owned.txt"
+            ],
+            "status": "UU owned.txt"
+          },
+          "after": {
+            "head": "7faf3094d44eedb63bc1bbac52f47ac3417aba1d",
+            "mergeHead": "872e2dbfc44eaac59f7976b9003ff0c555d93474",
+            "indexEntries": [
+              "100644 d8cbf491f75b94c5ad1244411ac72ea984dd54de 0\tREADME.md",
+              "100644 2ab19ae607aabda796309682e0448237aab03047 0\towned.txt"
+            ],
+            "unmergedPaths": [],
+            "status": "M  owned.txt"
+          },
+          "reason": "Scenario's repository and runtime assertions passed"
+        }
+      }
+    ]
+  },
+  "outcome": {
+    "expected": "pass"
+  }
+}

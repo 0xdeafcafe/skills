@@ -1,10 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { DriveChangeReport } from "../drive-change-parser.ts";
-import {
-  type ExpectedDriveChange,
-  scoreDriveChange,
-} from "../drive-change-scoring.ts";
+import { type ExpectedDriveChange, scoreDriveChange } from "../drive-change-scoring.ts";
 
 const baseReport: DriveChangeReport = {
   mode: "tiny",

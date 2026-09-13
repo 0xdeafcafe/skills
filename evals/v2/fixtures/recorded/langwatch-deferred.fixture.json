@@ -1,0 +1,391 @@
+{
+  "schemaVersion": 1,
+  "id": "langwatch-deferred",
+  "provenance": {
+    "kind": "recorded-model",
+    "capturedAt": "2026-09-11T22:13:03.858Z",
+    "cliVersion": "2.1.223 (Claude Code)",
+    "model": "claude-opus-5[1m]",
+    "scenarioPackageVersion": "1.6.0",
+    "promptDigest": "95829ff581469f0d136d7ed5154989bbeda612990caf9eba5410f3f6a8b3f7e5",
+    "instructionDigest": "896aebec064cfe51fca3275297e2a1a6891460a49ce89494cc89c9f842666f05",
+    "normalizations": [
+      "Known worktree and plugin paths replaced consistently with <WORKTREE> and <PLUGIN_ROOT>; thinking blocks excluded by the official adapter; tool results use the adapter's default 8000-character cap."
+    ]
+  },
+  "context": {
+    "caseId": "langwatch-deferred",
+    "repoTemplate": "v2/scenarios/coordinator.scenario.test.ts"
+  },
+  "turns": [
+    {
+      "prompt": "Continue the recorded effort and satisfy its acceptance. Respect prior decisions in WORK.md.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "I'll start by finding the recorded effort and its acceptance criteria."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01NAASBgoDtc4oxmvDVFQ4xM",
+              "toolName": "Bash",
+              "input": {
+                "command": "pwd && ls -la",
+                "description": "Show working directory and contents"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01NAASBgoDtc4oxmvDVFQ4xM",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "/private<WORKTREE>\ntotal 16\ndrwx------@   5 lw  staff    160 Sep 11 23:12 .\ndrwx------@ 728 lw  staff  23296 Sep 11 23:12 ..\ndrwxr-xr-x@  12 lw  staff    384 Sep 11 23:12 .git\n-rw-r--r--@   1 lw  staff     21 Sep 11 23:12 README.md\n-rw-r--r--@   1 lw  staff    106 Sep 11 23:12 WORK.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01GXGMgG6Gjwupr6XN4YtNng",
+              "toolName": "Glob",
+              "input": {
+                "pattern": "**/WORK.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01GXGMgG6Gjwupr6XN4YtNng",
+              "toolName": "Glob",
+              "output": {
+                "type": "text",
+                "value": "WORK.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_016vLgicspajKDPsnQGEc9eC",
+              "toolName": "Read",
+              "input": {
+                "file_path": "/private<WORKTREE>/WORK.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_016vLgicspajKDPsnQGEc9eC",
+              "toolName": "Read",
+              "output": {
+                "type": "text",
+                "value": "1\t# Work\n2\t\n3\tLangWatch setup: deferred by user for this effort.\n4\tAcceptance: create result.txt containing done.\n5\t"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01Knm4H9SkURjwfLZSQoJKPq",
+              "toolName": "Read",
+              "input": {
+                "file_path": "/private<WORKTREE>/README.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01Knm4H9SkURjwfLZSQoJKPq",
+              "toolName": "Read",
+              "output": {
+                "type": "text",
+                "value": "1\t# langwatch-deferred\n2\t"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "The effort is small and fully specified. Two recorded facts: LangWatch setup is deferred (so I won't re-raise it), and acceptance is a `result.txt` containing `done`."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01LyGtNdvEXWbaFyUK3MuPoQ",
+              "toolName": "Bash",
+              "input": {
+                "command": "git status --porcelain=v2 --branch && echo \"---SEQ---\" && ls .git | grep -Ei 'MERGE|REBASE|CHERRY|REVERT|BISECT|seq' || echo \"no active operation\"",
+                "description": "Check git operating state"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01LyGtNdvEXWbaFyUK3MuPoQ",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "# branch.oid e2f3dc33654973ab6a36f74cf81955407cbef1c4\n# branch.head main\n---SEQ---\nno active operation"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Clean tree, normal edit state, no active Git operation. Creating the artifact:"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01HsQVB8y2g5ep1GjAMvY8WJ",
+              "toolName": "Write",
+              "input": {
+                "file_path": "/private<WORKTREE>/result.txt",
+                "content": "done\n"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01HsQVB8y2g5ep1GjAMvY8WJ",
+              "toolName": "Write",
+              "output": {
+                "type": "text",
+                "value": "File created successfully at: /private<WORKTREE>/result.txt (file state is current in your context — no need to Read it back)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Verifying the postcondition directly rather than assuming the write satisfied it:"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01PqpCAhAbEseRYZ6AEqxhJs",
+              "toolName": "Bash",
+              "input": {
+                "command": "test -f result.txt && echo \"exists: yes\" && echo \"--- contents ---\" && cat result.txt && echo \"--- grep 'done' ---\" && grep -qx 'done' result.txt && echo \"matches: yes\" ; echo \"--- repo state ---\" && git status --short",
+                "description": "Verify result.txt exists and contains done"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01PqpCAhAbEseRYZ6AEqxhJs",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "exists: yes\n--- contents ---\ndone\n--- grep 'done' ---\nmatches: yes\n--- repo state ---\n?? result.txt"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Recording the outcome in the live work record:"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01DZCedAb5GJoan3HwNgQrjD",
+              "toolName": "Edit",
+              "input": {
+                "replace_all": false,
+                "file_path": "/private<WORKTREE>/WORK.md",
+                "old_string": "LangWatch setup: deferred by user for this effort.\nAcceptance: create result.txt containing done.\n",
+                "new_string": "LangWatch setup: deferred by user for this effort.\nAcceptance: create result.txt containing done.\n\n## Status: complete\n\n- `result.txt` created at repo root, contents `done`.\n- Verified: file exists; `grep -qx 'done' result.txt` matches.\n- Repository state: on `main`, no active Git operation. `result.txt` and this\n  update are left untracked/uncommitted — no commit was requested.\n- LangWatch remains deferred per the decision above; not re-raised, not installed,\n  no trace lookup performed.\n"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01DZCedAb5GJoan3HwNgQrjD",
+              "toolName": "Edit",
+              "output": {
+                "type": "text",
+                "value": "The file /private<WORKTREE>/WORK.md has been updated successfully. (file state is current in your context — no need to Read it back)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "The recorded effort is complete.\n\n**Outcome:** `result.txt` created at the repository root containing `done`.\n\n**Validation evidence:**\n- File exists; contents are exactly `done` (`grep -qx 'done' result.txt` matches, confirming the single line with no stray content).\n- Checked Git operating state before writing: clean tree on `main`, no merge/rebase/cherry-pick/revert/bisect or sequencer in progress — a normal-edit state, so a plain file write was the legal action.\n\n**Prior decisions respected:**\n- WORK.md records LangWatch setup as *deferred by the user for this effort*. I treated that as a standing decision: no setup suggestion, no installation, no trace lookup. There was also no concrete diagnostic question here — no repeated failures, latency surprise, or handoff rework — so a trace query couldn't have changed the next action regardless.\n\n**Repository state:** on `main`, nothing committed or staged. `result.txt` and the WORK.md status update are both untracked/uncommitted, since acceptance was creating the file and you didn't ask for a commit.\n\n**Observations:** none outstanding. Nothing adjacent surfaced that needs a disposition.\n\nTwo things worth flagging, neither blocking:\n\n- This repo lives in a temporary directory (`/private/var/folders/.../T/skills-v2-langwatch-deferred-52FGzj`). If the result needs to survive, say the word and I'll commit it or copy it somewhere durable.\n- If you'd rather the acceptance artifact be committed, that's a one-line follow-up — I held off deliberately rather than assuming."
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    }
+  ],
+  "evidence": {
+    "git": {
+      "headBefore": "e2f3dc33654973ab6a36f74cf81955407cbef1c4",
+      "headAfter": "e2f3dc33654973ab6a36f74cf81955407cbef1c4",
+      "mergeHeadBefore": null,
+      "mergeHeadAfter": null,
+      "unmergedPaths": [],
+      "indexEntries": [
+        "100644 ee208c5b49d90806aec04c322dc6ed2f295c9fda 0\tREADME.md",
+        "100644 9efe387f368240d1a40135454811852c6548c06c 0\tWORK.md"
+      ],
+      "files": {
+        "WORK.md": "# Work\n\nLangWatch setup: deferred by user for this effort.\nAcceptance: create result.txt containing done.\n\n## Status: complete\n\n- `result.txt` created at repo root, contents `done`.\n- Verified: file exists; `grep -qx 'done' result.txt` matches.\n- Repository state: on `main`, no active Git operation. `result.txt` and this\n  update are left untracked/uncommitted — no commit was requested.\n- LangWatch remains deferred per the decision above; not re-raised, not installed,\n  no trace lookup performed.\n",
+        "result.txt": "done\n"
+      }
+    },
+    "checks": [
+      {
+        "id": "langwatch-deferred-postconditions",
+        "kind": "git-postcondition",
+        "required": true,
+        "passed": true,
+        "observed": {
+          "before": {
+            "head": "e2f3dc33654973ab6a36f74cf81955407cbef1c4",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 ee208c5b49d90806aec04c322dc6ed2f295c9fda 0\tREADME.md",
+              "100644 9efe387f368240d1a40135454811852c6548c06c 0\tWORK.md"
+            ],
+            "unmergedPaths": [],
+            "status": ""
+          },
+          "after": {
+            "head": "e2f3dc33654973ab6a36f74cf81955407cbef1c4",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 ee208c5b49d90806aec04c322dc6ed2f295c9fda 0\tREADME.md",
+              "100644 9efe387f368240d1a40135454811852c6548c06c 0\tWORK.md"
+            ],
+            "unmergedPaths": [],
+            "status": "M WORK.md\n?? result.txt"
+          },
+          "reason": "Scenario's repository and runtime assertions passed"
+        }
+      }
+    ]
+  },
+  "outcome": {
+    "expected": "pass"
+  }
+}

@@ -14,10 +14,7 @@ export type FlagSpec = {
  * isn't present. Looks up by literal match — supply both long and short
  * forms (`--fixture`, `-f`) in `flags` if you want them.
  */
-export const flagValue = (
-  argv: readonly string[],
-  ...flags: readonly string[]
-): string | null => {
+export const flagValue = (argv: readonly string[], ...flags: readonly string[]): string | null => {
   for (const flag of flags) {
     const idx = argv.indexOf(flag);
     if (idx !== -1) return argv[idx + 1] ?? null;
@@ -28,21 +25,15 @@ export const flagValue = (
 /**
  * True iff at least one of the listed flags appears anywhere in argv.
  */
-export const flagPresent = (
-  argv: readonly string[],
-  ...flags: readonly string[]
-): boolean => flags.some((flag) => argv.includes(flag));
+export const flagPresent = (argv: readonly string[], ...flags: readonly string[]): boolean =>
+  flags.some((flag) => argv.includes(flag));
 
 /**
  * Convenience: parse a numeric flag with a default. Throws if the value is
  * present but not a finite number, so a typo (`--runs three`) fails loud
  * instead of silently defaulting.
  */
-export const numericFlag = (
-  argv: readonly string[],
-  flag: string,
-  fallback: number,
-): number => {
+export const numericFlag = (argv: readonly string[], flag: string, fallback: number): number => {
   const raw = flagValue(argv, flag);
   if (raw === null) return fallback;
   const parsed = Number(raw);

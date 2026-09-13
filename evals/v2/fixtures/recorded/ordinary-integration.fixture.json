@@ -1,0 +1,447 @@
+{
+  "schemaVersion": 1,
+  "id": "ordinary-integration",
+  "provenance": {
+    "kind": "recorded-model",
+    "capturedAt": "2026-09-11T22:06:12.105Z",
+    "cliVersion": "2.1.223 (Claude Code)",
+    "model": "claude-opus-5[1m]",
+    "scenarioPackageVersion": "1.6.0",
+    "promptDigest": "a824b2222c487c4a2868c15960883c5110253bfbf4dc4fdbe7edd6656a751ed7",
+    "instructionDigest": "42e3aa47d497a461982c5c68e18ccbb47137ea8e3be692591ec17e0198535856",
+    "normalizations": [
+      "Known worktree and plugin paths replaced consistently with <WORKTREE> and <PLUGIN_ROOT>; thinking blocks excluded by the official adapter; tool results use the adapter's default 8000-character cap."
+    ]
+  },
+  "context": {
+    "caseId": "ordinary-integration",
+    "repoTemplate": "v2/scenarios/coordinator.scenario.test.ts"
+  },
+  "turns": [
+    {
+      "prompt": "Integrate the already implemented src/value.txt change into this repository. I authorize staging and committing it. Use the appropriate bundled skills, verify the actual Git state, and finish the integration.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "I'll start by loading the integration skill and verifying the actual Git state."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01DiDwxLrkjXLS4MHSL3Phq6",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:integrate-work"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01DiDwxLrkjXLS4MHSL3Phq6",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:integrate-work"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>skills/integrate-work\n\n# Integrate work\n\nSelect a legal integration action from the intended outcome and current repository operation. A worker result being collected or reviewed does not imply that it should be committed or that its assignment is complete.\n\n## Establish applicability\n\nIdentify the integration owner, worker assignment, reported base and head, owned paths, expected result, and requested outcome. State whether this action should only collect changes while preserving a running operation, or complete an integration boundary.\n\nWhen the operation is uncertain or affects the next action, run:\n\n```bash\npython3 <skill-dir>/scripts/inspect-git-state.py --repo <worktree>\n```\n\nResolve `<skill-dir>` from this loaded skill. The helper is a read-only observation, not authorization, a lock, or proof that the state remains unchanged. Inspect again immediately before a state-changing action when intervening work could have changed it.\n\nVerify the actual diff, index, unmerged paths, operation metadata, HEAD, and effects outside the worker's reported files. Preserve unrelated user or agent changes. A mismatch invalidates only the step that depends on it; continue independent inspection, review, or work.\n\n## Select the current operation\n\n- **Normal edit:** an ordinary commit may be considered only when no merge, rebase, cherry-pick, revert, bisect, or sequencer operation is active, ownership is clear, and the intended postcondition calls for a commit.\n- **Merge:** preserve the existing merge parents, index stages, and unrelated staged entries. During intermediate collection, stage only reviewed resolved owned paths when authorized. Do not move HEAD with a normal slice commit. Complete the merge only when that is the requested integration boundary and all required resolutions are ready.\n- **Rebase or cherry-pick:** use that operation's continue, skip, or abort workflow as authorized and applicable. Never replace its continuation with a generic commit.\n- **Revert or sequencer:** preserve the sequence and use its operation-specific continuation. Do not manufacture an ordinary commit merely because the working tree appears committable.\n- **Bisect:** preserve the investigation state unless the requested action explicitly concerns advancing or ending it.\n\nInterpret markers together: a multi-commit cherry-pick or revert can legitimately report both its operation and `sequencer`. If metadata describes incompatible operations or cannot be reconciled, diagnose it before mutation.\n\n## Apply the integration\n\nReview the worker result against intent, standards, assignment boundaries, and dependencies. Distinguish statuses explicitly: `reported`, `collected`, `reviewed`, `staged`, `operation-continued`, `committed`, and `assignment-complete` are different claims.\n\nAvoid global staging. Add only known reviewed paths or hunks and verify the resulting index. When safe collection requires a local snapshot, use a tested repository-specific snapshot workflow that preserves the active operation and unrelated state; do not assume stash, patch, or commit semantics are safe.\n\nA content checkpoint does not carry the live index stages or operation metadata to another worktree or machine. For a transfer, record the operation's original parents, staged/resolved and unmerged path inventory, and the reconstruction procedure. Verify that the destination recovered the required state before continuing; preserving the source is different from making it portable.\n\nBefore mutation, state the expected postconditions: operation still active or completed, expected HEAD movement, index contents, remaining conflicts, and ownership of remaining changes. Reinspect afterward and compare with those postconditions. Never push by default.\n\nIf authoritative instructions appear contradictory, resolve them by user intent, source authority, and applicability to the current operation. Do not choose the newest prose automatically. Raise an unresolved contradiction before a destructive or operation-changing step while continuing independent work.\n\n## Guardrails and fallback\n\nPrefer callable helpers that reject incompatible operation states where feasible; prose alone is not enforcement. If this skill or its helper is unavailable, perform the same state inspection and operation-specific reasoning with repository tools before mutation.\n\nReturn the verified operation, action taken, paths and index effects, HEAD before and after, postcondition result, remaining state, and whether the worker output is merely collected or the assignment is complete.\n"
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01WinQcKy3VcLFjpsph3P6Vo",
+              "toolName": "Bash",
+              "input": {
+                "command": "git status && echo \"--- HEAD ---\" && git log --oneline -5 2>/dev/null",
+                "description": "Check Git status and recent history"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01WinQcKy3VcLFjpsph3P6Vo",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "On branch main\nChanges to be committed:\n  (use \"git restore --staged <file>...\" to unstage)\n\tmodified:   sentinel.txt\n\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   sentinel.txt\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tsrc/\n\n--- HEAD ---\n6c13843 sentinel baseline\n6f6433e initial fixture"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Git state shows something important already: `sentinel.txt` has both staged and unstaged modifications that are **not** part of my assignment. Let me inspect thoroughly before touching anything."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01BUwxVaTT3v8Yn6BYHnM99v",
+              "toolName": "Bash",
+              "input": {
+                "command": "python3 <PLUGIN_ROOT>skills/integrate-work/scripts/inspect-git-state.py --repo \"$(git rev-parse --show-toplevel)\" 2>&1 | head -60",
+                "description": "Run bundled git state inspector"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01BUwxVaTT3v8Yn6BYHnM99v",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "{\n  \"repo\": \"/private<WORKTREE>\",\n  \"head\": \"6c13843835242a69f6cb7db401960a05326c681a\",\n  \"branch\": \"main\",\n  \"operations\": [],\n  \"unmerged_paths\": [],\n  \"index_path\": \"/private<WORKTREE>/.git/index\",\n  \"git_dir\": \"/private<WORKTREE>/.git\",\n  \"ordinary_commit_candidate\": true\n}"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01VRbW7KMdWpntCNdKfgMpxz",
+              "toolName": "Bash",
+              "input": {
+                "command": "cd \"$(git rev-parse --show-toplevel)\" && echo \"=== porcelain v2 ===\" && git status --porcelain=v2 --branch && echo \"=== GIT_DIR markers ===\" && ls -a \"$(git rev-parse --git-dir)\" | grep -Ei 'MERGE|REBASE|CHERRY|REVERT|BISECT|sequencer|HEAD' ; echo \"=== src tree ===\" && find src -type f",
+                "description": "Inspect porcelain status, operation markers, src files"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01VRbW7KMdWpntCNdKfgMpxz",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== porcelain v2 ===\n# branch.oid 6c13843835242a69f6cb7db401960a05326c681a\n# branch.head main\n1 MM N... 100644 100644 100644 df967b96a579e45a18b8251732d16804b2e56a55 00107bc67bc6f79da180fd8180c4d044500ecca6 sentinel.txt\n? src/\n=== GIT_DIR markers ===\nHEAD\n=== src tree ===\nsrc/value.txt"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Normal edit state confirmed — no merge/rebase/cherry-pick/revert/bisect/sequencer active. Now let me review the actual content before staging."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_0124j6sEXztDfMS3SP2bfVGg",
+              "toolName": "Bash",
+              "input": {
+                "command": "cd \"$(git rev-parse --show-toplevel)\" && echo \"=== src/value.txt ===\" && cat src/value.txt && echo \"=== sentinel staged diff (NOT MINE) ===\" && git diff --cached -- sentinel.txt && echo \"=== sentinel unstaged diff (NOT MINE) ===\" && git diff -- sentinel.txt",
+                "description": "Show target file content and unrelated sentinel diffs"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_0124j6sEXztDfMS3SP2bfVGg",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== src/value.txt ===\nready\n=== sentinel staged diff (NOT MINE) ===\ndiff --git a/sentinel.txt b/sentinel.txt\nindex df967b9..00107bc 100644\n--- a/sentinel.txt\n+++ b/sentinel.txt\n@@ -1 +1 @@\n-base\n+staged-user-state\n=== sentinel unstaged diff (NOT MINE) ===\ndiff --git a/sentinel.txt b/sentinel.txt\nindex 00107bc..92ad5cc 100644\n--- a/sentinel.txt\n+++ b/sentinel.txt\n@@ -1 +1 @@\n-staged-user-state\n+unstaged-user-state"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Unrelated user state found: `sentinel.txt` carries a **staged** value (`staged-user-state`) and a *different* **working-tree** value (`unstaged-user-state`). Both must survive untouched.\n\nThis makes a plain `git commit` unsafe — it would sweep the staged `sentinel.txt` into my commit. I'll stage only my path and commit with an explicit pathspec.\n\n**Expected postconditions:** no operation started; HEAD advances by one commit containing *only* `src/value.txt`; `sentinel.txt` remains staged at `00107bc` and unstaged at `92ad5cc`."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01WmTYTht7nxvR9pJ5LzyMgg",
+              "toolName": "Bash",
+              "input": {
+                "command": "cd \"$(git rev-parse --show-toplevel)\" && git add -- src/value.txt && echo \"=== index after precise add ===\" && git status --porcelain=v2 && echo \"=== staged paths ===\" && git diff --cached --name-only",
+                "description": "Stage only src/value.txt and verify index"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01WmTYTht7nxvR9pJ5LzyMgg",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== index after precise add ===\n1 MM N... 100644 100644 100644 df967b96a579e45a18b8251732d16804b2e56a55 00107bc67bc6f79da180fd8180c4d044500ecca6 sentinel.txt\n1 A. N... 000000 100644 100644 0000000000000000000000000000000000000000 395527df662d5fdf4b00c5f1cd9b8d7ac048e127 src/value.txt\n=== staged paths ===\nsentinel.txt\nsrc/value.txt"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Index confirms the hazard: both paths are staged, so a plain commit would capture the user's `sentinel.txt`. Committing with an explicit pathspec instead, which leaves the rest of the index intact."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_012kce5ViHgfTb2EmdxsfgU2",
+              "toolName": "Bash",
+              "input": {
+                "command": "cd \"$(git rev-parse --show-toplevel)\" && python3 <PLUGIN_ROOT>skills/integrate-work/scripts/inspect-git-state.py --repo \"$(pwd)\" | python3 -c \"import json,sys; d=json.load(sys.stdin); print('ops:',d['operations'],'unmerged:',d['unmerged_paths'],'head:',d['head'][:7],'ok:',d['ordinary_commit_candidate'])\" && git commit -- src/value.txt -m \"$(printf 'Add src/value.txt\\n\\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>')\"",
+                "description": "Re-verify state then commit only src/value.txt"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_012kce5ViHgfTb2EmdxsfgU2",
+              "toolName": "Bash",
+              "output": {
+                "type": "error-text",
+                "value": "Exit code 1\nops: [] unmerged: [] head: 6c13843 ok: True\nerror: pathspec '-m' did not match any file(s) known to git\nerror: pathspec 'Add src/value.txt\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>' did not match any file(s) known to git"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Argument-order error — everything after `--` was parsed as a pathspec, so nothing was committed. Retrying with the message before the separator."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_018cpPT59VRJ9VgSHm4HdwN9",
+              "toolName": "Bash",
+              "input": {
+                "command": "cd \"$(git rev-parse --show-toplevel)\" && echo \"HEAD before: $(git rev-parse --short HEAD)\" && git commit -m \"$(printf 'Add src/value.txt\\n\\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>')\" -- src/value.txt && echo \"HEAD after: $(git rev-parse --short HEAD)\"",
+                "description": "Commit only src/value.txt with correct arg order"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_018cpPT59VRJ9VgSHm4HdwN9",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "HEAD before: 6c13843\n[main 5d3b98f] Add src/value.txt\n 1 file changed, 1 insertion(+)\n create mode 100644 src/value.txt\nHEAD after: 5d3b98f"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Now verifying postconditions against what I stated before mutation."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01FQEd6M2VUhVfLKpZHPrfQ8",
+              "toolName": "Bash",
+              "input": {
+                "command": "cd \"$(git rev-parse --show-toplevel)\" && echo \"=== commit contents (must be ONLY src/value.txt) ===\" && git show --stat --oneline HEAD && echo \"=== status now ===\" && git status --porcelain=v2 && echo \"=== sentinel staged value ===\" && git show :sentinel.txt && echo \"=== sentinel worktree value ===\" && cat sentinel.txt && echo \"=== operations ===\" && python3 <PLUGIN_ROOT>skills/integrate-work/scripts/inspect-git-state.py --repo \"$(pwd)\" | python3 -c \"import json,sys; d=json.load(sys.stdin); print('ops:',d['operations'],'unmerged:',d['unmerged_paths'])\" && echo \"=== unpushed ===\" && git log --branches --not --remotes --oneline 2>/dev/null",
+                "description": "Verify commit scope and preserved sentinel state"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01FQEd6M2VUhVfLKpZHPrfQ8",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== commit contents (must be ONLY src/value.txt) ===\n5d3b98f Add src/value.txt\n src/value.txt | 1 +\n 1 file changed, 1 insertion(+)\n=== status now ===\n1 MM N... 100644 100644 100644 df967b96a579e45a18b8251732d16804b2e56a55 00107bc67bc6f79da180fd8180c4d044500ecca6 sentinel.txt\n=== sentinel staged value ===\nstaged-user-state\n=== sentinel worktree value ===\nunstaged-user-state\n=== operations ===\nops: [] unmerged: []\n=== unpushed ===\n5d3b98f Add src/value.txt\n6c13843 sentinel baseline\n6f6433e initial fixture"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Integration complete, postconditions verified.\n\n**Verified operation:** normal edit — no merge, rebase, cherry-pick, revert, bisect, or sequencer active (confirmed by the bundled inspector and by the absence of `GIT_DIR` operation markers). An ordinary commit was therefore the legal action.\n\n**Action taken:** staged and committed `src/value.txt` only.\n\n- HEAD before: `6c13843` → HEAD after: `5d3b98f`\n- Commit contents: `src/value.txt` alone, 1 file changed, 1 insertion\n- Branch: `main`; not pushed\n\n**The thing worth flagging:** the repository contained unrelated in-flight user work that made the obvious commands unsafe. `sentinel.txt` was in a split state — staged as `staged-user-state`, working tree as `unstaged-user-state`. Because it was *already staged*, a plain `git commit` (and likewise `git add -A` or `git commit -a`) would have silently absorbed your staged sentinel content into my commit and collapsed that distinction. I staged the single owned path and committed with an explicit pathspec (`git commit -m … -- src/value.txt`), which builds the commit from a temporary index and leaves the rest of the index untouched.\n\nBoth sentinel values survived exactly as found: staged still `staged-user-state` (`00107bc`), working tree still `unstaged-user-state`. Its `MM` status is unchanged from before I started.\n\nOne non-failure to note: my first commit attempt exited nonzero with `pathspec '-m' did not match any file(s)` — an argument-ordering mistake where the message landed after `--`. No mutation occurred; HEAD was still `6c13843`, and I confirmed that before retrying.\n\n**Status:** `committed` and assignment-complete for this change. Nothing was pushed, and I did not touch your `sentinel.txt` work — it remains yours to stage, commit, or discard."
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    }
+  ],
+  "evidence": {
+    "git": {
+      "headBefore": "6c13843835242a69f6cb7db401960a05326c681a",
+      "headAfter": "5d3b98ff7da2552b8b3dad9fa329a301c8dc69b7",
+      "mergeHeadBefore": null,
+      "mergeHeadAfter": null,
+      "unmergedPaths": [],
+      "indexEntries": [
+        "100644 36786f87aaf97e602f6b77699300bfc31749d08d 0\tREADME.md",
+        "100644 00107bc67bc6f79da180fd8180c4d044500ecca6 0\tsentinel.txt",
+        "100644 395527df662d5fdf4b00c5f1cd9b8d7ac048e127 0\tsrc/value.txt"
+      ],
+      "files": {
+        "src/value.txt": "ready\n",
+        "sentinel.txt": "unstaged-user-state\n"
+      }
+    },
+    "checks": [
+      {
+        "id": "ordinary-integration-postconditions",
+        "kind": "git-postcondition",
+        "required": true,
+        "passed": true,
+        "observed": {
+          "before": {
+            "head": "6c13843835242a69f6cb7db401960a05326c681a",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 36786f87aaf97e602f6b77699300bfc31749d08d 0\tREADME.md",
+              "100644 00107bc67bc6f79da180fd8180c4d044500ecca6 0\tsentinel.txt"
+            ],
+            "unmergedPaths": [],
+            "status": "MM sentinel.txt\n?? src/"
+          },
+          "after": {
+            "head": "5d3b98ff7da2552b8b3dad9fa329a301c8dc69b7",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 36786f87aaf97e602f6b77699300bfc31749d08d 0\tREADME.md",
+              "100644 00107bc67bc6f79da180fd8180c4d044500ecca6 0\tsentinel.txt",
+              "100644 395527df662d5fdf4b00c5f1cd9b8d7ac048e127 0\tsrc/value.txt"
+            ],
+            "unmergedPaths": [],
+            "status": "MM sentinel.txt"
+          },
+          "reason": "Scenario's repository and runtime assertions passed"
+        }
+      }
+    ]
+  },
+  "outcome": {
+    "expected": "pass"
+  }
+}

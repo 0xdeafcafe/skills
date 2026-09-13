@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "id": "voice-alex-tone-of-voice-wrong-directory",
+  "provenance": {
+    "kind": "recorded-model",
+    "capturedAt": "2026-09-11T22:12:25.660Z",
+    "cliVersion": "2.1.223 (Claude Code)",
+    "model": "claude-sonnet-5",
+    "scenarioPackageVersion": "1.6.0",
+    "promptDigest": "2bf8b7d58af59a6f730a9d1042420edeb08a8ff2b7ef4122121c0e9bb5582f02",
+    "instructionDigest": "413b4fa044e9164dd591999d72d9cd9f7660d5eadbf5e42574105265a66b72e4",
+    "normalizations": [
+      "Known worktree and plugin paths replaced consistently with <WORKTREE> and <PLUGIN_ROOT>; thinking blocks excluded by the official adapter; tool results use the adapter's default 8000-character cap.",
+      "Remaining host home paths, including failed tool destinations and Git warnings, replaced with <HOME> during corpus review."
+    ]
+  },
+  "context": {
+    "caseId": "voice-alex-tone-of-voice",
+    "repoTemplate": "v2/scenarios/voice.scenario.test.ts",
+    "notes": "Observed failure: the model wrote DRAFTS.md outside the disposable project after loading the skill. The newly created file was verified against the captured Write call, saved as evidence, and removed by the harness author."
+  },
+  "turns": [
+    {
+      "prompt": "Use the bundled alex-tone-of-voice skill to draft five short versions of the same update. Write as Alex.\nKnown facts: the current search UI loses the entered query after a timeout. The agreed fix must preserve it and let the user retry the same query. The fix has not shipped. There are no confirmed release dates or performance figures.\nSave DRAFTS.md with exactly these second-level headings: Slack, Twitter/X, WhatsApp, Blog, Code review. Slack is for an internal engineering channel. Twitter/X is a public post. WhatsApp is a private work message to a colleague, Sam. Blog is a two-paragraph opening. Code review is a blocking comment explaining the required behavior. Adapt the register to each channel, preserve the known facts, and invent no experiences, relationships, figures or release claims. Do not publish or commit anything.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01PM9EUbMucudEVHtKeiav81",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:alex-tone-of-voice",
+                "args": "Draft five short versions of the same product update, as Alex, for DRAFTS.md with second-level headings: Slack, Twitter/X, WhatsApp, Blog, Code review.\n\nKnown facts (preserve exactly, invent nothing beyond these):\n- The current search UI loses the entered query after a timeout.\n- The agreed fix must preserve the query and let the user retry the same query.\n- The fix has not shipped yet.\n- No confirmed release dates or performance figures exist.\n\nChannel requirements:\n- Slack: internal engineering channel, casual/direct internal register.\n- Twitter/X: public post, no invented figures/dates/experiences.\n- WhatsApp: private message to a colleague named Sam, personal/informal register.\n- Blog: two-paragraph opening only (not a full post).\n- Code review: a blocking review comment explaining the required behavior (not shipped status, but what the fix must do), appropriate review register.\n\nDo not invent experiences, relationships, figures, or release claims. Do not publish or commit anything — just draft the text."
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01PM9EUbMucudEVHtKeiav81",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:alex-tone-of-voice"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>skills/alex-tone-of-voice\n\n# Alex tone of voice\n\nWrite as Alex only when the user asks for Alex's voice or clearly authorizes ghostwriting under his identity. Establish the audience, channel, purpose, factual inputs, and desired response first. Authority to draft does not authorize sending or publishing.\n\nAlex's voice is direct, British, specific, and conversational. It often uses dry understatement, an honest admission, or a precise detail where generic copy would use praise. These are tendencies, not slots every paragraph must fill.\n\n## Use the evidence selectively\n\nFor a substantial blog, announcement, or voice-matching revision, read [the annotated source samples](references/samples.md). They preserve excerpts and attribution to Alex's event-sourcing announcement, Snapchat API interview, and LangWatch welcome post.\n\nRead [the worked style guide](references/style-guide.md) when auditing a long-form draft or when a voice choice remains unclear. It derives patterns from those sources. Do not load both references for a short message when the guidance below is enough.\n\nThe samples are strongest for blog and conversational technical prose. Guidance for channels without direct samples is an inference from the demonstrated voice and the channel's constraints; label that inference if it affects a consequential choice. A correction from the user overrides these defaults.\n\n## Preserve the voice without performing it\n\n- Lead with the concrete point. Prefer facts, numbers, and named effects over promotional adjectives.\n- Use British spelling and natural contractions.\n- Allow a dry aside, understatement, colloquialism, reference, or emoji only when the subject and audience earn it.\n- Use spaced hyphens, parentheses, commas, or sentence breaks instead of em dashes.\n- Cut stock AI phrasing, corporate throat-clearing, empty enthusiasm, and vague calls to action.\n- Never invent statistics, experiences, opinions, relationships, jokes, or self-deprecation.\n- Correct typing errors. Do not reproduce mistakes merely to imitate Alex.\n\nAvoid rigid paragraph recipes. The source material contains recurring rhythms, but forcing an aside, joke, statistic, or three-word closer into every passage creates a caricature.\n\n## Fit the channel\n\n- **Slack:** concise and collaborative. Lead with the state, evidence, or request; include a link or next step when useful. Show ownership without turning the message into a memo.\n- **Twitter/X:** tight, opinionated, and specific. Make one defensible point per post or give a thread a clear progression. Do not manufacture controversy, certainty, or engagement bait.\n- **WhatsApp:** use the actual recipient and shared context. Keep it natural and proportionate to a private message, without assuming intimacy, slang, profanity, or emotional familiarity not established by the user.\n- **Blog:** build an evidence-led narrative. Use concrete examples, honest tradeoffs, and headings that advance the story. Humour and references remain optional; factual support carries the piece.\n- **Code review:** describe the concrete behavior, impact or severity, evidence, and action. State clearly whether a finding blocks the change or is optional. Keep the tone respectful and avoid using humour where it could blur technical judgment.\n\nPR descriptions, customer email, and other formats should follow their practical conventions first, then apply the demonstrated voice at an appropriate intensity. Security, legal, incident, and sensitive interpersonal writing should be sober and precise.\n\n## Keep maintained writing appropriate\n\nNeutral technical documentation and code comments should follow repository style unless Alex's authorship is itself relevant. Commit messages and review comments should remain useful to future readers; voice must not obscure behavior, scope, or evidence.\n\n## Deliver safely\n\nVerify claims and preserve supplied links, names, constraints, and attribution. If a draft depends on an unsupported personal opinion or anecdote, ask for it or remove it. Return the draft in the requested format and offer alternatives only when they clarify a real tone choice.\n\nDo not post, send, publish, or sign as Alex without separate explicit authorization for that external action.\n\n\nARGUMENTS: Draft five short versions of the same product update, as Alex, for DRAFTS.md with second-level headings: Slack, Twitter/X, WhatsApp, Blog, Code review.\n\nKnown facts (preserve exactly, invent nothing beyond these):\n- The current search UI loses the entered query after a timeout.\n- The agreed fix must preserve the query and let the user retry the same query.\n- The fix has not shipped yet.\n- No confirmed release dates or performance figures exist.\n\nChannel requirements:\n- Slack: internal engineering channel, casual/direct internal register.\n- Twitter/X: public post, no invented figures/dates/experiences.\n- WhatsApp: private message to a colleague named Sam, personal/informal register.\n- Blog: two-paragraph opening only (not a full post).\n- Code review: a blocking review comment explaining the required behavior (not shipped status, but what the fix must do), appropriate review register.\n\nDo not invent experiences, relationships, figures, or release claims. Do not publish or commit anything — just draft the text."
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01C3egRrrk7ty3PrjcGyR6QR",
+              "toolName": "Write",
+              "input": {
+                "file_path": "<HOME>/Source/github.com/0xdeafcafe/DRAFTS.md",
+                "content": "## Slack\n\nQuick heads up on the search bug: if a request times out, we're currently wiping the query the user typed, so they have to re-type the whole thing to try again. Agreed fix is to keep the entered query in place after a timeout and let them retry it directly, no retyping. Not shipped yet, still in progress. Will update here when there's something concrete to test.\n\n## Twitter/X\n\nKnown issue we're fixing: right now, if search times out, it clears what you typed. The fix keeps your query in place so you can just retry it. Not live yet, no date to share.\n\n## WhatsApp\n\nHey Sam, quick one on the search timeout bug: agreed fix is to stop it wiping the query when it times out, so people can just hit retry instead of typing the whole thing again. Still building it, nothing shipped yet, no dates pinned down either. Will let you know when there's progress.\n\n## Blog\n\nIf you've searched on our site and hit a timeout, you'll know the annoying part isn't the wait, it's what happens after. The query you typed just disappears, and you're back to typing it out again before you can even try once more.\n\nWe've agreed a fix for this: on timeout, the entered query stays in place and you can retry the same search directly. It hasn't shipped yet, and we don't have a date to share, but the behaviour is settled and it's what we're building towards.\n\n## Code review\n\nBlocking: this doesn't preserve the entered query on timeout, it clears it, which means the user has to retype the whole search to try again. The agreed behaviour is that the query stays in the input after a timeout and the user can retry that same query directly (ideally without a full re-submit round trip if the current structure allows it). Please update this before merge so a timeout no longer discards what the user typed.\n"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01C3egRrrk7ty3PrjcGyR6QR",
+              "toolName": "Write",
+              "output": {
+                "type": "text",
+                "value": "File created successfully at: <HOME>/Source/github.com/0xdeafcafe/DRAFTS.md (file state is current in your context — no need to Read it back)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Saved to `DRAFTS.md` with the five headings requested (Slack, Twitter/X, WhatsApp, Blog, Code review). Nothing was published or committed — just the file on disk.\n\nA couple of notes on choices made:\n\n- Every draft sticks to the four known facts only: query lost after timeout, agreed fix preserves it and allows retry, not shipped, no confirmed dates/figures. No invented experiences, relationships, numbers, or release claims anywhere.\n- The code review comment is phrased as a blocking finding describing required behavior, with one bracketed suggestion (\"ideally without a full re-submit round trip if the current structure allows it\") flagged as a soft ask rather than a hard fact, since that detail wasn't in your known facts — happy to cut that line if you'd rather it stay strictly to the agreed behavior only.\n- Blog is exactly two paragraphs, framed as an opening rather than a full post, per your spec.\n\nWant me to trim that bracketed aside from the code review comment, or adjust register on any one channel?"
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    }
+  ],
+  "evidence": {
+    "git": {
+      "headBefore": "26ef1d9453cd1246b7b6bc4472e824bfd5235f4c",
+      "headAfter": "26ef1d9453cd1246b7b6bc4472e824bfd5235f4c",
+      "mergeHeadBefore": null,
+      "mergeHeadAfter": null,
+      "unmergedPaths": [],
+      "indexEntries": [
+        "100644 c8943532cd94c691886d5814b8be5fe4e67a44aa 0\tREADME.md"
+      ],
+      "files": {
+        "outside-project/DRAFTS.md": "## Slack\n\nQuick heads up on the search bug: if a request times out, we're currently wiping the query the user typed, so they have to re-type the whole thing to try again. Agreed fix is to keep the entered query in place after a timeout and let them retry it directly, no retyping. Not shipped yet, still in progress. Will update here when there's something concrete to test.\n\n## Twitter/X\n\nKnown issue we're fixing: right now, if search times out, it clears what you typed. The fix keeps your query in place so you can just retry it. Not live yet, no date to share.\n\n## WhatsApp\n\nHey Sam, quick one on the search timeout bug: agreed fix is to stop it wiping the query when it times out, so people can just hit retry instead of typing the whole thing again. Still building it, nothing shipped yet, no dates pinned down either. Will let you know when there's progress.\n\n## Blog\n\nIf you've searched on our site and hit a timeout, you'll know the annoying part isn't the wait, it's what happens after. The query you typed just disappears, and you're back to typing it out again before you can even try once more.\n\nWe've agreed a fix for this: on timeout, the entered query stays in place and you can retry the same search directly. It hasn't shipped yet, and we don't have a date to share, but the behaviour is settled and it's what we're building towards.\n\n## Code review\n\nBlocking: this doesn't preserve the entered query on timeout, it clears it, which means the user has to retype the whole search to try again. The agreed behaviour is that the query stays in the input after a timeout and the user can retry that same query directly (ideally without a full re-submit round trip if the current structure allows it). Please update this before merge so a timeout no longer discards what the user typed.\n"
+      }
+    },
+    "checks": [
+      {
+        "id": "voice-alex-tone-of-voice-postconditions",
+        "kind": "file-content",
+        "required": true,
+        "passed": false,
+        "observed": {
+          "before": {
+            "head": "26ef1d9453cd1246b7b6bc4472e824bfd5235f4c",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 c8943532cd94c691886d5814b8be5fe4e67a44aa 0\tREADME.md"
+            ],
+            "unmergedPaths": [],
+            "status": ""
+          },
+          "after": {
+            "head": "26ef1d9453cd1246b7b6bc4472e824bfd5235f4c",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 c8943532cd94c691886d5814b8be5fe4e67a44aa 0\tREADME.md"
+            ],
+            "unmergedPaths": [],
+            "status": ""
+          },
+          "reason": "Voice scenario failed"
+        }
+      }
+    ]
+  },
+  "outcome": {
+    "expected": "fail",
+    "reason": "Voice scenario failed"
+  }
+}

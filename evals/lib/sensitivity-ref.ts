@@ -18,7 +18,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const SENSITIVITY_PATHS_PATH = resolve(
   __dirname,
-  "../../references/sensitivity-paths.md",
+  "../legacy/references/sensitivity-paths.md",
 );
 
 export interface SensitivityResult {

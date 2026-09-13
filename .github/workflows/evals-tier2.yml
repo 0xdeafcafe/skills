@@ -1,4 +1,5 @@
-# Tier-2 pipeline runs against real fixtures via the LangWatch gateway.
+# The historical v1 tier-2 pipeline runs against real fixtures via the
+# LangWatch gateway. It is retained for deliberate legacy comparisons.
 # EXPENSIVE — burns gateway / Anthropic credits. Gated three ways so it
 # never runs by accident:
 #
@@ -194,7 +195,7 @@ jobs:
           if [ -n "$TIER2_FIXTURE" ]; then ARGS+=(--fixture "$TIER2_FIXTURE"); fi
           if [ -n "$TIER2_REVIEWER" ]; then ARGS+=(--reviewer "$TIER2_REVIEWER"); fi
           if [ -n "$TIER2_RUNS" ]; then ARGS+=(--runs "$TIER2_RUNS"); fi
-          pnpm tier2 "${ARGS[@]}"
+          pnpm legacy:tier2 "${ARGS[@]}"
 
           # Surface cost / pass-rate to whoever triggered the run without
           # making them dig through stdout. Step Summary renders on the

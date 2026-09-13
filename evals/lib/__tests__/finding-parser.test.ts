@@ -54,14 +54,12 @@ describe("parseFindingBlock — happy path", () => {
   });
 
   it("parses an em-dash separator on the head line", () => {
-    const block =
-      "[P3] [hygiene] foo.ts:1 — short summary\nwhy: x\nfix: y";
+    const block = "[P3] [hygiene] foo.ts:1 — short summary\nwhy: x\nfix: y";
     expect(parseFindingBlock(block)).not.toBeNull();
   });
 
   it("also accepts a regular hyphen separator (be lenient on copy-paste)", () => {
-    const block =
-      "[P3] [hygiene] foo.ts:1 - short summary\nwhy: x\nfix: y";
+    const block = "[P3] [hygiene] foo.ts:1 - short summary\nwhy: x\nfix: y";
     const finding = parseFindingBlock(block);
     expect(finding).not.toBeNull();
     expect(finding?.summary).toBe("short summary");
@@ -84,12 +82,7 @@ describe("parseFindingBlock — non-findings", () => {
 
 describe("parseFindingBlock — drift detection", () => {
   it("throws on unknown finding fields (catches reviewer prompt drift)", () => {
-    const block = [
-      "[P0] [security] foo.ts:1 — bar",
-      "why: x",
-      "fix: y",
-      "vibes: high",
-    ].join("\n");
+    const block = ["[P0] [security] foo.ts:1 — bar", "why: x", "fix: y", "vibes: high"].join("\n");
 
     expect(() => parseFindingBlock(block)).toThrow(ParseError);
     expect(() => parseFindingBlock(block)).toThrow(/unknown finding field: vibes/);

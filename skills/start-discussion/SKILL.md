@@ -1,106 +1,47 @@
 ---
 name: start-discussion
-description: Use when the user says "/start-discussion", "let's discuss", "I have a problem", "I have an idea", "not sure what to do here", "want to think this through", or otherwise opens an exploratory conversation without yet knowing what shape the work will take. Drives an open discussion to extract context - what's the actual problem, what's the constraint, what would good look like. Once enough intent emerges, routes to /start-feature (or directly to /plan-change). No file outputs - this is talking, not writing. Companion to /start-feature for work where the intent is already clear.
-allowed-tools: Bash(gh:*), Bash(git:*), Bash(rg:*), Bash(fd:*), Read, Grep, Glob, Skill
+description: Explore an idea, problem, or uncertain change until its intent and useful next step are clear. Use for open-ended product or engineering discussion; preserve exploration rather than forcing an implementation plan.
 ---
 
-# start-discussion - explore before committing to a track
+# Start a discussion
 
-Not every conversation arrives with a known piece of work. Sometimes
-the user has a problem they don't yet know how to frame, or an idea
-they want to think out loud. `/start-discussion` holds that space.
+Help the user understand what, if anything, should change. The outcome may be a sharper objective, a decision, an experiment, a plan, or a deliberate choice to do nothing.
 
-It does not write files. It does not commit to a track. It draws out
-context until the work itself becomes clear - at which point it hands
-off to `/start-feature` (or directly to `/plan-change` if the next
-move is obvious).
+## Explore the intent
 
-## What this skill does
+Start from what prompted the discussion. Follow the most informative thread rather than running a questionnaire. Clarify only what changes the direction:
 
-1. Reflects what the user said back, so they know you heard them.
-2. Asks open-ended questions that pull out context, constraints, and
-   what "good" would look like.
-3. As intent crystallises, names what's emerging and offers to route
-   into the right next skill.
+- the problem or opportunity and who experiences it;
+- the desired outcome and signals that would show improvement;
+- constraints, non-goals, prior attempts, and existing commitments;
+- assumptions or uncertainties that could reverse the decision.
 
-## Phase 0 - Open the space
+Reflect emerging intent in concrete language so the user can correct it. Preserve promising alternatives and unresolved tensions until evidence makes them irrelevant. Do not rush toward architecture, tickets, or code merely to make the discussion look productive.
 
-The user has said "let's talk about X" or similar. Reflect what they
-said back in one or two sentences, then ask one open-ended question.
+Inspect repository context or prior work when it can answer a live question. Distinguish observed behavior from inferred rationale.
 
-Good opening questions:
+## Resolve uncertainty proportionally
 
-- "What's the problem you're trying to solve - not the solution, the
-  problem underneath it?"
-- "What would good look like? Describe the state of the world after
-  this is sorted."
-- "What constraint is forcing this conversation now rather than two
-  months ago?"
-- "What have you already ruled out, and why?"
+Use a small prototype, spike, sketch, or measurement when discussion alone cannot answer an important question and exploration of that kind is within the user’s scope. A request to talk does not authorise a production build. State what it is intended to learn and avoid treating exploratory output as production-ready work.
 
-Pick one. Don't fire all four.
+Ask for a user decision only when different answers materially change the work and context does not already authorize one. Do not repeat confirmation after the user has authorized the direction.
 
-## Phase 1 - Pull on threads
+## Keep a useful record
 
-Follow the substance of what the user says. Avoid:
+For a sustained or delegated discussion, maintain a compact durable record in the repository's preferred location when one exists. Otherwise keep the same information in working context:
 
-- Jumping to a solution before the problem is clear.
-- Drafting an ADR mid-conversation (that's `/plan-change`'s job).
-- Padding with strawman options the user didn't raise.
+- objective and non-goals;
+- decisions and their reasons;
+- applicable standards and source references;
+- acceptance evidence or success signals;
+- open questions, tasks, and observations.
 
-Patterns worth listening for:
+Update or replace stale entries as understanding changes. A shared work-record format may be used when available, but this skill does not depend on one.
 
-- **"We considered X but...":** there's already a decision shape.
-- **"It would be nice if...":** they're describing the world after,
-  which is what a spec captures.
-- **"I don't know if this is even a problem":** explore whether it
-  belongs in scope at all. Sometimes the answer is "not yet."
-- **"Last time we tried this...":** prior art worth surfacing in an
-  ADR's Context section later.
+## Notice adjacent issues
 
-## Phase 2 - Name what's emerging
+Record unrelated quality or UX problems without derailing context-heavy exploration. Give a mild nudge for a meaningful nonblocking issue, then continue. Revisit it only if the discussion reaches that boundary or during final review; record each as addressed with evidence, open-in-scope for review, follow-up with rationale, or disproved with evidence.
 
-After 3-6 turns, you'll usually be able to say what this is: a feature,
-a refactor, a bug investigation, or "still too vague, keep talking."
-Surface that read to the user, in your own words. Two things to
-include:
+## Exit when ready
 
-- The shape you think the work is taking ("this sounds like a
-  refactor of the cancel-order path", "this sounds like a feature
-  with a small adjacent bug").
-- The substantive constraints you heard - not the whole conversation
-  back, just the load-bearing facts.
-
-Then ask whether to move into the planning track now or keep talking.
-
-If the user wants to keep talking, keep going. No quota on discussion
-turns. If they're ready, hand off via the Skill tool with the summary
-pre-populated so they don't re-explain the problem.
-
-## Phase 3 - Hand off
-
-Invoke `/start-feature` with the summary. The user shouldn't have to
-re-explain what was just discussed; the routing into `/plan-change`
-or `/backfill-feature` can run with the context in hand.
-
-If the discussion concluded with "nothing to build here" - that's a
-valid outcome. Say so. Don't manufacture work to justify the skill.
-
-## Operating rules
-
-- **No file writes. Ever.** Discussion is the output.
-- **Don't draft ADRs mid-conversation.** That's a `/plan-change`
-  artefact. Tell the user "we'll capture this when we route into
-  /plan-change" if they start asking for one.
-- **Don't hurry.** Some conversations need ten turns to find the
-  thread. Some need three. Trust the user's signal.
-- **Surface the "no problem here" outcome.** If exploration reveals
-  there's actually nothing to do, name it. Don't pad.
-
-## Composing with other skills
-
-- **Routes into:** `/start-feature` (then onward to `/plan-change` or
-  `/backfill-feature`), or `/plan-change` directly when intent is
-  clear by the end.
-- **Companion entry:** `/start-feature` for work where intent is
-  already known.
+When the next move becomes clear, summarize the intent, load-bearing constraints, decisions, evidence, and remaining uncertainty. When authorised, continue with `start-feature` for scoped product work or `plan-change` when planning is useful; otherwise return the concrete next step without silently starting a build. If the companion skill is unavailable, carry out its needed work directly within the same scope. If nothing should be built, say so plainly.

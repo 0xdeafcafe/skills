@@ -1,9 +1,6 @@
-# Scenarios eval runs @langwatch/scenario multi-turn tests against the
-# conversational planning skills (/start-discussion, /plan-change,
-# /start-feature). Each scenario spins up a UserSimulatorAgent + a
-# JudgeAgent against a real Claude Code session loading the plugin —
-# meaning every run burns gateway / Anthropic credits AND time (per-test
-# timeout is 300s). Gated three ways so it never runs by accident:
+# The v2 Scenario suite runs scripted behavioral cases against a real Claude
+# Code coordinator session loading the plugin. Every run burns gateway /
+# Anthropic credits and time, so it is gated three ways:
 #
 #  1. PR label "run-scenarios" — collaborator-only; the workflow only
 #     fires when a write-permission user attaches the label.
@@ -160,10 +157,8 @@ jobs:
           # marketplace makes `install` resolve the SKILL.md files from
           # the just-checked-out repo — no remote fetch.
           #
-          # The scenarios adapter ALSO passes plugins: [{type:"local"}]
-          # to the SDK directly, which is the authoritative path. This
-          # CLI install is belt-and-suspenders for any claude-code
-          # subprocess paths that bypass the SDK's plugin list.
+          # The v2 fixture also supplies --plugin-dir to each isolated Claude
+          # subprocess. This install checks the aggregate marketplace package.
           #
           # No `|| true` — masking install failures hides real breakage
           # (CI starts fresh, there's no idempotence problem to absorb).
@@ -174,19 +169,13 @@ jobs:
       # Secrets are scoped to this step only. Keep them out of $GITHUB_ENV
       # and out of any earlier step — claude-code (subprocess of the SDK)
       # reads ANTHROPIC_BASE_URL + ANTHROPIC_AUTH_TOKEN at process spawn;
-      # scenario.config.mjs reads LANGWATCH_GATEWAY_URL +
-      # LANGWATCH_VIRTUAL_AI_KEY plus LANGWATCH_PROJECT_ID for the
-      # x-project-id header.
+      # the suite disables Scenario trace upload and receives no LangWatch
+      # ingestion credentials.
       - name: Run scenarios
         id: run
         env:
           ANTHROPIC_BASE_URL: ${{ secrets.LANGWATCH_GATEWAY_URL }}
           ANTHROPIC_AUTH_TOKEN: ${{ secrets.LANGWATCH_VIRTUAL_AI_KEY }}
-          LANGWATCH_GATEWAY_URL: ${{ secrets.LANGWATCH_GATEWAY_URL }}
-          LANGWATCH_VIRTUAL_AI_KEY: ${{ secrets.LANGWATCH_VIRTUAL_AI_KEY }}
-          LANGWATCH_PROJECT_ID: ${{ secrets.LANGWATCH_PROJECT_ID }}
-          LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
-          LANGWATCH_ENDPOINT: ${{ secrets.LANGWATCH_ENDPOINT }}
           SCENARIO_FILTER: ${{ github.event.inputs.scenario }}
           SUMMARY_FILE: ${{ github.workspace }}/scenarios-summary.md
           OUTPUT_FILE: ${{ github.workspace }}/scenarios-output.txt
@@ -195,9 +184,9 @@ jobs:
           # the PR. The job's exit code still comes from vitest itself.
           set -o pipefail
           if [ -n "$SCENARIO_FILTER" ]; then
-            pnpm scenarios -- "$SCENARIO_FILTER" 2>&1 | tee "$OUTPUT_FILE"
+            pnpm scenarios:v2 -- "$SCENARIO_FILTER" 2>&1 | tee "$OUTPUT_FILE"
           else
-            pnpm scenarios 2>&1 | tee "$OUTPUT_FILE"
+            pnpm scenarios:v2 2>&1 | tee "$OUTPUT_FILE"
           fi
           STATUS=$?
 

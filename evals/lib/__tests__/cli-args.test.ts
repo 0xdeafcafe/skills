@@ -4,9 +4,7 @@ import { flagPresent, flagValue, numericFlag } from "../cli-args.ts";
 
 describe("flagValue", () => {
   it("returns the value after the first matching flag", () => {
-    expect(flagValue(["--fixture", "tiny-token-leak"], "--fixture")).toBe(
-      "tiny-token-leak",
-    );
+    expect(flagValue(["--fixture", "tiny-token-leak"], "--fixture")).toBe("tiny-token-leak");
   });
 
   it("returns null when no flag matches", () => {
@@ -51,9 +49,7 @@ describe("numericFlag", () => {
   });
 
   it("throws on a non-numeric value (typo guard)", () => {
-    expect(() => numericFlag(["--runs", "three"], "--runs", 3)).toThrow(
-      /requires a number/,
-    );
+    expect(() => numericFlag(["--runs", "three"], "--runs", 3)).toThrow(/requires a number/);
   });
 
   it("accepts negative and decimal numbers", () => {

@@ -1,0 +1,475 @@
+{
+  "schemaVersion": 1,
+  "id": "shape-first",
+  "provenance": {
+    "kind": "recorded-model",
+    "capturedAt": "2026-09-11T22:19:49.212Z",
+    "cliVersion": "2.1.223 (Claude Code)",
+    "model": "claude-opus-5",
+    "scenarioPackageVersion": "1.6.0",
+    "promptDigest": "74e68eac74daae9adf6d0ebf230f9d925e49636b7dff119435427130520516aa",
+    "instructionDigest": "d834058ffd27cbfdaae4bc3ec0a66b3bc53e5b14d5815f459c8fe2536e79fc8c",
+    "normalizations": [
+      "Known worktree and plugin paths replaced consistently with <WORKTREE> and <PLUGIN_ROOT>; thinking blocks excluded by the official adapter; tool results use the adapter's default 8000-character cap."
+    ]
+  },
+  "context": {
+    "caseId": "shape-first",
+    "repoTemplate": "v2/scenarios/coordinator.scenario.test.ts"
+  },
+  "turns": [
+    {
+      "prompt": "Make onboarding better. Start by understanding the outcome; don't guess what to build.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01XVbEw3zG5eVLbci6uVfwU3",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:start-discussion",
+                "args": "Make onboarding better — outcome not yet defined"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01XVbEw3zG5eVLbci6uVfwU3",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:start-discussion"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>/skills/start-discussion\n\n# Start a discussion\n\nHelp the user understand what, if anything, should change. The outcome may be a sharper objective, a decision, an experiment, a plan, or a deliberate choice to do nothing.\n\n## Explore the intent\n\nStart from what prompted the discussion. Follow the most informative thread rather than running a questionnaire. Clarify only what changes the direction:\n\n- the problem or opportunity and who experiences it;\n- the desired outcome and signals that would show improvement;\n- constraints, non-goals, prior attempts, and existing commitments;\n- assumptions or uncertainties that could reverse the decision.\n\nReflect emerging intent in concrete language so the user can correct it. Preserve promising alternatives and unresolved tensions until evidence makes them irrelevant. Do not rush toward architecture, tickets, or code merely to make the discussion look productive.\n\nInspect repository context or prior work when it can answer a live question. Distinguish observed behavior from inferred rationale.\n\n## Resolve uncertainty proportionally\n\nUse a small prototype, spike, sketch, or measurement when discussion alone cannot answer an important question and exploration of that kind is within the user’s scope. A request to talk does not authorise a production build. State what it is intended to learn and avoid treating exploratory output as production-ready work.\n\nAsk for a user decision only when different answers materially change the work and context does not already authorize one. Do not repeat confirmation after the user has authorized the direction.\n\n## Keep a useful record\n\nFor a sustained or delegated discussion, maintain a compact durable record in the repository's preferred location when one exists. Otherwise keep the same information in working context:\n\n- objective and non-goals;\n- decisions and their reasons;\n- applicable standards and source references;\n- acceptance evidence or success signals;\n- open questions, tasks, and observations.\n\nUpdate or replace stale entries as understanding changes. A shared work-record format may be used when available, but this skill does not depend on one.\n\n## Notice adjacent issues\n\nRecord unrelated quality or UX problems without derailing context-heavy exploration. Give a mild nudge for a meaningful nonblocking issue, then continue. Revisit it only if the discussion reaches that boundary or during final review; record each as addressed with evidence, open-in-scope for review, follow-up with rationale, or disproved with evidence.\n\n## Exit when ready\n\nWhen the next move becomes clear, summarize the intent, load-bearing constraints, decisions, evidence, and remaining uncertainty. When authorised, continue with `start-feature` for scoped product work or `plan-change` when planning is useful; otherwise return the concrete next step without silently starting a build. If the companion skill is unavailable, carry out its needed work directly within the same scope. If nothing should be built, say so plainly.\n\n\nARGUMENTS: Make onboarding better — outcome not yet defined"
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01E5CWU7AEkdga5T5newXngo",
+              "toolName": "Bash",
+              "input": {
+                "command": "pwd && ls -la && git log --oneline -5 2>/dev/null",
+                "description": "Inspect project working directory"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01E5CWU7AEkdga5T5newXngo",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "<WORKTREE>\ntotal 32\ndrwx------@   8 lw  staff    256 Sep 11 23:17 .\ndrwx------@ 736 lw  staff  23552 Sep 11 23:18 ..\ndrwxr-xr-x@  12 lw  staff    384 Sep 11 23:17 .git\n-rw-r--r--@   1 lw  staff     14 Sep 11 23:17 README.md\n-rw-r--r--@   1 lw  staff     69 Sep 11 23:17 SETUP_REFERENCE.md\n-rw-r--r--@   1 lw  staff    177 Sep 11 23:17 package.json\ndrwxr-xr-x@   3 lw  staff     96 Sep 11 23:17 scripts\n-rw-r--r--@   1 lw  staff     36 Sep 11 23:17 server.mjs\ne3eef27 discoverable setup baseline\na8bb0da initial fixture"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_012EJQA6MZn6uFk5ehBm9nJV",
+              "toolName": "Bash",
+              "input": {
+                "command": "for f in README.md SETUP_REFERENCE.md package.json server.mjs; do echo \"=== $f ===\"; cat \"$f\"; done; echo \"=== scripts ===\"; ls -R scripts && cat scripts/*/* 2>/dev/null || cat scripts/*",
+                "description": "Read repo files for onboarding context"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_012EJQA6MZn6uFk5ehBm9nJV",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== README.md ===\n# shape-first\n=== SETUP_REFERENCE.md ===\nLocal setup uses `pnpm install`, `pnpm run setup`, then `pnpm test`.\n=== package.json ===\n{\n  \"engines\": {\n    \"node\": \">=24\",\n    \"pnpm\": \">=10\"\n  },\n  \"scripts\": {\n    \"setup\": \"node scripts/setup.mjs\",\n    \"dev\": \"node server.mjs\",\n    \"test\": \"node --test\"\n  }\n}\n=== server.mjs ===\nexport const product = 'unchanged';\n=== scripts ===\nsetup.mjs\n(eval):1: no matches found: scripts/*/*\nconsole.log('Local setup ready');"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "I read the repo before asking anything, so the questions below are grounded rather than generic.\n\n## What's actually here\n\n`/private/var/.../skills-v2-shape-first-Q2qkvD` — a very small repo, two commits (`initial fixture`, `discoverable setup baseline`).\n\n| File | State |\n|---|---|\n| `README.md` | One line: `# shape-first`. No setup, no purpose, no run instructions. |\n| `SETUP_REFERENCE.md` | The real steps (`pnpm install` → `pnpm run setup` → `pnpm test`), in a file a newcomer has no reason to open. |\n| `package.json` | Requires node >=24, pnpm >=10. Nothing enforces it — no `.nvmrc`, no preinstall check. |\n| `scripts/setup.mjs` | Prints `Local setup ready` and does nothing else. |\n| `server.mjs` | `export const product = 'unchanged'` — a placeholder, not a server. |\n| Missing | No CI, no CONTRIBUTING, no tests (`node --test` currently matches nothing). |\n\n## The question I can't answer for you\n\n\"Onboarding\" splits two ways here, and they share almost no work:\n\n1. **Developer onboarding** — someone clones this and gets to a working state. The evidence points this way: real steps stranded in `SETUP_REFERENCE.md`, an empty README, unenforced engine requirements, a setup script that's a stub.\n2. **Product onboarding** — a first-run experience for users of whatever `server.mjs` becomes. There's no product here yet to onboard anyone into, so this would mean building the thing first.\n\n## What would change the direction\n\n- **Which of the two above?** If it's developer onboarding, that's the whole scope and it's small.\n- **What does \"better\" look like in evidence?** The sharpest version I can imagine: a new contributor clones and reaches a passing `pnpm test` without asking anyone a question, with a wrong Node version failing loudly and early instead of confusingly later. Is that your bar, or is there a real failure you've watched someone hit?\n- **Is `setup.mjs` a stub awaiting real work, or intentionally trivial?** This decides whether the job is \"document what exists\" or \"make setup actually do something.\"\n- **Who is the newcomer?** Someone in your team who already has pnpm and the right Node, or an outside contributor starting cold? Only the second makes version enforcement worth it.\n\n## Two things I noticed but am not acting on\n\n- `node --test` matches no test files, so `pnpm test` currently passes vacuously. If \"reaches a passing test\" becomes the success signal, that signal is meaningless as it stands.\n- `server.mjs` exporting `product = 'unchanged'` suggests this repo is a fixture rather than a real project. If so, tell me — the right answer might be that onboarding docs aren't worth writing yet.\n\nI've deliberately built nothing. Answer the first question and probably the second, and I'll either scope it with `start-feature` or tell you it isn't worth doing."
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    },
+    {
+      "prompt": "The target is a checked-in ONBOARDING.md with exactly three numbered command lines for local setup; no product code changes. Please implement and verify it now.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01WYdZ5DzGpMMC8GZVo3MhwB",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:drive-change",
+                "args": "Add checked-in ONBOARDING.md with exactly three numbered local setup command lines; no product code changes"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01WYdZ5DzGpMMC8GZVo3MhwB",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:drive-change"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>/skills/drive-change\n\n# Drive a change\n\nCarry an authorized change to a complete, reviewable result. Add preparation when evidence shows it is needed, without turning every clear change into a formal planning exercise.\n\n## Establish the contract\n\nRecover the objective, non-goals, relevant decisions, repository standards, and acceptance evidence from the conversation and repository. Inspect the affected implementation, tests, callers, and current changes. If the intent is ambiguous in a way that could produce the wrong behavior, resolve it before editing.\n\nUse the repository's preferred work record for sustained work, or maintain an equivalent concise state containing objective, non-goals, decisions, standards references, acceptance evidence, open questions, tasks, and observations. Link existing plans or specs rather than requiring new ones.\n\nIf a major unresolved design choice or undocumented compatibility boundary makes direct implementation unsafe, perform the focused work needed to resolve it. Use `plan-change` or `backfill-feature` when available and useful, or do that work directly. Do not route away merely because the change is large.\n\n## Implement\n\nMap the smallest coherent surface that satisfies the intent. Follow existing architecture and conventions unless the authorized change calls for altering them. Keep tests and documentation aligned with behavior. Refer back to recorded decisions and acceptance evidence as implementation choices arise.\n\nContinue through routine edits and checks without repeated confirmation. Ask only when a decision materially changes user-visible behavior, scope, or authority and cannot be resolved from context.\n\nAgents are optional. When supported and beneficial, give them bounded, non-overlapping assignments with minimal context and explicit validation. Coordinate shared contracts centrally and integrate completed work as events arrive. Avoid hard-coded models, fixed fan-out, and repeated whole-change reviews.\n\nIntegrate worker output through `integrate-work` when available, or apply the\nsame operation-aware checks directly. Before mutation, verify the current Git\noperation, integration owner, actual changed paths and index, whether collection\nmust preserve or complete the operation, and expected postconditions. Treat\ncollected, reviewed, committed, and assignment-complete as distinct states.\n\nDuring an active merge, preserve merge parents and unrelated index entries;\nnever create a normal slice commit for intermediate collection. Rebase,\ncherry-pick, revert, and sequencer work uses its own continuation workflow.\nAvoid global staging and pushing by default. If state differs from the report,\ninvalidate only the dependent action and continue independent work.\n\n## Review and correct\n\nValidate incrementally, then review the integrated change for behavior, regressions, tests, security, accessibility and UX where relevant, and repository standards. Use focused reviewers or companion review skills only when they add signal. Apply supported fixes within scope and re-run checks affected by those fixes.\n\nRecord unrelated issues as observations. Give a mild nudge for meaningful nonblocking issues, then continue. Revisit them at the relevant boundary and final review; disposition each without assuming it belongs in this change.\n\nKeep the standards used by the change internally consistent. If implementation reveals that a referenced local rule is stale or conflicts with an authorized decision, resolve the scope-relevant conflict and update the source when appropriate. Record out-of-scope standards work with evidence and a clear disposition.\n\n## Complete\n\nCompletion requires acceptance evidence for the intended behavior and satisfaction of applicable required standards. Scope-relevant blockers or defects cannot be deferred merely to report success. If something truly cannot be resolved, state its impact and the missing decision or dependency.\n\nReport what changed, why it meets the intent, validation performed, material limitations, and observation dispositions. Preserve enough state for `handoff` or `resume-work` if those companion skills are available; otherwise provide the same continuity directly.\n\nIf work must stop before completion, leave the next action bounded and state which evidence, decision, or dependency will unblock it. Do not represent a paused or partially validated change as finished.\n\nDo not weaken an applicable standard, redefine acceptance, or mark a decision accepted merely to make the work pass. Record a proposed change to the agreement and resolve it through the appropriate owner; existing user authorisation still governs.\n\nPrefer an available LangWatch plugin and CLI for targeted trace checks when\nrepeated failures, unexpected latency, context pressure, or handoff rework leave\na question that could change the next action. Use `assess-usage` when available;\notherwise use the installed LangWatch guidance and bounded read-only queries.\nIf missing, suggest setup once per effort and continue the task. Preserve any\nprior decline or deferral, and leave installation/sign-in/capture changes to\nuser authorisation. Never make telemetry availability a completion requirement.\n\n\nARGUMENTS: Add checked-in ONBOARDING.md with exactly three numbered local setup command lines; no product code changes"
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_012tVJHbXDUZTQRdjoh3C12w",
+              "toolName": "Bash",
+              "input": {
+                "command": "git status --short --branch && git branch --show-current && echo \"--- tools ---\" && (which pnpm node || true) && node --version 2>/dev/null",
+                "description": "Check git state and tool availability"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_012tVJHbXDUZTQRdjoh3C12w",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "## main\nmain\n--- tools ---\n/opt/homebrew/bin/pnpm\n/opt/homebrew/bin/node\nv24.20.0"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Contract is clear. Verifying the three commands actually work before I document them."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01NdsCxB2KRNgvNhPv5HwJRo",
+              "toolName": "Bash",
+              "input": {
+                "command": "echo \"=== 1. pnpm install ===\" && pnpm install; echo \"exit=$?\"; echo \"=== 2. pnpm run setup ===\" && pnpm run setup; echo \"exit=$?\"; echo \"=== 3. pnpm test ===\" && pnpm test; echo \"exit=$?\"",
+                "description": "Run the three documented setup commands",
+                "timeout": 180000
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01NdsCxB2KRNgvNhPv5HwJRo",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== 1. pnpm install ===\nAlready up to date\n\nDone in 2.9s using pnpm v10.15.1\nexit=0\n=== 2. pnpm run setup ===\n\n> @ setup <WORKTREE>\n> node scripts/setup.mjs\n\nLocal setup ready\nexit=0\n=== 3. pnpm test ===\n\n> @ test <WORKTREE>\n> node --test\n\nℹ tests 0\nℹ suites 0\nℹ pass 0\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 136.453417\nexit=0"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "All three commands pass. Creating a branch (we're on `main`) and writing the file."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01Kef9LgbVdxx61uZbuQPhze",
+              "toolName": "Bash",
+              "input": {
+                "command": "git checkout -b docs/onboarding 2>&1 | tail -1",
+                "description": "Create branch off main"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01Kef9LgbVdxx61uZbuQPhze",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "Switched to a new branch 'docs/onboarding'"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01NNuQcWAbyS6yi6xQ8V2e9D",
+              "toolName": "Write",
+              "input": {
+                "file_path": "<WORKTREE>/ONBOARDING.md",
+                "content": "# Onboarding\n\nRequires Node >= 24 and pnpm >= 10.\n\n1. `pnpm install`\n2. `pnpm run setup`\n3. `pnpm test`\n"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01NNuQcWAbyS6yi6xQ8V2e9D",
+              "toolName": "Write",
+              "output": {
+                "type": "text",
+                "value": "File created successfully at: <WORKTREE>/ONBOARDING.md (file state is current in your context — no need to Read it back)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01CsuMMRqbrzhrCtsC8sTe8f",
+              "toolName": "Bash",
+              "input": {
+                "command": "echo \"=== numbered lines ===\" && grep -nE '^[0-9]+\\. ' ONBOARDING.md && echo \"count=$(grep -cE '^[0-9]+\\. ' ONBOARDING.md)\" && echo \"=== working tree vs main ===\" && git status --short && git diff --stat main",
+                "description": "Verify numbered line count and change scope"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01CsuMMRqbrzhrCtsC8sTe8f",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== numbered lines ===\n5:1. `pnpm install`\n6:2. `pnpm run setup`\n7:3. `pnpm test`\ncount=3\n=== working tree vs main ===\n?? ONBOARDING.md\n?? node_modules/\n?? pnpm-lock.yaml"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "`pnpm install` left untracked `node_modules/` and `pnpm-lock.yaml`, and there's no `.gitignore`. Staging only the intended file — no global `git add`."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01C8tR47bzoo8KSoXZJKtvro",
+              "toolName": "Bash",
+              "input": {
+                "command": "git add ONBOARDING.md && git commit -q -m \"$(cat <<'EOF'\nAdd ONBOARDING.md with local setup commands\n\nPromotes the three local setup steps from SETUP_REFERENCE.md into a\ndiscoverable ONBOARDING.md. All three commands verified to exit 0.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\nEOF\n)\" && git show --stat HEAD | head -12 && echo \"=== remaining untracked ===\" && git status --short",
+                "description": "Commit ONBOARDING.md only"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01C8tR47bzoo8KSoXZJKtvro",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "commit ceb3295e4f57cb31f5c865485f8c0b2d2cf11187\nAuthor: Skills Eval <skills-eval@example.invalid>\nDate:   Fri Sep 11 23:19:35 2026 +0100\n\n    Add ONBOARDING.md with local setup commands\n    \n    Promotes the three local setup steps from SETUP_REFERENCE.md into a\n    discoverable ONBOARDING.md. All three commands verified to exit 0.\n    \n    Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n ONBOARDING.md | 7 +++++++\n=== remaining untracked ===\n?? node_modules/\n?? pnpm-lock.yaml"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Done and verified.\n\n## What changed\n\nOne commit on `docs/onboarding` (branched off `main`, since `main` is the default branch), one file, 7 lines:\n\n```markdown\n# Onboarding\n\nRequires Node >= 24 and pnpm >= 10.\n\n1. `pnpm install`\n2. `pnpm run setup`\n3. `pnpm test`\n```\n\n## Verification\n\n- **The three commands actually run.** I executed each in order before writing the file — `pnpm install` (exit 0), `pnpm run setup` (exit 0, prints `Local setup ready`), `pnpm test` (exit 0). Documented steps match observed behavior, not just what `SETUP_REFERENCE.md` claimed.\n- **Exactly three numbered lines**, confirmed by count: `grep -cE '^[0-9]+\\. '` returns `3`.\n- **No product code changes.** `git show --stat` shows `ONBOARDING.md | 7 +++++++` and nothing else. `server.mjs`, `package.json`, and `scripts/setup.mjs` are untouched.\n\n## One judgement call to confirm or strip\n\nI added the non-numbered line `Requires Node >= 24 and pnpm >= 10.` The engine constraints in `package.json` are unenforced, so a newcomer on the wrong Node hits a confusing failure inside step 1 rather than a clear one before it. It adds no numbered command line, so it holds to your spec — but if you want the file to be *only* the three lines and a heading, say so and I'll remove it.\n\n## Observations, not acted on\n\n- **`pnpm test` passes vacuously.** `node --test` reports `tests 0 / pass 0 / fail 0`. Step 3 currently proves nothing about the code — it only proves the toolchain runs. Flagged earlier, still true; fixing it means product code, which you excluded. **Follow-up.**\n- **`pnpm install` created untracked `node_modules/` and `pnpm-lock.yaml`, and there is no `.gitignore`.** I staged `ONBOARDING.md` by explicit path and did not run a global `git add`, so neither got committed. But the repo is one careless `git add -A` away from committing `node_modules/`. **Follow-up** — a `.gitignore` is the obvious fix, and checking in the lockfile is normally correct, but both are outside the scope you set.\n- **`SETUP_REFERENCE.md` now duplicates `ONBOARDING.md`.** Two files, same three steps, free to drift apart. Worth deciding whether `SETUP_REFERENCE.md` gets deleted or reduced to a pointer. **Open-in-scope** if you want it settled now; I left it alone because deleting a file wasn't part of the target.\n\nNothing is pushed and no PR is open. Say the word if you want either."
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    }
+  ],
+  "evidence": {
+    "git": {
+      "headBefore": "e3eef27fb7d8455dcc2ac01b8c42efc13eb62137",
+      "headAfter": "ceb3295e4f57cb31f5c865485f8c0b2d2cf11187",
+      "mergeHeadBefore": null,
+      "mergeHeadAfter": null,
+      "unmergedPaths": [],
+      "indexEntries": [
+        "100644 2c8aff00e8464c0f8ae3a4f487bcc5a31f3e5339 0\tONBOARDING.md",
+        "100644 90b40544f0558d6be0c363e07dc33fa6d2bb35dc 0\tREADME.md",
+        "100644 6f25f98f14e783d6dc071b6ef91197de5c8f78ee 0\tSETUP_REFERENCE.md",
+        "100644 0ec8f2f260801436959b94baeec63feeb3bfcfe5 0\tpackage.json",
+        "100644 07a72233321cf023e450e6d7dd0c284b9f400bc2 0\tscripts/setup.mjs",
+        "100644 ecfa426c0e9b186610124579be39e7cc162d8555 0\tserver.mjs"
+      ],
+      "files": {
+        "ONBOARDING.md": "# Onboarding\n\nRequires Node >= 24 and pnpm >= 10.\n\n1. `pnpm install`\n2. `pnpm run setup`\n3. `pnpm test`\n"
+      }
+    },
+    "checks": [
+      {
+        "id": "shape-first-postconditions",
+        "kind": "git-postcondition",
+        "required": true,
+        "passed": true,
+        "observed": {
+          "before": {
+            "head": "e3eef27fb7d8455dcc2ac01b8c42efc13eb62137",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 90b40544f0558d6be0c363e07dc33fa6d2bb35dc 0\tREADME.md",
+              "100644 6f25f98f14e783d6dc071b6ef91197de5c8f78ee 0\tSETUP_REFERENCE.md",
+              "100644 0ec8f2f260801436959b94baeec63feeb3bfcfe5 0\tpackage.json",
+              "100644 07a72233321cf023e450e6d7dd0c284b9f400bc2 0\tscripts/setup.mjs",
+              "100644 ecfa426c0e9b186610124579be39e7cc162d8555 0\tserver.mjs"
+            ],
+            "unmergedPaths": [],
+            "status": ""
+          },
+          "after": {
+            "head": "ceb3295e4f57cb31f5c865485f8c0b2d2cf11187",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 2c8aff00e8464c0f8ae3a4f487bcc5a31f3e5339 0\tONBOARDING.md",
+              "100644 90b40544f0558d6be0c363e07dc33fa6d2bb35dc 0\tREADME.md",
+              "100644 6f25f98f14e783d6dc071b6ef91197de5c8f78ee 0\tSETUP_REFERENCE.md",
+              "100644 0ec8f2f260801436959b94baeec63feeb3bfcfe5 0\tpackage.json",
+              "100644 07a72233321cf023e450e6d7dd0c284b9f400bc2 0\tscripts/setup.mjs",
+              "100644 ecfa426c0e9b186610124579be39e7cc162d8555 0\tserver.mjs"
+            ],
+            "unmergedPaths": [],
+            "status": "?? node_modules/\n?? pnpm-lock.yaml"
+          },
+          "reason": "Scenario's repository and runtime assertions passed"
+        }
+      }
+    ]
+  },
+  "outcome": {
+    "expected": "pass"
+  }
+}

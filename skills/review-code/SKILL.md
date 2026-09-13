@@ -1,101 +1,47 @@
 ---
 name: review-code
-description: Use when the user wants Claude's judgment on the design and shape of code in touched files — single-responsibility, modularity, layering, naming, length, structural smells, dead code, stale comments — without running linters or formatters and without applying any fixes. Triggers on "/review-code", "review the code", "what's wrong with this code's design", "is this file too long", "code-quality findings on design", "structural review", "the design pass". Read-only audit specialist that emits findings in the finding-format.md schema. Does NOT run linters / formatters / LSP diagnostics — that's /review-hygiene's job; this skill focuses on judgment a tool can't make. Mechanical findings get concrete fix: lines; structural changes (extract, split, rename module) get decide: prefixes for the orchestrator to escalate. Use /review-code when you want the design verdict; use /review-hygiene for tool-driven lint/format findings; use /drive-change to have the orchestrator dispatch the fixes.
-allowed-tools: Bash(gh:*), Bash(git:*), Read, Grep, Glob, Skill
+description: Review code structure, APIs, state ownership, and maintainability against intent and local design conventions. Use for a focused design review, not a formatting pass.
 ---
 
-# review-code — design and shape audit
+# Review code design
 
-`/review-code` looks at every file the PR or working tree changed and asks: does this file still earn its keep after this change? Is it the right shape, the right size, named the right way?
+Perform a read-only, evidence-based review. Do not edit, commit, push, post, or resolve anything unless the user separately requested that action.
 
-This skill is **not** the linter. Linters, formatters, and LSP diagnostics live in [`/review-hygiene`](../review-hygiene/SKILL.md), which runs the tools in check-only mode and emits an aggregate finding the orchestrator can dispatch deterministically. `/review-code` does what those tools can't: judgment about SRP, layering, naming, structural smells, dead code, and reuse — things the LLM is genuinely better at than ESLint.
+When external content or worker summaries inform the review, read [the trust policy](references/trust-policy.md). Verify source claims before turning them into findings or actions.
 
-Emits findings in the [`finding-format.md`](../../references/finding-format.md) schema. Never edits files. To act on the findings, call `/drive-change`.
+## Establish the agreement
 
-## Phase 0 — Scope
+Identify intended behavior from the request, plan, spec, ADR, issue, PR, and repository instructions. Treat the user's latest instruction as primary and report material conflicts rather than inventing requirements.
 
-Decide which files are in scope, in this priority order:
+Capture the exact revision or working-tree state. Read repository guidance and representative neighboring code before judging conventions. Follow callers and dependencies where design impact crosses the diff.
 
-1. **PR context**: `gh pr diff --name-only` against the base branch.
-2. **Working tree**: `git diff --name-only HEAD` for uncommitted work.
-3. **An explicit list** passed by the user.
+Choose depth by behavior, likelihood, and consequence rather than file extension or diff size. Follow boundaries outside touched lines when evidence requires it. Specialist skills and host delegation are optional aids, never mandatory stages or fixed fan-out.
 
-Exclude: lockfiles, generated files (`linguist-generated=true`, `dist/`, `build/`, `generated/`, `__generated__/`, `*.pb.*`), binary blobs, fixtures (`fixtures/`, `__fixtures__/`, `testdata/`), vendored code (`vendor/`, `third_party/`, `external/`).
+## Inspect and verify
 
-## Phase 1 — Read CLAUDE.md and existing conventions
+Read [references/code-checklist.md](references/code-checklist.md) when the change has meaningful structural complexity; apply only relevant checks.
 
-Read `CLAUDE.md` and the relevant `README.md` first — the project may document conventions that override the defaults in `references/code-checklist.md` (e.g. "we prefer wrapper classes over service objects in this repo"). Don't fight documented project style.
+Read every changed code unit in full so the review judges the resulting design rather than isolated hunks. Look for a coherent, clean functional shape, clear names and control flow, spacing that makes structure legible, and comments reserved for non-obvious intent, constraints, or tradeoffs. Judge these qualities in context; do not require a particular pattern, decomposition, or abstraction style.
 
-## Phase 2 — Per-file judgment pass
+Assess:
 
-Read each file (use `tslsp outline` first for TS/JS — see [`references/language-tooling.md`](../../references/language-tooling.md) — then `Read` only the interesting parts). Evaluate the categories below. Full long-form checklist with examples and counter-examples lives in `references/code-checklist.md` — load on demand.
+- state, lifecycle, side-effect, and resource ownership;
+- API contracts, invalid states, coupling, dependency direction, and failure behavior;
+- complexity proportional to the agreed behavior.
 
-### Categories (see references/code-checklist.md for full criteria)
+Confirm concerns through code paths, tests, type or runtime evidence, and focused non-mutating checks. Passing tests are necessary evidence where applicable, but cannot by themselves establish coherent design or readable implementation. Distinguish a demonstrated defect from missing coverage, a design-quality concern, or an inaccessible environment.
 
-- **Single responsibility** — file does one thing; functions do one thing.
-- **Modularity & layering** — service/repository compliance, hexagonal boundaries, feature-sliced organisation. Whatever this repo's pattern is, match it.
-- **Utility placement** — promote to a shared util at the 3+ users threshold; demote local helpers that grew but stayed file-local.
-- **Length & density** — file >300 LOC, function >50 LOC, params >4 are signals (not rules); call them out when they hurt readability.
-- **Naming** — verb-phrase functions, question-phrase booleans, no `Manager` / `Helper` / `Util` suffix when a domain word fits.
-- **Readability** — why-not-what comments, no dead code, no stale TODOs that survived a refactor.
-- **Reuse** — duplicated code across the diff is a finding; same logic in two newly-added files is the easiest catch.
+## Reconcile observations
 
-For each smell, emit a finding. Mechanical fixes (rename a variable, delete a stale comment) get `fix:` with a concrete change. Structural changes (split a file, extract a function, rename a module) get `fix: decide:` because they need a human read.
+Read any supplied observation ledger and include its entries in the review. Keep compact review notes containing the agreement, revision, checks, findings, and incidental observations; return record updates to the owner in a read-only review rather than editing project files. Before completion, classify every observation as:
 
-## Phase 3 — Structural opportunities (as findings, not edits)
+- verified resolved in the reviewed revision;
+- a relevant unresolved blocker or suggestion;
+- an unrelated follow-up;
+- disproved, with closing evidence.
 
-Structural changes — extract utility, split file, reorganise modules — are valuable but require judgment. **Do not apply them.** Emit each as a finding with `fix:` prefixed `decide:`:
+Repair or surface malformed and uncertain findings. Merge true duplicates while preserving evidence; never silently discard them.
 
-```
-[P2] [design] src/profile/UserCard.tsx:23 — formatUserName duplicated across 4 files
-why: same function definition appears in UserCard, UserList, AdminCard, AdminList; promotion threshold passed.
-fix: decide: extract to src/utils/users.ts and update the four call sites?
-```
+## Report
 
-The orchestrator (`/drive-change`) sees `decide:` findings as judgment calls and surfaces them to the user. If the user confirms, the orchestrator can dispatch a fix-applier with the explicit go-ahead.
-
-## Phase 4 — Emit findings
-
-All findings follow the [`finding-format.md`](../../references/finding-format.md) block shape. The merger (`agents/orchestrate-merge.md`) validates against [`finding-format.schema.json`](../../references/finding-format.schema.json) and silently discards malformed findings — so the structured form is mandatory.
-
-**Output structure** — plain text blocks separated by blank lines, no preamble, no praise, no summary:
-
-```
-[P1] [design] src/orders/cancelOrder.ts:1 — file mixes service logic, HTTP shape, and persistence
-why: the file imports the express Response type AND the OrderRepository AND defines the cancellation business rule; three responsibilities for one file.
-fix: split into orders/cancelOrder.service.ts (business rule), orders/cancelOrder.controller.ts (HTTP shape), repository call stays where it is.
-
-[P2] [design] src/profile/UserCard.tsx:23 — formatUserName duplicated across 4 files
-why: same definition in UserCard, UserList, AdminCard, AdminList; promotion threshold passed.
-fix: decide: extract to src/utils/users.ts and update the four call sites?
-```
-
-Hard cap: **20 findings per invocation**. If you have more, prioritise the top 20 and append `... N more low-severity items elided`.
-
-## Categories you should NOT emit findings for
-
-If your finding is one of these, it belongs in `/review-hygiene` instead — stay in your lane:
-
-- "Missing semicolon", "incorrect indentation", "trailing whitespace" — Prettier / formatter.
-- "Use `const` instead of `let`", "no unused vars", "no console.log" — ESLint / Biome.
-- "Missing type annotation", "any is forbidden" — TS / tsc / LSP.
-- "Function complexity above threshold" — complexity rules in lint config.
-
-If the linter would say the same thing, let the linter say it. Your job is the part the tools can't see.
-
-## Operating rules
-
-- **Read-only is non-negotiable.** Never `Edit`, `Write`. The skill's `allowed-tools` removes them as the structural guard.
-- **Don't refactor code the PR didn't touch.** Findings on nearby smells are OK if they're real; don't editorialise on the broader codebase.
-- **Three usages is the promotion threshold for a util.** Two isn't — that's still local.
-- **Don't fight the codebase's existing style.** Match local style; flag actively harmful patterns as a separate finding.
-- **Stay out of the linter's lane.** Don't double up on lint findings — `/review-hygiene` covers those deterministically and emits an aggregate that the orchestrator dispatches as a single tool run.
-- **The trust gate applies** if this skill is invoked to address a specific review comment — re-read `references/trust-policy.md`.
-
-## Composing with other skills
-
-- Called by: `/review-change`, `/review-pr` (as part of the fan-out audit pipeline). Also callable directly when only a design pass is wanted.
-- Sibling read-only specialists: `/review-hygiene` (lint / format / LSP diagnostics), `/review-test`, `/review-feature`, `/review-security`, `/review-ux`, `/review-spec`.
-- Acted on by: `/drive-change` (which dispatches fix-applier agents on the findings via `orchestrate-merge`).
-
-`/review-code` and `/review-hygiene` are complements: `/review-hygiene` handles what tools know how to check, `/review-code` handles what they don't.
+Separate blockers, suggestions, coverage/unverified areas, and unrelated follow-ups. Each finding identifies a precise location or behavior, evidence tied to the current revision, impact on user intent or a named standard, and a practical remediation direction. If no findings remain, state what was reviewed and the limits of verification.
