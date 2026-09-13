@@ -1,168 +1,43 @@
 ---
 name: start-feature
-description: Use when the user says "/start-feature", "start a feature", "I want to add X", "I need to fix bug Y", "I'm going to refactor Z", "let's build something", or otherwise signals they have a known piece of code work to do (feature add, bug fix, refactor, UI tweak). Routes to the right next skill: new feature -> /plan-change; existing feature with ADR -> read it, then /plan-change in update mode; existing feature without ADR -> /backfill-feature, then /plan-change; trivial change -> skip scaffolding and go straight to implementation. Companion to /start-discussion for exploratory work where the intent isn't yet clear.
-allowed-tools: Bash(gh:*), Bash(git:*), Bash(rg:*), Bash(fd:*), Read, Grep, Glob, Skill
+description: Establish the intent and preparation needed to begin a feature, fix, refactor, or product change. Use when the work is known but its current state, uncertainty, or appropriate path still needs to be assessed.
 ---
 
-# start-feature - entry point for known code work
+# Start a feature
 
-> **You are a router, not a designer.** Your job is to identify
-> the work, find the existing ADR landscape, name the next skill,
-> and hand off. You do NOT discuss architecture options. You do
-> NOT ask about counter algorithms, storage shapes, edge cases,
-> forcing functions, scope, or anything else that belongs to
-> `/plan-change`. If you find yourself asking a design question,
-> stop — that's a sign you've drifted into the wrong skill.
+Turn a stated change into a grounded next action without imposing a document sequence. Preserve the user's goal and existing authorization throughout the lifecycle.
 
-A piece of work walks in the door. You know what you want to do but
-you might not know what scaffolding belongs around it. `/start-feature`
-sorts that out and routes you into the right next skill.
+## Establish the change
 
-It covers any **known** code work: features, bug fixes, refactors,
-UI tweaks. For exploratory "I have a problem, let's chat" work where
-the intent isn't clear yet, use `/start-discussion` instead.
+Summarize the objective, affected users or systems, non-goals, and evidence of success. Inspect the repository for relevant code, tests, conventions, active plans, decision records, and feature documentation. Prefer repository truth over generic ceremony.
 
-## What this skill does
+Determine:
 
-This is a **four-step routing skill**. Nothing more.
+- whether this is new behavior, a correction, maintenance, or an extension of existing behavior;
+- what is already decided and what remains uncertain;
+- which repository standards or ownership boundaries apply;
+- whether current behavior needs characterization before it changes;
+- what preparation is proportionate to the risk and reversibility.
 
-1. Asks at most two short questions to pin down the work
-   (one-sentence summary + new-vs-existing). Stop asking once
-   you have both answers.
-2. Inspects the codebase for any existing ADR / spec for the area
-   — runs the discovery commands in Phase 1.
-3. States the routing decision back to the user
-   (which next skill, why). One short block. Then waits 0 turns.
-4. Hands off via the Skill tool. The handoff is the deliverable.
+Do not require an ADR, formal spec, ticket set, or prototype by default. Create or update one when it resolves a real ambiguity, communicates a durable contract, or is required by repository convention.
 
-Anything beyond these four steps belongs to the downstream skill.
+## Choose the useful path
 
-## Phase 0 - Pin the work
+- Continue directly to implementation when intent and acceptance are clear and the change is bounded.
+- Use `backfill-feature` when important existing behavior or rationale is undocumented and changing it safely requires a baseline.
+- Use `plan-change` when decisions, dependencies, sequencing, or acceptance need to be worked out first.
+- Return to exploration when the proposed feature is still a proxy for an unclear problem.
 
-You need exactly two answers before you can route. Get them and
-move on. Do not ask any third question here — anything more belongs
-to the downstream skill, not this one.
+These are capabilities, not mandatory gates. If a companion skill is unavailable, perform the corresponding work directly.
 
-1. **What's the work?** One sentence is fine. ("Add CSV export on the
-   orders page", "fix the bug where invoices print the wrong total
-   when discounts apply", "refactor the auth middleware to use the new
-   session store".)
+## Maintain continuity
 
-2. **Is this new code, or are you modifying something that already
-   exists?**
-   - New = no code today; this introduces a new feature area, new
-     service boundary, new route, etc.
-   - Existing = there's already code; you're changing its behaviour,
-     fixing it, or restructuring it.
+For sustained work, keep a compact work record in the repository's established location, or in working context if no durable location fits. Capture objective, non-goals, decisions, standards references, acceptance evidence, open questions, tasks, and observations. Correct it when the direction changes instead of preserving obsolete history as instruction.
 
-If the user opened with enough detail that you can answer both
-yourself, summarise back in one sentence and ask "is that right?"
-rather than asking from scratch.
+If agents are available and useful, give each a bounded assignment with only the context needed: intent, relevant decisions and standards, target surface, expected output, and stop condition. Agents are optional; continue in a single-agent environment.
 
-**Do not ask about design.** Forcing function, scope, alternatives,
-algorithms, storage shape, edge cases, golden path — all of that
-belongs to `/plan-change`. If you catch yourself drafting a numbered
-list of design forks, you've drifted into the wrong skill; stop and
-route.
+## Finish preparation
 
-## Phase 1 - Find the ADR landscape
+Preparation is complete when the next worker can act without guessing at the intent or violating a known standard. Scope-relevant blockers and required standards must be resolved or explicitly surfaced; they cannot be deferred merely to declare the feature started.
 
-Look for the repo's ADR and specs directories - same discovery as
-`/plan-change` Phase 0:
-
-```bash
-for d in docs/adr docs/architecture/decisions docs/decisions adr decisions; do
-  [ -d "$d" ] && echo "$d"
-done
-
-for d in specs features tests/features; do
-  [ -d "$d" ] && echo "$d"
-done
-```
-
-If the work touches existing code, try to spot whether the relevant
-area is already covered:
-
-```bash
-rg -l '<feature-keywords>' docs/adr/ specs/ 2>/dev/null
-```
-
-Best-effort. The user will know better than the grep does.
-
-**If grep returns nothing**, do *not* conclude "no existing area" - the
-user's feature keywords may not appear in the existing code yet (e.g.
-adding "cancellation" to a service that doesn't yet contain the word).
-Instead ask: "Which directory or module is this work touching?"
-Re-run the search against ADRs / specs that mention *that path* rather
-than the feature noun.
-
-Show what you found and ask "is one of these the ADR for what you're
-touching, or is there nothing yet?"
-
-## Phase 2 - Route
-
-| Work is... | ADR exists? | Next skill |
-| --- | --- | --- |
-| New | n/a | `/plan-change` (writes ADR + spec) |
-| Existing | Yes | Read the ADR, then `/plan-change` to layer the change on top |
-| Existing | No | `/backfill-feature` to characterize current state, then `/plan-change` |
-| Trivial (typo, one-line fix, copy change) | n/a | Skip scaffolding; implement directly |
-
-"Trivial" is a judgement call. Five-word description with no design
-choice = trivial. Two-sentence description with follow-up questions =
-not.
-
-State the route back before invoking. The routing block is your
-deliverable — without it you have not done this skill's job. Even
-when the user's first message already implies the answer (new
-feature, no prior ADR), still print this block and then call the
-skill. Don't skip the announcement.
-
-```
-Routing:
-  Work:       <one-line summary>
-  Track:      <new / existing-with-adr / existing-no-adr / trivial>
-  Next skill: <name>   | "no skill - implement directly"
-
-Calling <skill> now.
-```
-
-## Phase 3 - Hand off
-
-Invoke the next skill via the Skill tool. Pre-populate it with what
-you already know so the user doesn't repeat themselves.
-
-If trivial: tell the user no scaffolding is needed and offer to start
-implementation directly. Skip ADR / spec / characterization tests.
-
-## Operating rules
-
-- **You are a router, not a designer.** This is the most common
-  failure mode. The temptation to "be helpful" by listing
-  architectural options is wrong here — that's exactly what
-  `/plan-change` is for. Route to it; don't impersonate it.
-- **No design discussion. Period.** Do not list storage options, do
-  not enumerate algorithms, do not lay out forcing functions, do not
-  draft anchor questions, do not produce numbered lists of
-  "decisions to make". If any of those appear in your response,
-  delete them and replace with the routing block.
-- **Don't write any files.** This skill routes; it doesn't author.
-  Downstream skills (`/plan-change`, `/backfill-feature`) do the
-  writing.
-- **Don't pad the routing.** If the user already said "this is a new
-  feature, here's the design", route straight to `/plan-change` with
-  the context. Don't re-ask.
-- **Trust the user's "trivial" claim, but sanity-check it.** If they
-  say "just a copy change" but the diff spans 12 files, ask once.
-- **One question per turn where possible.** Don't dump a list. And
-  never ask more than two questions total before routing.
-- **Always print the routing block.** Even when the answer is
-  obvious. Even when you handed off to the next skill in the same
-  response. The block is what makes the routing legible.
-
-## Composing with other skills
-
-- **Routes into:** `/plan-change`, `/backfill-feature` (then
-  `/plan-change`).
-- **Companion entry:** `/start-discussion` for exploratory work.
-- **After implementation:** `/drive-change` for the full audit pass.
+Report the selected path, why it fits, what context carries forward, and any decision the user must make. Continue without another confirmation when the user already authorized that next action.

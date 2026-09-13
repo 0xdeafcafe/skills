@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  type CellSummary,
-  passRateLabel,
-  renderTier2Summary,
-} from "../summary-markdown.ts";
+import { type CellSummary, passRateLabel, renderTier2Summary } from "../summary-markdown.ts";
 
 const cell = (
   fixture: string,

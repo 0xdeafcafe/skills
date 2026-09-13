@@ -1,5 +1,5 @@
-# Tier-3 pipeline runs the full `/drive-change` orchestrator against a
-# fixture, end-to-end. VERY EXPENSIVE — burns multiple LLM calls per run
+# The historical tier-3 runner evaluates `/drive-change` against v1 fixture
+# expectations. VERY EXPENSIVE — burns multiple LLM calls per run
 # (slicer + 4-6 reviewers + merger + verifier). Cost ceiling per run:
 # ~$5 (set via --max-budget-usd in the runner).
 #
@@ -73,7 +73,7 @@ jobs:
           ARGS=(--summary-path "$TIER3_SUMMARY")
           if [ -n "$TIER3_FIXTURE" ]; then ARGS+=(--fixture "$TIER3_FIXTURE"); fi
           if [ -n "$TIER3_BUDGET" ]; then ARGS+=(--max-budget-usd "$TIER3_BUDGET"); fi
-          pnpm tier3 "${ARGS[@]}"
+          pnpm legacy:tier3 "${ARGS[@]}"
 
           # Same step-summary handling as tier-2: surface pass/fail + cost to
           # whoever dispatched the workflow without needing to read stdout.

@@ -1,0 +1,714 @@
+{
+  "schemaVersion": 1,
+  "id": "observation-review",
+  "provenance": {
+    "kind": "recorded-model",
+    "capturedAt": "2026-09-11T22:11:41.143Z",
+    "cliVersion": "2.1.223 (Claude Code)",
+    "model": "claude-opus-5[1m]",
+    "scenarioPackageVersion": "1.6.0",
+    "promptDigest": "2361e2f7d069593c983bc04df98c42c510608a547a2fe2bd2c535785cc72dbfd",
+    "instructionDigest": "413b4fa044e9164dd591999d72d9cd9f7660d5eadbf5e42574105265a66b72e4",
+    "normalizations": [
+      "Known worktree and plugin paths replaced consistently with <WORKTREE> and <PLUGIN_ROOT>; thinking blocks excluded by the official adapter; tool results use the adapter's default 8000-character cap."
+    ]
+  },
+  "context": {
+    "caseId": "observation-review",
+    "repoTemplate": "v2/scenarios/coordinator.scenario.test.ts"
+  },
+  "turns": [
+    {
+      "prompt": "Implement the accepted status behavior in app.mjs and review the result. While working, record the empty-label button in page.html as an incidental UX observation without abandoning the implementation. Reconcile it at review with a reasoned follow-up disposition in WORK.md; it is outside this change's scope.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "I'll start by understanding the actual state of the work \u2014 what \"accepted status behavior\" means here and what's in these files."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_0157LU2VG5z2dVp6o2HqCW4X",
+              "toolName": "Bash",
+              "input": {
+                "command": "pwd && ls -la"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_0157LU2VG5z2dVp6o2HqCW4X",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "/private<WORKTREE>\ntotal 32\ndrwx------@   7 lw  staff    224 Sep 11 23:10 .\ndrwx------@ 729 lw  staff  23328 Sep 11 23:10 ..\ndrwxr-xr-x@  12 lw  staff    384 Sep 11 23:10 .git\n-rw-r--r--@   1 lw  staff     21 Sep 11 23:10 README.md\n-rw-r--r--@   1 lw  staff     43 Sep 11 23:10 WORK.md\n-rw-r--r--@   1 lw  staff     36 Sep 11 23:10 app.mjs\n-rw-r--r--@   1 lw  staff     18 Sep 11 23:10 page.html"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01F1VQjsZdaBfAwom2QHqPxg",
+              "toolName": "Bash",
+              "input": {
+                "command": "git -C . status --porcelain=v2 --branch 2>&1 | head -40"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01F1VQjsZdaBfAwom2QHqPxg",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "# branch.oid 8dd946da745af07125bdfb5431c984e8f0b87c0e\n# branch.head main"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01ENPA1RKyp8cmqndVz8U7bo",
+              "toolName": "Read",
+              "input": {
+                "file_path": "/private<WORKTREE>/app.mjs"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01ENPA1RKyp8cmqndVz8U7bo",
+              "toolName": "Read",
+              "output": {
+                "type": "text",
+                "value": "1\texport const status = () => 'down';\n2\t"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01WNeNmn4sEfVLVTcLfWb6fa",
+              "toolName": "Read",
+              "input": {
+                "file_path": "/private<WORKTREE>/WORK.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01WNeNmn4sEfVLVTcLfWb6fa",
+              "toolName": "Read",
+              "output": {
+                "type": "text",
+                "value": "1\t# Work\n2\t\n3\tAcceptance: status() returns 'ok'.\n4\t"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01KNgPdsUt7owQyZhwyEkHe6",
+              "toolName": "Read",
+              "input": {
+                "file_path": "/private<WORKTREE>/page.html"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01KNgPdsUt7owQyZhwyEkHe6",
+              "toolName": "Read",
+              "output": {
+                "type": "text",
+                "value": "1\t<button></button>\n2\t"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01WCGc6C69yNAjENX5HCSSvb",
+              "toolName": "Read",
+              "input": {
+                "file_path": "/private<WORKTREE>/README.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01WCGc6C69yNAjENX5HCSSvb",
+              "toolName": "Read",
+              "output": {
+                "type": "text",
+                "value": "1\t# observation-review\n2\t"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "The work is small and fully specified: `WORK.md` sets acceptance as `status()` returning `'ok'`, and `app.mjs` currently returns `'down'`. Let me load the implementation and observation-tracking skills."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01G7JTjhwFEu9TTDcwszcHst",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:implement-change"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01G7JTjhwFEu9TTDcwszcHst",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:implement-change"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>skills/implement-change\n\n# Implement a change\n\nTranslate the current contract into working code and evidence. No particular artifact is mandatory; the implementation must remain traceable to intent and applicable standards.\n\n## Recover the contract\n\nRead the user request and relevant repository sources. Extract:\n\n- objective and non-goals;\n- decided behavior and architectural constraints;\n- applicable repository and domain standards;\n- acceptance evidence, edge cases, and compatibility expectations;\n- open questions that could materially change the build.\n\nSources may include a work record, plan, ADR, behavioral spec, issue, prototype results, tests, or conversation. Resolve conflicts by checking recency and authority; do not silently choose whichever source is easiest to implement.\n\nIf essential intent is missing, do the smallest useful investigation or ask for the material decision. Do not demand a spec or ADR solely because none exists.\n\n## Map and build\n\nInspect the affected code, callers, tests, and local conventions. Form a file or interface-level implementation approach proportional to the change. Share it when it exposes a consequential interpretation; routine implementation details do not need another approval after the user authorized the work.\n\nImplement coherent slices and validate each risky boundary as it lands. Keep production behavior, tests, documentation, migrations, and observability aligned where relevant. Treat prototypes as evidence; harden or replace them before including them in the final build.\n\nFor sustained work, maintain the repository's preferred work record or an equivalent concise state with objective, non-goals, decisions, standards references, acceptance evidence, open questions, tasks, and observations. Update decisions and tasks when implementation reveals new facts.\n\nAgents may handle bounded independent slices when the host supports them. Provide minimal relevant context, explicit ownership, expected evidence, and a stop condition. Do not require agents, prescribe models, or delegate integration-sensitive contracts without coordination.\n\n## Handle findings\n\nFix scope-relevant defects and required-standard violations discovered during implementation. Record unrelated UX, quality, or maintenance issues; briefly flag meaningful nonblocking observations and continue. Revisit them when touching their boundary or during final review, then mark a disposition rather than assuming every observation needs a fix.\n\n## Validate and hand off\n\nRun the focused checks that demonstrate acceptance and the repository checks appropriate to the touched surface. Manual evidence is valid where automation is impractical, but identify it clearly. Do not claim completion while a scope-relevant blocker, failed acceptance case, or required standard remains unresolved.\n\nReport the implemented behavior, decisions interpreted or changed, validation evidence, touched surface, observations, and any remaining question. If broader integration review is authorized, continue with `drive-change` or `drive-plan`; if companion skills are unavailable, perform or describe the same handoff directly.\n\nDo not weaken an applicable standard, redefine acceptance, or mark a decision accepted merely to make the work pass. Record a proposed change to the agreement and resolve it through the appropriate owner; existing user authorisation still governs.\n\nPrefer an available LangWatch plugin and CLI for targeted trace checks when\nrepeated failures, unexpected latency, context pressure, or handoff rework leave\na question that could change the next action. Use `assess-usage` when available;\notherwise use the installed LangWatch guidance and bounded read-only queries.\nIf missing, suggest setup once per effort and continue the task. Preserve any\nprior decline or deferral, and leave installation/sign-in/capture changes to\nuser authorisation. Never make telemetry availability a completion requirement.\n"
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01TpdNkLxhfnLNyrXEYAxH2G",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:track-observations"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01TpdNkLxhfnLNyrXEYAxH2G",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:track-observations"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>skills/track-observations\n\n# Track Observations\n\nKeep useful findings from being lost while protecting the reasoning and momentum of the current task.\n\n## Record an observation\n\nCapture observations in the effort\u2019s live work record when authorised to update it, otherwise return compact entries to its owner. Never put project state in a bundled template. Reuse existing observation IDs and merge true duplicates without losing their evidence. Each entry should contain:\n\n```markdown\n- ID: OBS-<stable-id>\n  Observation: <specific claim>\n  Evidence: <path, line, command result, or reproducible behavior>\n  Confidence: high | medium | low\n  Impact: <effect on current outcome or later work>\n  Disposition: open-in-scope | addressed | follow-up | disproved\n  Owner/next step: <when useful>\n```\n\nEvidence may be incomplete; match confidence to it. Do not promote inference into fact or turn a preference into a defect.\n\n## Protect the active task\n\nChoose the least disruptive response:\n\n- Record silently when the observation is unrelated or low impact.\n- Give a mild, brief nudge when it meaningfully affects a nearby decision but does not block current work.\n- Interrupt when evidence shows a material blocker, likely harm, invalid acceptance criteria, destructive collision, or security/correctness issue that makes continuing unsound.\n\nPreserve expensive reasoning already in progress. Do not abandon a coherent implementation thread to investigate every adjacent curiosity. A bounded read-only check is reasonable when it determines whether interruption is warranted.\n\n## Revisit and close\n\nRevisit observations at planning boundaries, before final build completion, and during final review. Every recorded observation needs a disposition; every observation does not need a fix.\n\n- `addressed`: verified resolution and evidence.\n- `open-in-scope`: still required for the current acceptance criteria; name the owner or blocker.\n- `follow-up`: valid but outside current scope; preserve a concrete next step and rationale.\n- `disproved`: evidence no longer supports the observation; state why.\n\nDo not mark an item addressed because code changed. Verify the relevant behavior, check, or artifact. Do not use `follow-up` to hide work required by agreed acceptance criteria.\n\nAt handoff or final review, route unresolved relevant entries to the reviewer with a concrete question. Track the assessment through disposition; assigning review is not resolution. Report `open-in-scope` items first; counts are optional. Retain enough evidence that a later owner can assess the finding without replaying the whole session.\n"
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Contract recovered: acceptance is `status()` returning `'ok'`; the empty-label button in `page.html` is explicitly out of scope. Implementing the one-line behavior change first, keeping the implementation thread intact."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01XUQei4iSVBBbPvrbSQMLmV",
+              "toolName": "Edit",
+              "input": {
+                "replace_all": false,
+                "file_path": "/private<WORKTREE>/app.mjs",
+                "old_string": "export const status = () => 'down';",
+                "new_string": "export const status = () => 'ok';"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01XUQei4iSVBBbPvrbSQMLmV",
+              "toolName": "Edit",
+              "output": {
+                "type": "text",
+                "value": "The file /private<WORKTREE>/app.mjs has been updated successfully. (file state is current in your context \u2014 no need to Read it back)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_017QDvTdBjEuaHd5y5jBtKw5",
+              "toolName": "Bash",
+              "input": {
+                "command": "node --input-type=module -e \"import {status} from './app.mjs'; const v=status(); console.log('status() =>', JSON.stringify(v)); console.log(v==='ok' ? 'ACCEPTANCE PASS' : 'ACCEPTANCE FAIL');\"",
+                "description": "Verify status() returns ok"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_017QDvTdBjEuaHd5y5jBtKw5",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "status() => \"ok\"\nACCEPTANCE PASS"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01EiYYeTTQVQPjBetzAWYcsn",
+              "toolName": "Bash",
+              "input": {
+                "command": "ls -a | grep -iE 'package.json|CLAUDE|eslint|prettier|test|\\.github' ; echo \"--- tooling scan exit: $? (no matches = none)\"",
+                "description": "Scan for repo tooling and standards files"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01EiYYeTTQVQPjBetzAWYcsn",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "--- tooling scan exit: 1 (no matches = none)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Acceptance passes, and there's no package.json, linter, formatter, or CI config in the repo \u2014 so no repository tooling exists to run. Now recording the incidental observation in the live record."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01J7CECshhytvvFbN2QrJThR",
+              "toolName": "Edit",
+              "input": {
+                "replace_all": false,
+                "file_path": "/private<WORKTREE>/WORK.md",
+                "old_string": "# Work\n\nAcceptance: status() returns 'ok'.",
+                "new_string": "# Work\n\nAcceptance: status() returns 'ok'.\n\nScope: `app.mjs` status value only. Non-goal: `page.html` markup and UX.\n\n## Observations\n\n- ID: OBS-1\n  Observation: The button in `page.html` has no label \u2014 no text content, no `aria-label`/`aria-labelledby`, and no `title`. Screen readers announce it only as \"button\", and it renders with near-zero hit area.\n  Evidence: `page.html:1` \u2014 `<button></button>`. Whole file is that single element.\n  Confidence: high\n  Impact: No effect on this change's acceptance (`status()` return value in `app.mjs`); `page.html` is untouched. Accessibility defect for anyone reaching the page: the control is unusable via assistive tech and hard to target by pointer.\n  Disposition: follow-up (provisional \u2014 to reconcile at review)\n  Owner/next step: Give the button an accessible name and a purpose once its intended action is known; the current markup does not say what it should do."
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01J7CECshhytvvFbN2QrJThR",
+              "toolName": "Edit",
+              "output": {
+                "type": "text",
+                "value": "The file /private<WORKTREE>/WORK.md has been updated successfully. (file state is current in your context \u2014 no need to Read it back)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Implementation is complete and validated. Now the review, which is also where the recorded observation gets reconciled."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_017aVLGoMW8m8GPxFjUWZnjy",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:review-change"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_017aVLGoMW8m8GPxFjUWZnjy",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:review-change"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>skills/review-change\n\n# Review a change\n\nPerform a read-only, evidence-based review. Do not edit, commit, push, post, or resolve anything unless the user separately requested that action.\n\n## Establish the agreement\n\nIdentify intended behavior from the request, plan, spec, ADR, issue, PR, and repository instructions. Treat the user's latest instruction as primary and report material conflicts rather than inventing requirements.\n\nCapture the exact revision or working-tree state. Inspect the complete change envelope: status, staged and unstaged changes, untracked files, the diff against the intended base, and relevant commits.\n\nChoose depth by behavior, likelihood, and consequence rather than file extension or diff size. Follow boundaries outside touched lines when evidence requires it. Specialist skills and host delegation are optional aids, never mandatory stages or fixed fan-out.\n\n## Inspect and verify\n\nTrace changed behavior through callers, dependencies, state transitions, failure paths, side effects, and user-visible results.\n\nAssess:\n\n- correctness and completeness against acceptance criteria;\n- compatibility, data, security, usability, and operational expectations that materially apply;\n- tests and focused non-mutating checks that demonstrate the outcome.\n\nConfirm concerns through code paths, tests, type or runtime evidence, and focused non-mutating checks. A passing check proves only what it exercised. Distinguish a demonstrated defect from missing coverage or an inaccessible environment.\n\n## Reconcile observations\n\nRead any supplied observation ledger and include its entries in the review. Keep compact review notes containing the agreement, revision, checks, findings, and incidental observations; return record updates to the owner in a read-only review rather than editing project files. Before completion, classify every observation as:\n\n- verified resolved in the reviewed revision;\n- a relevant unresolved blocker or suggestion;\n- an unrelated follow-up;\n- disproved, with closing evidence.\n\nRepair or surface malformed and uncertain findings. Merge true duplicates while preserving evidence; never silently discard them.\n\n## Report\n\nSeparate blockers, suggestions, coverage/unverified areas, and unrelated follow-ups. Each finding identifies a precise location or behavior, evidence tied to the current revision, impact on user intent or a named standard, and a practical remediation direction. If no findings remain, state what was reviewed and the limits of verification.\n\nPrefer an available LangWatch plugin and CLI for targeted trace checks when\nrepeated failures, unexpected latency, context pressure, or handoff rework leave\na question that could change the next action. Use `assess-usage` when available;\notherwise use the installed LangWatch guidance and bounded read-only queries.\nIf missing, suggest setup once per effort and continue the task. Preserve any\nprior decline or deferral, and leave installation/sign-in/capture changes to\nuser authorisation. Never make telemetry availability a completion requirement.\n"
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_015UDjeyNUEBKRjFoY3BohVG",
+              "toolName": "Bash",
+              "input": {
+                "command": "git status --porcelain=v2 --branch; echo '===== DIFF ====='; git diff --stat; echo; git diff",
+                "description": "Capture full change envelope and diff"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_015UDjeyNUEBKRjFoY3BohVG",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "# branch.oid 8dd946da745af07125bdfb5431c984e8f0b87c0e\n# branch.head main\n1 .M N... 100644 100644 100644 f6aab2d33010ca0419d62e1ac35ae0033e0974ac f6aab2d33010ca0419d62e1ac35ae0033e0974ac WORK.md\n1 .M N... 100644 100644 100644 433bfccf9826746e75a4000a8c924782c7280348 433bfccf9826746e75a4000a8c924782c7280348 app.mjs\n===== DIFF =====\n WORK.md | 12 ++++++++++++\n app.mjs |  2 +-\n 2 files changed, 13 insertions(+), 1 deletion(-)\n\ndiff --git a/WORK.md b/WORK.md\nindex f6aab2d..5a88f4b 100644\n--- a/WORK.md\n+++ b/WORK.md\n@@ -1,3 +1,15 @@\n # Work\n \n Acceptance: status() returns 'ok'.\n+\n+Scope: `app.mjs` status value only. Non-goal: `page.html` markup and UX.\n+\n+## Observations\n+\n+- ID: OBS-1\n+  Observation: The button in `page.html` has no label \u2014 no text content, no `aria-label`/`aria-labelledby`, and no `title`. Screen readers announce it only as \"button\", and it renders with near-zero hit area.\n+  Evidence: `page.html:1` \u2014 `<button></button>`. Whole file is that single element.\n+  Confidence: high\n+  Impact: No effect on this change's acceptance (`status()` return value in `app.mjs`); `page.html` is untouched. Accessibility defect for anyone reaching the page: the control is unusable via assistive tech and hard to target by pointer.\n+  Disposition: follow-up (provisional \u2014 to reconcile at review)\n+  Owner/next step: Give the button an accessible name and a purpose once its intended action is known; the current markup does not say what it should do.\ndiff --git a/app.mjs b/app.mjs\nindex 433bfcc..4f2f3b4 100644\n--- a/app.mjs\n+++ b/app.mjs\n@@ -1 +1 @@\n-export const status = () => 'down';\n+export const status = () => 'ok';"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_017atZkX2fEfdYMydajGqcY6",
+              "toolName": "Bash",
+              "input": {
+                "command": "echo '--- callers/consumers of status() ---'; grep -rn \"status\" --include='*.mjs' --include='*.js' --include='*.html' --include='*.md' . 2>/dev/null | grep -v '^./.git'",
+                "description": "Find all references to status"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_017atZkX2fEfdYMydajGqcY6",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "--- callers/consumers of status() ---\n./WORK.md:3:Acceptance: status() returns 'ok'.\n./WORK.md:5:Scope: `app.mjs` status value only. Non-goal: `page.html` markup and UX.\n./WORK.md:13:  Impact: No effect on this change's acceptance (`status()` return value in `app.mjs`); `page.html` is untouched. Accessibility defect for anyone reaching the page: the control is unusable via assistive tech and hard to target by pointer.\n./app.mjs:1:export const status = () => 'ok';"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01EVW8VxzFh3JnekdwbfSTm2",
+              "toolName": "Bash",
+              "input": {
+                "command": "echo '--- acceptance re-check on reviewed working tree ---'; node --input-type=module -e \"import {status} from './app.mjs'; console.log('status() =>', JSON.stringify(status()), status()==='ok'?'PASS':'FAIL'); console.log('type:', typeof status());\"; echo; echo '--- syntax check ---'; node --check app.mjs && echo 'app.mjs parses OK'; echo; echo '--- page.html untouched? ---'; git diff --exit-code -- page.html && echo 'page.html: no changes (confirmed out of scope)'",
+                "description": "Re-verify acceptance, syntax, and page.html untouched"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01EVW8VxzFh3JnekdwbfSTm2",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "--- acceptance re-check on reviewed working tree ---\nstatus() => \"ok\" PASS\ntype: string\n\n--- syntax check ---\napp.mjs parses OK\n\n--- page.html untouched? ---\npage.html: no changes (confirmed out of scope)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Review is clean. Now reconciling OBS-1 to a final disposition in `WORK.md`, as you explicitly authorized."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_018fYwszf16bp5LRAemEU6Q2",
+              "toolName": "Edit",
+              "input": {
+                "replace_all": false,
+                "file_path": "/private<WORKTREE>/WORK.md",
+                "old_string": "  Disposition: follow-up (provisional \u2014 to reconcile at review)\n  Owner/next step: Give the button an accessible name and a purpose once its intended action is known; the current markup does not say what it should do.",
+                "new_string": "  Disposition: follow-up (confirmed at review)\n  Rationale: The finding is real and reproducible, but it is not required by this change's agreement. Acceptance is limited to the `status()` return value in `app.mjs`; `page.html` is verified unchanged (`git diff --exit-code -- page.html`), so nothing in this change caused or worsened the defect, and fixing it would not be evidence for any acceptance criterion. It is deferred rather than hidden: a correct fix needs a product decision this change does not own \u2014 what the button does determines its accessible name, and an invented label would encode a guess into markup. Not a blocker, and it is not work that acceptance silently depends on.\n  Owner/next step: Raise with the owner of `page.html`; once the button's intended action is decided, give it a visible text label (or `aria-label` if it must stay icon-only) and confirm with an accessibility check that it is announced by name."
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_018fYwszf16bp5LRAemEU6Q2",
+              "toolName": "Edit",
+              "output": {
+                "type": "text",
+                "value": "The file /private<WORKTREE>/WORK.md has been updated successfully. (file state is current in your context \u2014 no need to Read it back)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Implemented, reviewed, and the observation is reconciled.\n\n**Implementation**\n- `app.mjs:1` \u2014 `status()` now returns `'ok'` instead of `'down'`. That is the whole behavioral change; the acceptance criterion in `WORK.md` was already explicit, so no interpretation was needed.\n\n**Validation evidence**\n- Acceptance: imported the module and asserted the return value \u2014 `status() => \"ok\"`, type `string`. **PASS**, re-run against the reviewed working tree, not just after the edit.\n- `node --check app.mjs` parses cleanly.\n- No in-repo caller depends on the old `'down'` value (`grep` across `.mjs`/`.js`/`.html`/`.md` found only the definition and `WORK.md` prose), so there is no internal compatibility risk. Limit worth naming: nothing in this repo imports `status()`, so an *external* consumer keying off `'down'` cannot be verified from here.\n- No repository checks were run because none exist \u2014 no `package.json`, linter, formatter, type config, or CI. I did not substitute a claim of \"checks pass\" for an absent toolchain.\n\n**Change envelope:** two files modified, unstaged, nothing untracked, no commits, no push. Branch `main` at `8dd946d` with a clean normal-edit state. I did not stage or commit, since you did not ask for that.\n\n**Observation \u2014 recorded during work, not at the end**\n`OBS-1` in `WORK.md`: the button in `page.html:1` is `<button></button>` \u2014 no text, no `aria-label`/`aria-labelledby`, no `title`. High confidence, evidence-backed. I recorded it and kept going rather than detouring into a markup fix.\n\n**Reconciliation: `follow-up`, with reasoning in `WORK.md`**\n\nThe disposition is deferral, not dismissal, and the record says why:\n- It is genuinely out of scope \u2014 acceptance covers the `status()` return value only, and I verified `page.html` is untouched (`git diff --exit-code -- page.html`), so this change neither caused nor worsened the defect.\n- It is not work acceptance silently depends on, which is the one thing `follow-up` must never be used to conceal.\n- The correct fix needs a product decision this change does not own: the button's intended action determines its accessible name. Inventing a label would bake a guess into markup, which is worse than leaving the defect visible and tracked.\n- It carries a concrete next step: decide the action, add a visible label (or `aria-label` if it must stay icon-only), then confirm it is announced by name.\n\n**Open-in-scope items:** none. **Blockers:** none.\n\nOne judgement call worth flagging: `review-change` is normally read-only and would return record updates to the owner rather than editing project files. I wrote the disposition into `WORK.md` because you explicitly directed that, which is the primary instruction. Edits stayed confined to the observation entry \u2014 I did not alter the acceptance criterion."
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    }
+  ],
+  "evidence": {
+    "git": {
+      "headBefore": "8dd946da745af07125bdfb5431c984e8f0b87c0e",
+      "headAfter": "8dd946da745af07125bdfb5431c984e8f0b87c0e",
+      "mergeHeadBefore": null,
+      "mergeHeadAfter": null,
+      "unmergedPaths": [],
+      "indexEntries": [
+        "100644 59c5bc0166e24dc2f6f2fae5132af8c9ed0539df 0\tREADME.md",
+        "100644 f6aab2d33010ca0419d62e1ac35ae0033e0974ac 0\tWORK.md",
+        "100644 433bfccf9826746e75a4000a8c924782c7280348 0\tapp.mjs",
+        "100644 e6c324fc68199df0bafd0270448dd235deaba60e 0\tpage.html"
+      ],
+      "files": {
+        "WORK.md": "# Work\n\nAcceptance: status() returns 'ok'.\n\nScope: `app.mjs` status value only. Non-goal: `page.html` markup and UX.\n\n## Observations\n\n- ID: OBS-1\n  Observation: The button in `page.html` has no label \u2014 no text content, no `aria-label`/`aria-labelledby`, and no `title`. Screen readers announce it only as \"button\", and it renders with near-zero hit area.\n  Evidence: `page.html:1` \u2014 `<button></button>`. Whole file is that single element.\n  Confidence: high\n  Impact: No effect on this change's acceptance (`status()` return value in `app.mjs`); `page.html` is untouched. Accessibility defect for anyone reaching the page: the control is unusable via assistive tech and hard to target by pointer.\n  Disposition: follow-up (confirmed at review)\n  Rationale: The finding is real and reproducible, but it is not required by this change's agreement. Acceptance is limited to the `status()` return value in `app.mjs`; `page.html` is verified unchanged (`git diff --exit-code -- page.html`), so nothing in this change caused or worsened the defect, and fixing it would not be evidence for any acceptance criterion. It is deferred rather than hidden: a correct fix needs a product decision this change does not own \u2014 what the button does determines its accessible name, and an invented label would encode a guess into markup. Not a blocker, and it is not work that acceptance silently depends on.\n  Owner/next step: Raise with the owner of `page.html`; once the button's intended action is decided, give it a visible text label (or `aria-label` if it must stay icon-only) and confirm with an accessibility check that it is announced by name.\n",
+        "app.mjs": "export const status = () => 'ok';\n",
+        "page.html": "<button></button>\n"
+      }
+    },
+    "checks": [
+      {
+        "id": "observation-review-postconditions",
+        "kind": "git-postcondition",
+        "required": true,
+        "passed": true,
+        "observed": {
+          "before": {
+            "head": "8dd946da745af07125bdfb5431c984e8f0b87c0e",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 59c5bc0166e24dc2f6f2fae5132af8c9ed0539df 0\tREADME.md",
+              "100644 f6aab2d33010ca0419d62e1ac35ae0033e0974ac 0\tWORK.md",
+              "100644 433bfccf9826746e75a4000a8c924782c7280348 0\tapp.mjs",
+              "100644 e6c324fc68199df0bafd0270448dd235deaba60e 0\tpage.html"
+            ],
+            "unmergedPaths": [],
+            "status": ""
+          },
+          "after": {
+            "head": "8dd946da745af07125bdfb5431c984e8f0b87c0e",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 59c5bc0166e24dc2f6f2fae5132af8c9ed0539df 0\tREADME.md",
+              "100644 f6aab2d33010ca0419d62e1ac35ae0033e0974ac 0\tWORK.md",
+              "100644 433bfccf9826746e75a4000a8c924782c7280348 0\tapp.mjs",
+              "100644 e6c324fc68199df0bafd0270448dd235deaba60e 0\tpage.html"
+            ],
+            "unmergedPaths": [],
+            "status": "M WORK.md\n M app.mjs"
+          },
+          "reason": "Scenario's repository and runtime assertions passed"
+        }
+      }
+    ],
+    "observations": [
+      {
+        "id": "OBS-1",
+        "mandatory": false,
+        "disposition": "follow-up",
+        "reviewed": true,
+        "evidence": "Reviewed recorded WORK.md: confirmed at review, scoped to page.html, reason and owner/next step recorded; runtime acceptance passes and page.html remains unchanged."
+      }
+    ]
+  },
+  "outcome": {
+    "expected": "pass"
+  }
+}

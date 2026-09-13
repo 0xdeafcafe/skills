@@ -54,9 +54,9 @@ describe("buildSubprocessEnv — credential precedence", () => {
   });
 
   it("throws when the gateway URL is set but the auth token isn't", () => {
-    expect(() =>
-      buildSubprocessEnv({ LANGWATCH_GATEWAY_URL: "https://gw.example/v1" }),
-    ).toThrow(/no Claude credentials/);
+    expect(() => buildSubprocessEnv({ LANGWATCH_GATEWAY_URL: "https://gw.example/v1" })).toThrow(
+      /no Claude credentials/,
+    );
   });
 
   it("preserves unrelated env vars verbatim", () => {

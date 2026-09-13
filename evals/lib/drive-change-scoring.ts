@@ -5,7 +5,11 @@
 // Tier-3 adds reviewer + mode + specialists checks that don't exist at the
 // per-reviewer level. The greedy matcher itself lives in lib/match.ts.
 
-import type { DriveChangeFinding, DriveChangeMode, DriveChangeReport } from "./drive-change-parser.ts";
+import type {
+  DriveChangeFinding,
+  DriveChangeMode,
+  DriveChangeReport,
+} from "./drive-change-parser.ts";
 import { greedyMatchSpecs, matches, type SpecMatch } from "./match.ts";
 
 export type ExpectedDriveChangeSpec = {
@@ -76,11 +80,7 @@ export const scoreDriveChange = (
     (expected.count_min === undefined || report.findings.length >= expected.count_min) &&
     (expected.count_max === undefined || report.findings.length <= expected.count_max);
 
-  const { per_spec, used } = greedyMatchSpecs(
-    expected.findings,
-    report.findings,
-    checkSpecAgainst,
-  );
+  const { per_spec, used } = greedyMatchSpecs(expected.findings, report.findings, checkSpecAgainst);
 
   const matched_count = per_spec.filter((s) => s.all_passed).length;
   const expected_findings_matched =

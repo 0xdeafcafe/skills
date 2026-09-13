@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "id": "voice-alex-tone-of-voice",
+  "provenance": {
+    "kind": "recorded-model",
+    "capturedAt": "2026-09-11T23:52:57.862Z",
+    "cliVersion": "2.1.223 (Claude Code)",
+    "model": "claude-sonnet-5",
+    "sessionId": "eee5909a-960d-4661-a7f9-1a6179d1d6e8",
+    "scenarioPackageVersion": "1.6.0",
+    "promptDigest": "2bf8b7d58af59a6f730a9d1042420edeb08a8ff2b7ef4122121c0e9bb5582f02",
+    "instructionDigest": "eb55255971caf6599c52d3c3d0124f2b11ff75ab970052717fbbbd1872e92c08",
+    "normalizations": [
+      "Known worktree, plugin and home paths replaced with <WORKTREE>, <PLUGIN_ROOT> and <HOME>.",
+      "Thinking excluded by the official adapter; tool results use its default 8000-character cap."
+    ]
+  },
+  "context": {
+    "caseId": "voice-alex-tone-of-voice",
+    "repoTemplate": "v2/scenarios/voice.scenario.test.ts"
+  },
+  "turns": [
+    {
+      "prompt": "Use the bundled alex-tone-of-voice skill to draft five short versions of the same update. Write as Alex.\nKnown facts: the current search UI loses the entered query after a timeout. The agreed fix must preserve it and let the user retry the same query. The fix has not shipped. There are no confirmed release dates or performance figures.\nSave DRAFTS.md with exactly these second-level headings: Slack, Twitter/X, WhatsApp, Blog, Code review. Slack is for an internal engineering channel. Twitter/X is a public post. WhatsApp is a private work message to a colleague, Sam. Blog is a two-paragraph opening. Code review is a blocking comment explaining the required behavior. Adapt the register to each channel, preserve the known facts, and invent no experiences, relationships, figures or release claims. Do not publish or commit anything.",
+      "model": "claude-sonnet-5",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01Jsu3VieAhF3nvZppsDpd5e",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:alex-tone-of-voice",
+                "args": "Draft five short versions of the same update (search UI bug fix, not yet shipped) for: Slack (internal engineering channel), Twitter/X (public), WhatsApp (private message to colleague Sam), Blog (two-paragraph opening only), Code review (blocking comment). Known facts only: current search UI loses the entered query after a timeout; agreed fix preserves the query and lets the user retry the same query; fix has not shipped; no confirmed release dates or performance figures. Save to DRAFTS.md with second-level headings exactly: Slack, Twitter/X, WhatsApp, Blog, Code review."
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01Jsu3VieAhF3nvZppsDpd5e",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:alex-tone-of-voice"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>/skills/alex-tone-of-voice\n\n# Alex tone of voice\n\nWrite as Alex only when the user asks for Alex's voice or clearly authorizes ghostwriting under his identity. Establish the audience, channel, purpose, factual inputs, and desired response first. Authority to draft does not authorize sending or publishing.\n\nAlex's voice is direct, British, specific, and conversational. It often uses dry understatement, an honest admission, or a precise detail where generic copy would use praise. These are tendencies, not slots every paragraph must fill.\n\n## Use the evidence selectively\n\nFor a substantial blog, announcement, or voice-matching revision, read [the annotated source samples](references/samples.md). They preserve excerpts and attribution to Alex's event-sourcing announcement, Snapchat API interview, and LangWatch welcome post.\n\nRead [the worked style guide](references/style-guide.md) when auditing a long-form draft or when a voice choice remains unclear. It derives patterns from those sources. Do not load both references for a short message when the guidance below is enough.\n\nThe samples are strongest for blog and conversational technical prose. Guidance for channels without direct samples is an inference from the demonstrated voice and the channel's constraints; label that inference if it affects a consequential choice. A correction from the user overrides these defaults.\n\n## Preserve the voice without performing it\n\n- Lead with the concrete point. Prefer facts, numbers, and named effects over promotional adjectives.\n- Use British spelling and natural contractions.\n- Allow a dry aside, understatement, colloquialism, reference, or emoji only when the subject and audience earn it.\n- Use spaced hyphens, parentheses, commas, or sentence breaks instead of em dashes.\n- Cut stock AI phrasing, corporate throat-clearing, empty enthusiasm, and vague calls to action.\n- Never invent statistics, experiences, opinions, relationships, jokes, or self-deprecation.\n- Correct typing errors. Do not reproduce mistakes merely to imitate Alex.\n\nAvoid rigid paragraph recipes. The source material contains recurring rhythms, but forcing an aside, joke, statistic, or three-word closer into every passage creates a caricature.\n\n## Fit the channel\n\n- **Slack:** concise and collaborative. Lead with the state, evidence, or request; include a link or next step when useful. Show ownership without turning the message into a memo.\n- **Twitter/X:** tight, opinionated, and specific. Make one defensible point per post or give a thread a clear progression. Do not manufacture controversy, certainty, or engagement bait.\n- **WhatsApp:** use the actual recipient and shared context. Keep it natural and proportionate to a private message, without assuming intimacy, slang, profanity, or emotional familiarity not established by the user.\n- **Blog:** build an evidence-led narrative. Use concrete examples, honest tradeoffs, and headings that advance the story. Humour and references remain optional; factual support carries the piece.\n- **Code review:** describe the concrete behavior, impact or severity, evidence, and action. State clearly whether a finding blocks the change or is optional. Keep the tone respectful and avoid using humour where it could blur technical judgment.\n\nPR descriptions, customer email, and other formats should follow their practical conventions first, then apply the demonstrated voice at an appropriate intensity. Security, legal, incident, and sensitive interpersonal writing should be sober and precise.\n\n## Keep maintained writing appropriate\n\nNeutral technical documentation and code comments should follow repository style unless Alex's authorship is itself relevant. Commit messages and review comments should remain useful to future readers; voice must not obscure behavior, scope, or evidence.\n\n## Deliver safely\n\nVerify claims and preserve supplied links, names, constraints, and attribution. If a draft depends on an unsupported personal opinion or anecdote, ask for it or remove it. Return the draft in the requested format and offer alternatives only when they clarify a real tone choice.\n\nFor substantial writing, establish Alex's intended argument, what the reader gains from it, and which evidence carries the claim. Preserve that intent while editing; do not substitute the reviewer's preferred finding. When the draft points elsewhere in a material way, ask which argument should govern. Develop a concrete failure, decision, or example rather than flattening every finding into equal-weight analysis. Keep consequential uncertainty visible near the headline claim. Read the full draft for connective logic and interest before polishing voice; structural completeness and existing tests do not establish argument quality.\n\nDo not post, send, publish, or sign as Alex without separate explicit authorization for that external action.\n\n## Avoid manufactured contrasts\n\nDo not build a paragraph around “X is not the interesting bit. The interesting\nbit is Y”, “this is not about X; it is about Y”, or the same pivot in different\nwords. Alex explicitly identified this framing as sounding AI-generated. State\nthe substantive point directly. Keep a contrast only when both sides are\nrelevant and the distinction helps the reader understand the facts.\n\nWhen writing a file, resolve its destination against the project's verified\nworking directory. A loaded skill's directory contains instructions and\nreferences; it is not the destination for project drafts.\n\n\nARGUMENTS: Draft five short versions of the same update (search UI bug fix, not yet shipped) for: Slack (internal engineering channel), Twitter/X (public), WhatsApp (private message to colleague Sam), Blog (two-paragraph opening only), Code review (blocking comment). Known facts only: current search UI loses the entered query after a timeout; agreed fix preserves the query and lets the user retry the same query; fix has not shipped; no confirmed release dates or performance figures. Save to DRAFTS.md with second-level headings exactly: Slack, Twitter/X, WhatsApp, Blog, Code review."
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01DpEGty6qzTsxWh3beq4VdQ",
+              "toolName": "Bash",
+              "input": {
+                "command": "pwd",
+                "description": "Show current working directory"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01DpEGty6qzTsxWh3beq4VdQ",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "<WORKTREE>"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Now drafting the five versions, keeping strictly to the known facts (no invented dates, figures, or experiences)."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01Gaz2eDNaB3CnMJLVTHNpiJ",
+              "toolName": "Write",
+              "input": {
+                "file_path": "<WORKTREE>/DRAFTS.md",
+                "content": "## Slack\n\nQuick update on the search bug: right now, if a search times out, the query you typed just vanishes and you have to retype it to try again. The agreed fix keeps the query in place after a timeout so you can retry it directly. Not shipped yet, no date to share, but wanted this on people's radar. Will follow up here once it's out.\n\n## Twitter/X\n\nSmall but annoying bug we're fixing: if search times out, it currently wipes what you typed. The fix keeps your query so you can just retry it, no retyping. Not live yet, more soon.\n\n## WhatsApp\n\nHey Sam, quick one on the search bug we discussed. The fix keeps the typed query after a timeout so you can retry it instead of losing it and starting over. Agreed on the approach, just hasn't shipped yet, no date pinned down.\n\n## Blog\n\nIf you've searched and hit a timeout, you'll know the annoying bit that follows: the query you typed disappears, and you're stuck retyping it before you can even try again. It's a small failure, but it lands right at the moment you're already waiting on something.\n\nWe've agreed a fix: when a search times out, the query stays put, so you can retry the same search without re-entering it. It hasn't shipped yet, and we don't have a release date to share, but the direction is settled.\n\n## Code review\n\nBlocking: this needs to preserve the entered query when a search request times out. As it stands, a timeout clears the input, so the user has to retype the query to try again. Per the agreed fix, the query must remain in the field (or be resubmittable) after a timeout, so the user can retry the same search directly. Please update before this merges.\n"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01Gaz2eDNaB3CnMJLVTHNpiJ",
+              "toolName": "Write",
+              "output": {
+                "type": "text",
+                "value": "File created successfully at: <WORKTREE>/DRAFTS.md (file state is current in your context — no need to Read it back)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Saved `DRAFTS.md` with the five requested headings. Nothing was published, sent, or committed.\n\nNotes on what I kept out, per the brief:\n- No release dates or timeframes (\"soon\" in the Twitter draft refers only to the update itself, not a ship date — flag if you'd rather cut even that).\n- No performance/perf figures.\n- No invented shared history with Sam beyond \"the search bug we discussed,\" which reflects the stated fact that a fix was already agreed with him — let me know if that framing overstates your relationship and you'd like it more neutral.\n- Code review comment states the required behavior and marks it blocking, without humour, per the channel guidance."
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    }
+  ],
+  "evidence": {
+    "git": {
+      "headBefore": "f4b6293097ec08b7b9032442329b0152d24784f4",
+      "headAfter": "f4b6293097ec08b7b9032442329b0152d24784f4",
+      "mergeHeadBefore": null,
+      "mergeHeadAfter": null,
+      "unmergedPaths": [],
+      "indexEntries": [
+        "100644 b0edf72f24616c23c6d29caf66f34046f0d84624 0\tCLAUDE.md",
+        "100644 c8943532cd94c691886d5814b8be5fe4e67a44aa 0\tREADME.md"
+      ],
+      "files": {
+        "DRAFTS.md": "## Slack\n\nQuick update on the search bug: right now, if a search times out, the query you typed just vanishes and you have to retype it to try again. The agreed fix keeps the query in place after a timeout so you can retry it directly. Not shipped yet, no date to share, but wanted this on people's radar. Will follow up here once it's out.\n\n## Twitter/X\n\nSmall but annoying bug we're fixing: if search times out, it currently wipes what you typed. The fix keeps your query so you can just retry it, no retyping. Not live yet, more soon.\n\n## WhatsApp\n\nHey Sam, quick one on the search bug we discussed. The fix keeps the typed query after a timeout so you can retry it instead of losing it and starting over. Agreed on the approach, just hasn't shipped yet, no date pinned down.\n\n## Blog\n\nIf you've searched and hit a timeout, you'll know the annoying bit that follows: the query you typed disappears, and you're stuck retyping it before you can even try again. It's a small failure, but it lands right at the moment you're already waiting on something.\n\nWe've agreed a fix: when a search times out, the query stays put, so you can retry the same search without re-entering it. It hasn't shipped yet, and we don't have a release date to share, but the direction is settled.\n\n## Code review\n\nBlocking: this needs to preserve the entered query when a search request times out. As it stands, a timeout clears the input, so the user has to retype the query to try again. Per the agreed fix, the query must remain in the field (or be resubmittable) after a timeout, so the user can retry the same search directly. Please update before this merges.\n"
+      }
+    },
+    "checks": [
+      {
+        "id": "voice-alex-tone-of-voice-postconditions",
+        "kind": "file-content",
+        "required": true,
+        "passed": true,
+        "observed": {
+          "before": {
+            "head": "f4b6293097ec08b7b9032442329b0152d24784f4",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 b0edf72f24616c23c6d29caf66f34046f0d84624 0\tCLAUDE.md",
+              "100644 c8943532cd94c691886d5814b8be5fe4e67a44aa 0\tREADME.md"
+            ],
+            "unmergedPaths": [],
+            "status": ""
+          },
+          "after": {
+            "head": "f4b6293097ec08b7b9032442329b0152d24784f4",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 b0edf72f24616c23c6d29caf66f34046f0d84624 0\tCLAUDE.md",
+              "100644 c8943532cd94c691886d5814b8be5fe4e67a44aa 0\tREADME.md"
+            ],
+            "unmergedPaths": [],
+            "status": "?? DRAFTS.md"
+          },
+          "reason": "Scenario assertions passed"
+        }
+      }
+    ]
+  },
+  "outcome": {
+    "expected": "pass"
+  }
+}

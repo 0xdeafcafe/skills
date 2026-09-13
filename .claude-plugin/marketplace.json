@@ -5,38 +5,14 @@
     "email": "me@alex.forbes.red"
   },
   "metadata": {
-    "description": "Personal Claude Code skills for software-engineering work",
-    "version": "1.3.0"
+    "description": "Intent-led skills and agents for software work",
+    "version": "2.0.0-alpha.1"
   },
   "plugins": [
     {
       "name": "skills",
-      "description": "Twenty-one Claude Code skills covering entry, planning, reviewing, driving, and shipping the PR lifecycle.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/start-feature",
-        "./skills/start-discussion",
-        "./skills/plan-change",
-        "./skills/backfill-feature",
-        "./skills/write-adr",
-        "./skills/write-spec",
-        "./skills/review-spec",
-        "./skills/review-change",
-        "./skills/review-pr",
-        "./skills/drive-plan",
-        "./skills/drive-change",
-        "./skills/implement-change",
-        "./skills/review-hygiene",
-        "./skills/review-code",
-        "./skills/review-feature",
-        "./skills/review-test",
-        "./skills/review-security",
-        "./skills/review-ux",
-        "./skills/open-pr",
-        "./skills/drive-pr",
-        "./skills/tone-of-voice"
-      ]
+      "description": "Intent-led software work: 28 reusable skills and four agents for shaping, coordinating, building, and reviewing.",
+      "source": "./"
     }
   ]
 }

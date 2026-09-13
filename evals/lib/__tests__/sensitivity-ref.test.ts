@@ -44,25 +44,23 @@ describe("matchGlob", () => {
 
 describe("gate", () => {
   it("returns opus for any security-category finding regardless of path", () => {
-    expect(
-      gate({ files: ["docs/readme.md"], categories: ["security"] }),
-    ).toEqual({
+    expect(gate({ files: ["docs/readme.md"], categories: ["security"] })).toEqual({
       suggested_model: "opus",
       sensitivity_reason: "finding category=security",
     });
   });
 
   it("returns opus for sensitive paths (auth/ etc.) even with non-security category", () => {
-    expect(gate({ files: ["src/auth/session.ts"], categories: ["hygiene"] }))
-      .toEqual({
-        suggested_model: "opus",
-        sensitivity_reason: expect.stringMatching(/matched pattern.*auth/),
-      });
+    expect(gate({ files: ["src/auth/session.ts"], categories: ["hygiene"] })).toEqual({
+      suggested_model: "opus",
+      sensitivity_reason: expect.stringMatching(/matched pattern.*auth/),
+    });
   });
 
   it("returns opus for crypto paths", () => {
-    expect(gate({ files: ["src/cryptoHelpers.ts"], categories: ["hygiene"] }))
-      .toMatchObject({ suggested_model: "opus" });
+    expect(gate({ files: ["src/cryptoHelpers.ts"], categories: ["hygiene"] })).toMatchObject({
+      suggested_model: "opus",
+    });
   });
 
   it("returns sonnet for non-sensitive paths + non-security category", () => {

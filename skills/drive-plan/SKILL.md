@@ -1,118 +1,62 @@
 ---
 name: drive-plan
-description: Use when the user says "/drive-plan", "drive a plan", "drive this feature end-to-end with planning", "let's build feature X properly", "kick off this change with planning rigour", or asks Claude to drive a substantial change all the way through planning, implementation, and review in one composed workflow. Calls /plan-change interactively to produce ADR + Gherkin spec, then /implement-change to translate spec into code, then /review-change to audit and dispatch fixes via the agent pipeline; recommends /open-pr at the end. Use /drive-plan for substantial changes warranting planning rigour; use /drive-change for quick changes that don't need formal planning; use /drive-pr to iterate an already-open PR. Confirms with the user at each phase boundary because this skill writes a lot of state.
-allowed-tools: Bash(gh:*), Bash(git:*), Bash(npm:*), Bash(yarn:*), Bash(pnpm:*), Bash(bun:*), Bash(npx:*), Bash(go:*), Bash(cargo:*), Bash(pytest:*), Bash(vitest:*), Bash(jest:*), Bash(playwright:*), Bash(just:*), Bash(make:*), Read, Edit, Write, Grep, Glob, Skill, Task
+description: Drive a substantial change from intent through preparation, implementation, and final review. Use when the user wants the planned work carried through rather than receiving a plan alone.
 ---
 
-# drive-plan
+# Drive a plan
 
-The end-to-end "make this feature happen with planning rigour" workhorse. Composes three skills in order: `/plan-change` (produce ADR + spec), `/implement-change` (translate spec into code), `/review-change` (audit and dispatch fixes). Recommends `/open-pr` at the end without auto-opening.
+Own the change through a complete, reviewable outcome. Select planning artifacts and collaboration mechanisms according to the work; do not require a fixed idea-to-ADR-to-spec sequence.
 
-This skill writes a lot of state — code, docs, commits — so it confirms with the user at every phase boundary. The cost of an unwanted commit or a half-written feature is higher than the cost of one extra "proceed?" question.
+## Establish continuity
 
-## When to use this vs other drivers
+Recover the objective, non-goals, decisions, applicable standards, acceptance evidence, open questions, tasks, and observations from conversation and repository sources. Maintain these in the repository's work record when one exists, or in an equivalent durable artifact or working context. Keep references to source decisions and update stale entries.
 
-- **`/drive-plan`** — substantial change warranting an ADR + Gherkin spec before writing code. Multi-step features, architecture changes, anything where "what is the right shape" needs discussion before implementation.
-- **`/drive-change`** — clear or quick change where the implementation can be derived from conversation without formal planning. Bug fixes, small enhancements, "fix the typo" work.
-- **`/drive-pr`** — iterate an already-open PR to merge-ready state.
+If intent is still unclear, perform the necessary exploration. If important existing behavior is undocumented, characterize only the boundary the change will affect. Plan enough to prevent foreseeable rework, using an ADR, behavioral spec, prototype, diagram, or task breakdown only when useful or required locally.
 
-## Phase 0 — Intent and scope gate
+## Coordinate the work
 
-Confirm the change warrants planning rigour. If the user describes a one-line bug fix, redirect to `/drive-change` rather than spinning up the full pipeline.
+Break implementation into bounded tasks with explicit dependencies and acceptance evidence. When agents are available and add value, assign only independent or safely partitioned work. Give each agent minimal relevant context: intent, non-goals, decisions, standards, target paths or interfaces, expected result, and stop condition.
 
-Ask:
-- What's the change about? (one sentence)
-- Is there an existing ADR or spec to update, or is this net-new?
-- What's the target scope — files, directories, components?
+Do not hard-code agent counts, models, or roles. Keep shared contracts and integration-sensitive edits coordinated. Follow up when a task completes or new evidence changes its boundary; avoid endless review fan-out. Work directly when delegation is unavailable or would cost more context than it saves.
 
-If the answer is "tiny change, no, one file", recommend `/drive-change` and stop. If the answer is "substantial, net-new, multiple domains", proceed.
+When collecting worker results, use `integrate-work` if available; otherwise
+apply its operation-aware contract directly. Record the integration owner,
+verified normal-edit or active Git operation, whether collection must preserve
+or complete it, and expected postconditions. Collected or reviewed work is not
+automatically committed or complete. During an active merge, preserve merge
+state and the shared index rather than creating intermediate slice commits.
 
-## Phase 1 — Planning via /plan-change
+## Build and maintain alignment
 
-Invoke `/plan-change` via the `Skill` tool. `/plan-change` is interactive — it holds a discussion with the user to extract context, decisions, scenarios, edge cases. Output is an ADR file and a Gherkin `.feature` spec file.
+Implement against the current intent, decisions, standards, and acceptance evidence. Update the work record when discoveries change the plan. A prototype may graduate into the build only after it meets production expectations and repository standards.
 
-Carry-forward state: record the paths of the ADR and spec files produced.
+Do not ask for confirmation at every phase boundary. Continue through actions already authorized and pause only for a material product decision, missing authority, irreversible external action, or genuine blocker.
 
-**Confirm before proceeding to Phase 2.** Show the user:
-- ADR path + one-line summary
-- Spec path + count of scenarios
+Record unrelated issues as observations. Briefly flag meaningful nonblocking ones and preserve focus. Revisit an observation when work reaches the relevant boundary and during final review; record each as addressed with evidence, open-in-scope for review, follow-up with rationale, or disproved with evidence.
 
-Ask: "Plan looks right? Proceed to implementation?"
+## Keep standards current
 
-If the user wants iteration, re-invoke `/plan-change` or branch back to discussion. Do not proceed without explicit confirmation.
+Treat standards as active constraints, not a checklist saved for the end. When the work exposes a stale or contradictory local standard, resolve the conflict if it is in scope or record the evidence and owner needed to resolve it. Propagate an accepted decision to the plan, tasks, and affected implementation so collaborators do not keep following obsolete guidance.
 
-## Phase 2 — Implementation via /implement-change
+## Verify completion
 
-Invoke `/implement-change` via the `Skill` tool, passing the ADR and spec paths from Phase 1.
+Run focused validation throughout and the repository's relevant final checks. Review the integrated behavior against the original intent, non-goals, decisions, standards, and acceptance evidence. Scope-relevant defects, blockers, and unmet required standards must be resolved or clearly block completion.
 
-`/implement-change` reads the contract, maps the touched surface (LSP-preferred), proposes a file-by-file plan, confirms with the user, writes the implementation, and runs the spec's scenarios as smoke tests. For large multi-domain implementations, `/implement-change` itself uses the agent pipeline (`orchestrate-slice` to partition, parallel fix-applier workers in implement mode) — that's its concern, not yours.
+Integrate before judging completion: reconcile outputs, inspect shared boundaries, and ensure later discoveries are reflected in every affected task or artifact. Re-run only the checks invalidated by fixes or integration changes, and review the affected result when needed to establish completion.
 
-Carry-forward state: list of files touched in this phase, commit SHAs (if `/implement-change` committed per scenario).
+Verify integration preconditions before mutation and inspect effects outside
+reported paths. A mismatch invalidates only dependent steps; continue other
+work. Use operation-specific continuation for rebase, cherry-pick, revert, or
+sequencer state, and never rely on global staging or an automatic push.
 
-**Confirm before proceeding to Phase 3.** Show the user:
-- Touched files (count + top-level paths)
-- Scenarios passing / failing
-- Commit log since Phase 1
+Finish with implemented behavior, artifacts and decisions, validation evidence, observation dispositions, and any remaining authorized next action. Suggest optional companion skills such as `track-observations`, `handoff`, or `resume-work` only when available; otherwise preserve the same information directly.
 
-Ask: "Implementation looks right? Proceed to audit + fix?"
+Do not weaken an applicable standard, redefine acceptance, or mark a decision accepted merely to make the work pass. Record a proposed change to the agreement and resolve it through the appropriate owner; existing user authorisation still governs.
 
-## Phase 3 — Audit + fix via /review-change loop
-
-Invoke `/review-change` via the `Skill` tool. `/review-change` runs the full agent pipeline (slice → fan-out to specialists → merge → verify) read-only over the working tree and produces findings in the [`finding-format.md`](../../references/finding-format.md) schema, partitioned into single-file work packets with sensitivity annotations.
-
-The findings drive a fix-applier dispatch loop:
-
-1. For each work packet in `/review-change`'s output, invoke `agents/fix-applier.md` via the `Task` tool:
-   - `Read` the agent file once.
-   - Pass `{ packet_id, files, findings, suggested_model }` as the `## Input` block.
-   - Set the Task `model:` parameter to `packet.suggested_model` (verbatim — no second judgment).
-   - Set `subagent_type: "general-purpose"`.
-   - Dispatch all packets **in parallel** (the merger guarantees file-partition, so no write collisions).
-2. After all fix-appliers return, re-run `/review-change` to see if new findings emerged.
-3. Loop until findings reach steady state (no new P0/P1) or the user calls it done.
-
-`judgment_findings` from `/review-change` (findings with `decide:` prefixes) go straight to the user — never dispatched to fix-applier. Surface them as "decisions to make" and let the user respond.
-
-**Confirm before proceeding to Phase 4.** Show the user:
-- Findings applied (count by severity)
-- Findings unappliable (count + per-finding reason)
-- Findings escalated as judgment calls
-- Drifted reviewers (if any) — flag for follow-up
-
-Ask: "Audit + fix looks good? Recommend opening the PR?"
-
-## Phase 4 — Recommend /open-pr
-
-Do **not** auto-open the PR. Print:
-
-> Ready for `/open-pr`. Suggested PR title: `<derived from ADR>`. Suggested base branch: `<current upstream>`. Touched files: `<count>`. Use `/open-pr` to package and push.
-
-The user runs `/open-pr` when ready. After that they'd typically use `/drive-pr` to drive the PR to mergeable.
-
-## Operating rules
-
-- **Phase-boundary confirmation is non-negotiable.** This skill writes the most state of any in the plugin; checkpointing matters.
-- **Never skip ahead.** Phase 2 cannot run without a spec from Phase 1. Phase 3 cannot run without an implementation from Phase 2. If the user wants to skip planning, redirect to `/drive-change`.
-- **Never auto-open the PR.** Phase 4 ends with a recommendation, not a `gh pr create` call.
-- **The agent pipeline is for `/review-change` to dispatch.** `/drive-plan` itself does not call `orchestrate-slice` / `orchestrate-merge` / `orchestrate-verify` directly — it composes the higher-level skills that do.
-
-## Composing with other skills
-
-- Calls: `/plan-change`, `/implement-change`, `/review-change` (in sequence) via `Skill`.
-- Invokes: `agents/fix-applier.md` via `Task` (during the Phase 3 loop).
-- Recommends: `/open-pr` at the end.
-- Sibling: `/drive-change` (no-plan workhorse), `/drive-pr` (PR iteration).
-
-## Carry-forward state shape
-
-Maintain a working block at the top of state so the workflow can resume if interrupted:
-
-```
-## Drive-plan state
-- ADR: <path> (from Phase 1)
-- Spec: <path> (from Phase 1, N scenarios)
-- Touched files: <count> (from Phase 2)
-- Commits since Phase 1 start: <count>
-- Last /review-change run: <timestamp>, <P0/P1/P2/P3 counts>
-- Current phase: <0|1|2|3|4>
-```
+Prefer an available LangWatch plugin and CLI for targeted trace checks when
+repeated failures, unexpected latency, context pressure, or handoff rework leave
+a question that could change the next action. Use `assess-usage` when available;
+otherwise use the installed LangWatch guidance and bounded read-only queries.
+If missing, suggest setup once per effort and continue the task. Preserve any
+prior decline or deferral, and leave installation/sign-in/capture changes to
+user authorisation. Never make telemetry availability a completion requirement.

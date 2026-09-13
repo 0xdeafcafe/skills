@@ -28,11 +28,7 @@ import type { DatasetRow } from "../lib/dataset-types.ts";
 import { parseFindingBlock, splitTranscript } from "../lib/finding-parser.ts";
 import { type ExpectedFindings, scoreFixture } from "../lib/scoring.ts";
 import { type Finding, validateFinding } from "../lib/schema.ts";
-import {
-  type CellSummary,
-  passRateLabel,
-  renderTier2Summary,
-} from "../lib/summary-markdown.ts";
+import { type CellSummary, passRateLabel, renderTier2Summary } from "../lib/summary-markdown.ts";
 
 const SERVICE_NAME = "skills-evals";
 const EXPERIMENT_NAME = "skills-reviewer-eval";
@@ -77,7 +73,9 @@ const parseArgs = (argv: readonly string[]): Args => {
  * dashboard URL today is to intercept the "Follow results at: <url>" line
  * the SDK prints during init. Wrap stdout for the duration of the call.
  */
-const captureDashboardUrl = async <T,>(work: () => Promise<T>): Promise<{ value: T; url: string | null }> => {
+const captureDashboardUrl = async <T>(
+  work: () => Promise<T>,
+): Promise<{ value: T; url: string | null }> => {
   let captured: string | null = null;
   const origWrite = process.stdout.write.bind(process.stdout);
   process.stdout.write = ((chunk: unknown, ...rest: unknown[]) => {
@@ -149,7 +147,11 @@ const setupRepo = async (
 
 const parseFindings = (
   response: string,
-): { readonly findings: readonly Finding[]; readonly all_valid: boolean; readonly drifted: number } => {
+): {
+  readonly findings: readonly Finding[];
+  readonly all_valid: boolean;
+  readonly drifted: number;
+} => {
   const blocks = splitTranscript(response);
   const findings: Finding[] = [];
   let drifted = 0;
@@ -231,10 +233,7 @@ const stddev = (xs: readonly number[]): number => {
   return Math.sqrt(xs.reduce((acc, x) => acc + (x - m) ** 2, 0) / (xs.length - 1));
 };
 
-const summarise = (
-  row: Row,
-  outcomes: readonly RunOutcome[],
-): CellSummary => ({
+const summarise = (row: Row, outcomes: readonly RunOutcome[]): CellSummary => ({
   fixture_name: row.fixture_name,
   reviewer_skill: row.reviewer_skill,
   run_count: outcomes.length,
@@ -261,9 +260,18 @@ const runOneCell = async (
   if (args.dryRun) {
     console.log("  ◦ --dry-run; skipping invocations");
     return summarise(row, [
-      { run_index: 0, invoked_ok: true, findings_count: 0, drifted_count: 0, overall_pass: true,
-        expected_findings_matched: 1, extra_findings_count: 0, missing_specs_count: 0,
-        cost_usd: 0, tokens: null },
+      {
+        run_index: 0,
+        invoked_ok: true,
+        findings_count: 0,
+        drifted_count: 0,
+        overall_pass: true,
+        expected_findings_matched: 1,
+        extra_findings_count: 0,
+        missing_specs_count: 0,
+        cost_usd: 0,
+        tokens: null,
+      },
     ]);
   }
 
@@ -291,7 +299,9 @@ const runOneCell = async (
   emit("total_cost_usd", { score: cell.total_cost_usd });
   emit("invocation_failures", { score: cell.invocation_failures });
 
-  console.log(`  ${passRateLabel(cell.pass_rate)} pass_rate=${cell.pass_rate.toFixed(2)} mean_findings=${cell.mean_findings_count.toFixed(1)} cost=$${cell.total_cost_usd.toFixed(4)}`);
+  console.log(
+    `  ${passRateLabel(cell.pass_rate)} pass_rate=${cell.pass_rate.toFixed(2)} mean_findings=${cell.mean_findings_count.toFixed(1)} cost=$${cell.total_cost_usd.toFixed(4)}`,
+  );
   return cell;
 };
 
@@ -302,15 +312,20 @@ const main = async (): Promise<void> => {
   }
 
   const rows: readonly Row[] = args.local ? await loadLocalRows() : await fetchDatasetRows();
-  const filtered = rows.filter((r) =>
-    (!args.fixtureFilter || r.fixture_name === args.fixtureFilter) &&
-    (!args.reviewerFilter || r.reviewer_skill === args.reviewerFilter),
+  const filtered = rows.filter(
+    (r) =>
+      (!args.fixtureFilter || r.fixture_name === args.fixtureFilter) &&
+      (!args.reviewerFilter || r.reviewer_skill === args.reviewerFilter),
   );
 
   if (filtered.length === 0) {
-    throw new Error(`no rows match filters: fixture=${args.fixtureFilter} reviewer=${args.reviewerFilter}`);
+    throw new Error(
+      `no rows match filters: fixture=${args.fixtureFilter} reviewer=${args.reviewerFilter}`,
+    );
   }
-  console.log(`◦ running ${filtered.length} cell(s) × ${args.runs} run(s) = ${filtered.length * args.runs} total invocation(s)`);
+  console.log(
+    `◦ running ${filtered.length} cell(s) × ${args.runs} run(s) = ${filtered.length * args.runs} total invocation(s)`,
+  );
 
   const cells: CellSummary[] = [];
 

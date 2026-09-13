@@ -3,7 +3,9 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
@@ -16,8 +18,19 @@
     "forceConsistentCasingInFileNames": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["lib/**/*", "runners/**/*", "fixtures/**/*.ts", "scenarios/**/*.ts"],
-  "exclude": ["node_modules", ".trigger-log.jsonl"]
+  "include": [
+    "lib/**/*",
+    "runners/**/*",
+    "fixtures/**/*.ts",
+    "scenarios/**/*.ts",
+    "v2/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".trigger-log.jsonl"
+  ]
 }

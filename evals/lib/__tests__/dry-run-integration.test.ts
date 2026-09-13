@@ -18,11 +18,11 @@ const tempDir = mkdtempSync(join(tmpdir(), "skills-eval-int-"));
 afterAll(() => rmSync(tempDir, { recursive: true, force: true }));
 
 const runNode = (script: string, args: readonly string[]) =>
-  spawnSync(
-    process.execPath,
-    [join(EVALS_DIR, "runners", script), ...args],
-    { encoding: "utf8", cwd: EVALS_DIR, stdio: "pipe" },
-  );
+  spawnSync(process.execPath, [join(EVALS_DIR, "runners", script), ...args], {
+    encoding: "utf8",
+    cwd: EVALS_DIR,
+    stdio: "pipe",
+  });
 
 describe("run-pipeline.ts --dry-run --local", () => {
   it("exits 0 and writes a markdown summary with the marker tag", () => {

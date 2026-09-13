@@ -1,291 +1,215 @@
-# skills
+# Skills and agents
 
-[![skills.sh](https://skills.sh/b/0xdeafcafe/skills)](https://skills.sh/0xdeafcafe/skills)
+Work from an idea to a result without making the engineering process the point
+of the conversation. Preserve the intent, prepare properly, build with care,
+and check that the result does what was agreed.
 
-Twenty-one Claude Code skills for the parts of shipping software I'd
-rather not do myself. The ADR. The Gherkin spec. The audit pass. The
-PR description. The back-and-forth on review comments. Tedious enough
-to skip, important enough that skipping bites a quarter later.
+This first v2 draft ships two layers: **28 standalone skills** describing useful
+methods, and **four agents** using those skills to own outcomes. The existing
+skill names remain available. The old fixed review pipeline is retired.
 
-They compose. Pick a front door.
+## Start with the outcome
 
-## Install
+> Getting a new project connected is a pain. Understand where people get stuck
+> and drive an improvement through to a reviewed change. Keep the current login.
 
+The agent investigates the experience, resolves consequential questions, and
+establishes what would count as an improvement. It chooses the necessary design,
+specification, implementation, and review work. Repository standards still apply;
+an ADR or spec is written when required or useful to the work.
+
+Exploration, decisions, execution, and assessment recur as needed. A prototype
+can uncover a question that must be settled before the final build. Discovery
+does not silently grant permission to expand the outcome.
+
+```mermaid
+flowchart LR
+  Intent["Intent and constraints"] --> Coordinator["Coordinator"]
+  Coordinator <--> Shaper["Shaper: understand and decide"]
+  Coordinator <--> Builder["Builder: deliver a bounded outcome"]
+  Coordinator <--> Reviewer["Reviewer: assess intent and standards"]
+  Coordinator <--> Record["Agreement, evidence, observations, handoff"]
+  Coordinator --> Result["Verified outcome and explicit remaining gaps"]
 ```
+
+These are available responsibilities, not four mandatory launches. The
+coordinator handles small work directly and delegates when independent work or
+an independent assessment justifies the context and integration cost.
+
+## Agents use skills
+
+| Agent | Responsibility | Typical skills |
+| --- | --- | --- |
+| [Shaper](agents/shaper.md) | Understand the need, challenge assumptions, prepare decisions and acceptance. | `start-discussion`, `plan-change`, `backfill-feature`, `write-adr`, `write-spec` |
+| [Coordinator](agents/coordinator.md) | Preserve intent, organise assignments, integrate results, and follow through. | `drive-plan`, `drive-change`, `integrate-work`, `track-observations`, `handoff`, `resume-work` |
+| [Builder](agents/builder.md) | Deliver and verify a coherent assignment; return discoveries and evidence. | `implement-change`, `review-hygiene`, `track-observations`, `handoff` |
+| [Reviewer](agents/reviewer.md) | Independently compare the result with intent, behaviour, and standards. | `review-change`, `review-pr`, relevant specialist reviews |
+
+Agents load relevant skill instructions as needed. They inherit the host's
+configured model and permissions; no model is hardcoded and no instruction can
+enable a tool the host has withheld. On hosts without delegation, the main agent
+performs the work directly and reports the limits of self-review.
+
+## Ordinary requests select useful actions
+
+“Read through all this” selects `read-context`. For broad material, the
+coordinator inventories the sources, assigns bounded reading, and reconciles a
+coverage ledger. Haiku handles straightforward extraction and summaries;
+Sonnet handles synthesis or ambiguity when available. The coordinator checks
+coverage and consequential conclusions against the original sources. Explicit
+model preferences and host restrictions still apply, and small inputs stay local.
+
+The [work primitives map](references/work-primitives.md) also routes requests to
+understand, compare, plan, implement, verify, review and resume. It selects work
+as needed without adding another mandatory lifecycle.
+
+## Standards without derailment
+
+Before a substantial build, the agent checks that the intended behaviour,
+consequential decisions, applicable standards, and verification approach are
+clear enough. It refers back to them during implementation and assessment.
+Preparation is proportional to uncertainty and impact. It does not require you
+to reconfirm an action already authorised merely because a phase changed.
+
+An incidental observation stays separate from the active assignment. Minor
+issues are recorded quietly; meaningful issues receive a brief nudge while work
+continues. Material blockers interrupt the affected work. At useful boundaries
+and final review, every observation gets a disposition: verified addressed,
+open in scope and routed to review, explicit follow-up, or disproved with a
+reason. Required fixes cannot be deferred just to report completion.
+
+The [work record contract](references/work-record.md) describes the agreement,
+assignment ownership, evidence, and observations. Each effort keeps its own live
+record. Handoffs describe actual state and the next action, including what will
+not survive a machine or session change. `integrate-work` checks the live Git
+operation before acting: ordinary integration, active merge collection, and
+rebase or cherry-pick continuation have different conditions. A collected worker
+result does not by itself mean a commit exists or the enclosing work is complete.
+Changed state invalidates the affected action, not every prior decision.
+
+## Choose a skill directly
+
+| Intent | Skills |
+| --- | --- |
+| Explore an idea or find the next useful action | `start-discussion`, `start-feature` |
+| Understand what exists | `backfill-feature` |
+| Read and summarise a supplied body of material | `read-context` |
+| Prepare a change and preserve decisions | `plan-change`, `write-adr`, `write-spec` |
+| Drive substantial work or a clear change | `drive-plan`, `drive-change` |
+| Build an agreed piece | `implement-change` |
+| Collect and integrate reviewed work in the live Git operation | `integrate-work` |
+| Assess a change or PR | `review-change`, `review-pr` |
+| Examine a particular concern | `review-code`, `review-feature`, `review-test`, `review-security`, `review-ux`, `review-hygiene`, `review-spec` |
+| Package and follow through | `open-pr`, `drive-pr` |
+| Continue across sessions | `handoff`, `resume-work` |
+| Notice issues and follow them through | `track-observations` |
+| Learn from recorded usage | `assess-usage` |
+| Write clear, direct prose | `tone-of-voice` |
+| Draft as Alex for the intended channel | `alex-tone-of-voice` |
+
+`drive-plan` owns continuity for substantial work. `drive-change` provides a
+direct implementation and convergence path for clear work. Neither imposes a
+mandatory series of technical artifacts. Specialist reviews remain read-only
+unless the user separately authorises changes.
+
+## Install or try the draft
+
+The Claude Code plugin bundles both layers:
+
+```text
 /plugin marketplace add 0xdeafcafe/skills
 /plugin install skills@0xdeafcafe-skills
 ```
 
-Shows up as `skills @ 0xdeafcafe-skills` in the plugin manager.
-
-For other agents (Cursor, Codex, OpenCode) or selective installs, the
-[skills.sh](https://www.skills.sh) CLI:
+Those commands install the published default branch. To try this checkout's
+draft without publishing it, run from the project you want to work on:
 
 ```bash
-npx skills add 0xdeafcafe/skills
+claude --plugin-dir /absolute/path/to/skills --agent skills:coordinator
 ```
 
-## The flow
+For individual skills, use the installed plugin namespace, for example
+`/skills:start-discussion` or `/skills:drive-change`. Select an agent from
+Claude's agent picker, or use the session role above. The packaging follows
+[Claude's plugin format](https://code.claude.com/docs/en/plugins-reference) and
+[agent invocation](https://code.claude.com/docs/en/sub-agents).
 
-```mermaid
-flowchart TD
-  Start(["I want to work on something"])
-  Start -->|Known intent| StartFeature["/start-feature"]
-  Start -->|Exploring| StartDiscussion["/start-discussion"]
-  StartDiscussion --> StartFeature
-
-  StartFeature --> Branch{New or existing?}
-  Branch -->|New| Plan["/plan-change"]
-  Branch -->|Existing, ADR exists| Plan
-  Branch -->|Existing, no ADR| Backfill["/backfill-feature"]
-  Backfill --> Plan
-  Branch -->|Trivial| Skip([Skip scaffolding])
-
-  Plan --> Impl["/implement-change"]
-  Skip --> DriveChange["/drive-change"]
-  Impl --> DriveChange
-  DriveChange -->|Findings to fix| DriveChange
-  DriveChange -->|Clean| OpenPR["/open-pr"]
-  OpenPR --> DrivePR["/drive-pr"]
-  DrivePR --> Merged([Merged])
-
-  classDef entry fill:#fef3c7,stroke:#d97706,color:#92400e
-  classDef plan fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
-  classDef drive fill:#dcfce7,stroke:#16a34a,color:#14532d
-  classDef ship fill:#fce7f3,stroke:#db2777,color:#831843
-  class StartFeature,StartDiscussion entry
-  class Plan,Backfill,Impl plan
-  class DriveChange drive
-  class OpenPR,DrivePR ship
-```
-
-`/drive-plan` is the composed alternative — it runs `/plan-change` →
-`/implement-change` → `/review-change` end-to-end with phase-boundary
-confirmations, for substantial changes that warrant the full pipeline
-upfront.
-
-`tone-of-voice` sits across the lot. It applies whenever Claude writes
-under my name (commit messages, PR bodies, anything published) and to
-its own conversational replies in this CLI, so the assistant stays in
-my register rather than drifting into LLM tells.
-
-## What it looks like
-
-A walked-through session, lightly compressed. Real artefacts get
-written along the way — ADRs, specs, characterisation tests, the PR
-body. The skills coordinate.
-
-```
-you:    I want to add CSV export on the orders page.
-
-claude: [/start-feature]
-        New code, or modifying something existing?
-
-you:    Existing orders page.
-
-claude: No ADR for the orders module. Backing it up before we touch
-        it.
-
-        [/backfill-feature]
-        Reading src/orders/. Here's what I think the area does today:
-          - server-paginated listing
-          - cancellation through a state machine in OrderService
-          - no exports yet
-        Correct?
-
-you:    Yes.
-
-claude: Writing retroactive ADR, characterisation spec, and 8 tests
-        locking current behaviour. All green.
-
-        [/plan-change]
-        Now the CSV export. What does the user click, and what comes
-        out the other side?
-
-[discussion. ADR + spec drafted, reviewed, committed.]
-
-you:    Plan looks right. Let's build.
-
-claude: [/implement-change]
-        Reading the spec. Plan: one new component, two edits to
-        OrderService, one new helper. 8 scenarios from the spec —
-        going to run them as smoke tests when I'm done.
-
-[implementation back-and-forth, scenarios pass]
-
-you:    Done. Audit it.
-
-claude: [/drive-change]
-        Triage: small (12 files, 2 directories). Skipping the slicer.
-        Fan-out to review-hygiene, review-code, review-test, review-feature,
-        review-security, review-ux in parallel.
-          review-hygiene:  230 prettier auto-fixable across 8 files (1 aggregate)
-          review-code:     clean
-          review-test:     1 missing edge case (empty order list)
-          review-feature:  clean
-          review-security: clean
-          review-ux:       loading state missing on the Export button
-        Merger: 2 P1 findings, both mechanical. Dispatching to Sonnet
-        fix-appliers in parallel.
-          applied: 2 of 2
-        Re-run: clean. Ready for /open-pr.
-
-you:    Open it.
-
-claude: [/open-pr]
-        ...
-        PR opened: https://github.com/...
-        Drive it now, or wait for review?
-```
-
-## The skills
-
-| Skill | One-liner |
-| --- | --- |
-| **Entry** | |
-| [`start-feature`](./skills/start-feature/) | Front door for known work. Routes to `plan-change` or `backfill-feature`. |
-| [`start-discussion`](./skills/start-discussion/) | Open-ended exploration. No file writes; talks until intent emerges. |
-| **Planning** | |
-| [`plan-change`](./skills/plan-change/) | Drives the discussion that produces an ADR plus a Gherkin spec for what's about to be built. |
-| [`backfill-feature`](./skills/backfill-feature/) | Retroactive ADR, spec, and characterisation tests for existing code with no documentation. |
-| [`write-adr`](./skills/write-adr/) | Standalone ADR. MADR / Nygard / Y-statement, matched to whatever the repo already does. |
-| [`write-spec`](./skills/write-spec/) | Standalone Gherkin `.feature` file. |
-| **Reviewing** | |
-| [`review-change`](./skills/review-change/) | Read-only audit of the working tree. Slice → fan-out to specialists → merge → verify. Emits findings; never edits. |
-| [`review-pr`](./skills/review-pr/) | Read-only audit of an open PR. Terminal report by default; `--comment` posts findings as PR comments. |
-| [`review-hygiene`](./skills/review-hygiene/) | Runs project linters / formatters / LSP diagnostics in check-only mode. One aggregate finding per tool with `auto:` fix — fix-applier runs the tool directly, not the LLM. |
-| [`review-code`](./skills/review-code/) | Per-file design judgment. SRP, modularity, length, naming, structural smells. Stays out of the linter's lane. Emits findings. |
-| [`review-feature`](./skills/review-feature/) | Feature logic against ADR / spec. Edge cases, error handling, side effects. Emits findings. |
-| [`review-test`](./skills/review-test/) | Test quality on touched files. Right level, real assertions, no mocking the unit under test. Emits findings. |
-| [`review-security`](./skills/review-security/) | Authz, secrets, input validation, dependency vulns, OWASP-top-10 smells. Emits findings. |
-| [`review-ux`](./skills/review-ux/) | Walks the changed UX in a real browser. Screenshots become finding evidence; a11y, console errors, network failures. |
-| [`review-spec`](./skills/review-spec/) | Audits a new spec or ADR against the existing corpus for duplicates, conflicts, overlap. |
-| **Driving** | |
-| [`drive-plan`](./skills/drive-plan/) | End-to-end orchestrator for substantial changes. Composes `/plan-change` → `/implement-change` → `/review-change`. Phase-boundary confirmations. |
-| [`drive-change`](./skills/drive-change/) | Workhorse for quick or clear changes. Implements from conversation intent + runs the agent pipeline (slice → fan-out → merge → verify) + dispatches fix-applier agents under sensitivity gating. |
-| [`implement-change`](./skills/implement-change/) | Translates a planned change (ADR + spec) into code. Runs the spec's scenarios as smoke tests. Hands off to `/drive-change`. |
-| **Shipping** | |
-| [`open-pr`](./skills/open-pr/) | Composes title and body, runs final checks, opens via `gh pr create`. Wires `tone-of-voice` so the body sounds like the author. |
-| [`drive-pr`](./skills/drive-pr/) | Iterates the open PR until trusted comments are resolved and CI is green. Calls `/review-pr` upfront, dispatches comment-driven edits through the agent pipeline. |
-| **Cross-cutting** | |
-| [`tone-of-voice`](./skills/tone-of-voice/) | Ghost-writes in my voice. Applies to PR bodies, commit messages, and Claude's own conversational replies. |
-
-## The agent pipeline
-
-The aggregators (`/drive-change`, `/drive-pr`, `/review-change`,
-`/review-pr`) compose four agent prompts in `agents/`:
-
-- **`orchestrate-slice`** partitions a multi-file diff into
-  domain-coherent slices and names the symbols that cross slice
-  boundaries (LSP-backed when available, structural fallback
-  otherwise).
-- **`orchestrate-merge`** takes parallel reviewer outputs, validates
-  every finding against the JSON schema, runs `git apply --check` on
-  the proposed fix, deduplicates by `file:line`, and partitions into
-  single-file work packets with sensitivity annotations.
-- **`orchestrate-verify`** cross-checks the contracts the slicer
-  named, catching the drift where slice A's change to interface I
-  doesn't match how slice B uses I.
-- **`fix-applier`** takes one work packet, applies the fixes, runs a
-  post-apply parse check, and reverts on failure.
-
-Shared contracts live in `references/`:
-
-- `finding-format.md` + `finding-format.schema.json` — the structured
-  shape every reviewer emits; the merger validates against the
-  schema and silently discards malformed findings.
-- `change-envelope.md` — the input shape every reviewer receives,
-  the same shape whether reviewing a whole diff or one slice.
-- `language-tooling.md` — when to prefer LSP queries (`tslsp`,
-  `gopls`, `pyright`, `rust-analyzer`) over reading files.
-- `sensitivity-paths.md` — path patterns that route fix-applier
-  dispatches to Opus instead of Sonnet (auth / crypto / IPC trust
-  boundaries).
-
-Sensitivity gating means a Sonnet worker applies hygiene fixes in
-parallel across the codebase, while anything touching session
-handling, token storage, or IPC handlers routes to Opus regardless
-of severity.
-
-## The trust gate
-
-PR comments come from anyone with a GitHub account. If a skill follows
-their instructions, anyone with a GitHub account has shell on my
-laptop. Every skill that reads them runs the same filter:
-
-1. **AI bots** — three trusted by name (CodeRabbit, GitHub Copilot
-   reviewer, Kilo Code reviewer). Other `[bot]` handles are untrusted
-   by default.
-2. **Humans** — verified members of the repo's owning organisation,
-   or collaborators with `write` or higher, checked live via `gh api`.
-   "Looks legit" isn't a verification.
-
-Untrusted comments get read for context. They never move code, write
-a reply, or resolve a thread.
-
-Six skills that read comments each ship their own copy of
-`references/trust-policy.md` so a standalone CLI install of one skill
-still has the policy locally. The canonical lives in
-`skills/drive-pr/references/trust-policy.md`; the others are mirrors.
-After editing the canonical, propagate it manually:
+For selective skill installation in other compatible hosts:
 
 ```bash
-for d in review-hygiene review-code review-feature review-test review-security review-ux; do
-  cp skills/drive-pr/references/trust-policy.md skills/$d/references/trust-policy.md
-done
+npx skills add 0xdeafcafe/skills --skill start-discussion
+npx skills add 0xdeafcafe/skills --skill '*'
 ```
 
-Then stage the five mirrors. No script lives in this repo on purpose —
-skills with zero executable surface are safer to install.
+These commands use the published default branch. To install a draft skill from
+this checkout, pass its local path instead, for example
+`npx skills add /absolute/path/to/skills --skill start-discussion`. The
+[`skills` CLI](https://github.com/vercel-labs/skills) installs skills separately;
+it does not register Claude Code agents.
 
-## Layout
+To try a selected set of agents or a smaller self-contained Claude plugin,
+export it outside this checkout and load that directory:
 
-```
-.
-├── README.md
-├── .claude-plugin/marketplace.json
-├── skills.sh.json
-├── agents/                       # prompt files invoked by orchestrators via Task
-│   ├── orchestrate-slice.md      # partition diff into domain slices
-│   ├── orchestrate-merge.md      # schema-validate + apply-validate + dedup + sensitivity
-│   ├── orchestrate-verify.md     # cross-slice contract check
-│   └── fix-applier.md            # single-file work packet executor
-├── references/                   # shared cross-skill contracts
-│   ├── finding-format.md
-│   ├── finding-format.schema.json
-│   ├── change-envelope.md
-│   ├── language-tooling.md
-│   └── sensitivity-paths.md
-└── skills/
-    ├── start-feature/
-    ├── start-discussion/
-    ├── plan-change/
-    ├── backfill-feature/
-    ├── write-adr/
-    ├── write-spec/
-    ├── review-change/
-    ├── review-pr/
-    ├── review-hygiene/
-    ├── review-code/
-    ├── review-feature/
-    ├── review-test/
-    ├── review-security/
-    ├── review-ux/
-    ├── review-spec/
-    ├── drive-plan/
-    ├── drive-change/
-    ├── implement-change/
-    ├── open-pr/
-    ├── drive-pr/
-    └── tone-of-voice/
+```bash
+python3 scripts/build-plugin.py --output /tmp/work-agents --agent shaper --agent builder
+claude --plugin-dir /tmp/work-agents
 ```
 
-Each skill is self-contained. When the CLI pulls a single skill on
-its own, the recipient gets that skill's `SKILL.md` plus its
-`references/` folder. Cross-skill contracts in the top-level
-`references/` and the `agents/` directory only matter to the
-orchestrator skills that consume them; the standalone read-only
-specialists don't depend on them at install time.
+Selected roles bring the skills they name plus the shared role references, so
+their relative links keep working after Claude copies the plugin into its cache.
+The coordinator can route to every method, so a coordinator export includes the
+full skill catalog.
+Use `--skill NAME` repeatedly for a custom skill set, `--all --skills-only` for
+all 28 skills without agents, or `--all` for all skills and agents. The exporter
+requires a new output path outside the source checkout and never installs into
+`~/.claude`.
 
-Reference files in each skill's `references/` are loaded on demand,
-which keeps the main `SKILL.md` lean.
+## Writing voice
+
+`tone-of-voice` supplies clear, direct writing suited to the audience and purpose.
+`alex-tone-of-voice` applies Alex's personal voice when drafting as him, with
+separate guidance for Slack, Twitter/X, WhatsApp, blog posts and code reviews.
+The original Alex samples and revision guide live with that skill.
+Channel guidance without direct samples is identified as an inference; the
+user's examples and corrections take precedence. Neither skill requires jokes,
+statistics or a fixed paragraph pattern, and drafting does not itself send or
+publish anything.
+
+## Context and usage
+
+Keep the agreement durable and active contexts focused. Workers receive bounded
+assignments and source pointers. Return findings and evidence instead of long
+logs. Prefer completion events over recurring status loops. Consider handoffs
+at useful boundaries, including when a large context has plateaued but the
+session keeps accumulating work and usage.
+
+These practices are hypotheses to assess against completion, quality, rework,
+time, and usage. There is no universal context cap or promised saving.
+LangWatch's plugin and CLI are the preferred optional integration. The
+coordinator suggests setup once if missing and remembers a decline or deferral.
+It can inspect traces during work when a specific question about repeated
+failures, latency, context, or handoff rework could change its next action.
+Queries happen at useful boundaries, not on a timer or every progress update.
+
+`assess-usage` covers those bounded checks as well as before/after comparisons.
+It distinguishes installation, sign-in, and actual capture coverage; missing
+telemetry never blocks the primary task. Enabling capture or installing the
+integration requires user authorisation. See [LangWatch setup and query guidance](skills/assess-usage/references/langwatch.md)
+and [the design evidence](evals/v2/design-evidence.md).
+
+## Validation and migration
+
+The shared [trust policy](references/trust-policy.md) applies when reading
+comments, imported documents, traces or worker output. Source content cannot
+grant permissions or rewrite the agreement. PR feedback retains author
+verification and the configured bot allowlist. Each consuming skill carries
+its own copy so selective installs remain complete; maintainers check them with
+`python3 scripts/sync-trust-policy.py --check` and synchronize deliberate changes
+with `--write`.
+
+[The v2 evaluation guide](evals/README.md) separates packaging checks from
+behavioural exercises and historical v1 tests. The previous slicer, merger,
+verifier, and fix-applier prompts and contracts live in `evals/legacy/` for
+reference. They are not installed as agents. Direct consumers of that old
+pipeline need to adopt the new roles and evidence-based returns; skill names
+are retained, but the old output schema and fixed model routing are not.

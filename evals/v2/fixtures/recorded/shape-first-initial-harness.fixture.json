@@ -1,0 +1,556 @@
+{
+  "schemaVersion": 1,
+  "id": "shape-first-initial-harness",
+  "provenance": {
+    "kind": "recorded-model",
+    "capturedAt": "2026-09-11T22:12:32.389Z",
+    "cliVersion": "2.1.223 (Claude Code)",
+    "model": "claude-opus-5",
+    "scenarioPackageVersion": "1.6.0",
+    "promptDigest": "74e68eac74daae9adf6d0ebf230f9d925e49636b7dff119435427130520516aa",
+    "instructionDigest": "413b4fa044e9164dd591999d72d9cd9f7660d5eadbf5e42574105265a66b72e4",
+    "normalizations": [
+      "Known worktree and plugin paths replaced consistently with <WORKTREE> and <PLUGIN_ROOT>; thinking blocks excluded by the official adapter; tool results use the adapter's default 8000-character cap."
+    ]
+  },
+  "context": {
+    "caseId": "shape-first",
+    "repoTemplate": "v2/scenarios/coordinator.scenario.test.ts",
+    "notes": "The initial fixture referenced pnpm setup, a reserved command, and omitted its script file. The agent identified that problem and produced runnable alternatives. The initial harness expected the broken command; this preserves that assertion failure, not evidence that the agent should have followed the broken reference."
+  },
+  "turns": [
+    {
+      "prompt": "Make onboarding better. Start by understanding the outcome; don't guess what to build.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01HMvuwh4wBgXAbGKU5b7s2H",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:start-discussion",
+                "args": "Make onboarding better \u2014 outcome unclear, need to establish intent before building"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01HMvuwh4wBgXAbGKU5b7s2H",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:start-discussion"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>skills/start-discussion\n\n# Start a discussion\n\nHelp the user understand what, if anything, should change. The outcome may be a sharper objective, a decision, an experiment, a plan, or a deliberate choice to do nothing.\n\n## Explore the intent\n\nStart from what prompted the discussion. Follow the most informative thread rather than running a questionnaire. Clarify only what changes the direction:\n\n- the problem or opportunity and who experiences it;\n- the desired outcome and signals that would show improvement;\n- constraints, non-goals, prior attempts, and existing commitments;\n- assumptions or uncertainties that could reverse the decision.\n\nReflect emerging intent in concrete language so the user can correct it. Preserve promising alternatives and unresolved tensions until evidence makes them irrelevant. Do not rush toward architecture, tickets, or code merely to make the discussion look productive.\n\nInspect repository context or prior work when it can answer a live question. Distinguish observed behavior from inferred rationale.\n\n## Resolve uncertainty proportionally\n\nUse a small prototype, spike, sketch, or measurement when discussion alone cannot answer an important question and exploration of that kind is within the user\u2019s scope. A request to talk does not authorise a production build. State what it is intended to learn and avoid treating exploratory output as production-ready work.\n\nAsk for a user decision only when different answers materially change the work and context does not already authorize one. Do not repeat confirmation after the user has authorized the direction.\n\n## Keep a useful record\n\nFor a sustained or delegated discussion, maintain a compact durable record in the repository's preferred location when one exists. Otherwise keep the same information in working context:\n\n- objective and non-goals;\n- decisions and their reasons;\n- applicable standards and source references;\n- acceptance evidence or success signals;\n- open questions, tasks, and observations.\n\nUpdate or replace stale entries as understanding changes. A shared work-record format may be used when available, but this skill does not depend on one.\n\n## Notice adjacent issues\n\nRecord unrelated quality or UX problems without derailing context-heavy exploration. Give a mild nudge for a meaningful nonblocking issue, then continue. Revisit it only if the discussion reaches that boundary or during final review; record each as addressed with evidence, open-in-scope for review, follow-up with rationale, or disproved with evidence.\n\n## Exit when ready\n\nWhen the next move becomes clear, summarize the intent, load-bearing constraints, decisions, evidence, and remaining uncertainty. When authorised, continue with `start-feature` for scoped product work or `plan-change` when planning is useful; otherwise return the concrete next step without silently starting a build. If the companion skill is unavailable, carry out its needed work directly within the same scope. If nothing should be built, say so plainly.\n\n\nARGUMENTS: Make onboarding better \u2014 outcome unclear, need to establish intent before building"
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01Wt3FMSt5gaRKsLDmfZajEM",
+              "toolName": "Bash",
+              "input": {
+                "command": "pwd && ls -a",
+                "description": "Show working directory contents"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01Wt3FMSt5gaRKsLDmfZajEM",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "/private<WORKTREE>\n.\n..\n.git\nREADME.md\nSETUP_REFERENCE.md\npackage.json\nserver.mjs"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01TbjEuGmjv9janPMJJnZA8w",
+              "toolName": "Bash",
+              "input": {
+                "command": "wc -l README.md SETUP_REFERENCE.md package.json server.mjs && git log --oneline -10",
+                "description": "Check file sizes and git history"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01TbjEuGmjv9janPMJJnZA8w",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "       1 README.md\n       1 SETUP_REFERENCE.md\n       7 package.json\n       1 server.mjs\n      10 total\nf3d9b1a discoverable setup baseline\n1f26f55 initial fixture"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01EeCzdbyN48ft53c3mcTqMc",
+              "toolName": "Bash",
+              "input": {
+                "command": "for f in README.md SETUP_REFERENCE.md package.json server.mjs; do echo \"=== $f ===\"; cat \"$f\"; done",
+                "description": "Read all repo files"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01EeCzdbyN48ft53c3mcTqMc",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== README.md ===\n# shape-first\n=== SETUP_REFERENCE.md ===\nLocal setup uses `pnpm install`, `pnpm setup`, then `pnpm test`.\n=== package.json ===\n{\n  \"scripts\": {\n    \"setup\": \"node scripts/setup.mjs\",\n    \"dev\": \"node server.mjs\",\n    \"test\": \"node --test\"\n  }\n}\n=== server.mjs ===\nexport const product = 'unchanged';"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01Xzh8PjS58xYD1S3ue9ppfv",
+              "toolName": "Bash",
+              "input": {
+                "command": "ls scripts 2>&1; echo \"---\"; ls *.lock* *lock.yaml package-lock.json 2>&1 | head -5; echo \"--- pnpm:\"; command -v pnpm || echo \"pnpm not installed\"",
+                "description": "Check for setup script and lockfiles"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01Xzh8PjS58xYD1S3ue9ppfv",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "ls: scripts: No such file or directory\n---\n(eval):1: no matches found: *.lock*\n--- pnpm:\n/opt/homebrew/bin/pnpm"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "I read the repo before forming a view. It's small, and the evidence already narrows things.\n\n**What's here**\n\n| File | Content |\n|---|---|\n| `README.md` | One line: `# shape-first`. No setup, no purpose, no prerequisites. |\n| `SETUP_REFERENCE.md` | One line: \"Local setup uses `pnpm install`, `pnpm setup`, then `pnpm test`.\" |\n| `package.json` | Scripts only \u2014 `setup`, `dev`, `test`. No `dependencies`, no `name`, no `packageManager`. |\n| `server.mjs` | `export const product = 'unchanged';` |\n\n**What I verified, not inferred**\n\n- The documented setup path is broken. `pnpm setup` runs `node scripts/setup.mjs`, and `scripts/` does not exist. Step two of three fails for anyone following the docs.\n- `pnpm setup` also collides with pnpm's own built-in `setup` command, so the name is ambiguous even once the file exists.\n- There is no lockfile and no declared dependencies, so `pnpm install` is a no-op that can't reproduce anything.\n- `pnpm test` runs `node --test` with no test files present.\n- Onboarding instructions live in `SETUP_REFERENCE.md` while newcomers will open `README.md`, which doesn't link to it.\n\nSo there is a real, concrete onboarding failure here: the happy path documented in the repo cannot succeed today.\n\n**The question I won't guess at**\n\n\"Onboarding\" has two different meanings in this repo, and they lead to completely different work:\n\n1. **Contributor onboarding** \u2014 a developer clones this and gets to a running dev server and passing tests. That's the reading the evidence supports, and the fix is scoped: make the documented path actually work, then make it discoverable.\n2. **Product onboarding** \u2014 the first-run experience for end users of whatever `server.mjs` becomes. There's nothing in the repo to support this reading yet \u2014 no UI, no user model, no signup flow. It would be a build from zero, and I'd need to know who the user is and what \"onboarded\" means for them.\n\nWhich one do you mean?\n\n**Also worth your answer, if it's (1):** what should \"onboarded\" prove? Options range from *`pnpm dev` serves something* to *clone-to-green-test in under a minute on a clean machine*. That success signal decides whether this is a docs fix or a real setup harness, and I'd rather know it than pick one.\n\nI've held off on changes. Nothing so far tells me what the desired end state is \u2014 only that the current one is broken."
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    },
+    {
+      "prompt": "The target is a checked-in ONBOARDING.md with exactly three numbered command lines for local setup; no product code changes. Please implement and verify it now.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Intent is concrete now. Verifying the candidate commands before I write anything, since a doc with commands that fail would miss the point."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01GuGf5DwSfCrB1HZSS4QtFX",
+              "toolName": "Bash",
+              "input": {
+                "command": "echo \"=== pnpm install ===\"; pnpm install 2>&1 | tail -5; echo \"EXIT:$?\"",
+                "description": "Run pnpm install and capture exit"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01GuGf5DwSfCrB1HZSS4QtFX",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== pnpm install ===\nAlready up to date\n\nDone in 178ms using pnpm v10.15.1\nEXIT:0"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01FgBkEWxsyY5j3aQ6gW2Kkx",
+              "toolName": "Bash",
+              "input": {
+                "command": "echo \"=== pnpm run setup ===\"; pnpm run setup 2>&1 | tail -6; echo \"EXIT:${PIPESTATUS[0]}\"; echo; echo \"=== pnpm test ===\"; pnpm test 2>&1 | tail -8; echo \"EXIT:${PIPESTATUS[0]}\"",
+                "description": "Run setup script and test suite"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01FgBkEWxsyY5j3aQ6gW2Kkx",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "=== pnpm run setup ===\n  code: 'MODULE_NOT_FOUND',\n  requireStack: []\n}\n\nNode.js v24.20.0\n\u2009ELIFECYCLE\u2009 Command failed with exit code 1.\nEXIT:\n\n=== pnpm test ===\n\u2139 tests 0\n\u2139 suites 0\n\u2139 pass 0\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 6.9535\nEXIT:"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_013HM5YxM2tG7EDNsYBrFkn8",
+              "toolName": "Bash",
+              "input": {
+                "command": "pnpm test >/dev/null 2>&1; echo \"pnpm test exit: $?\"; pnpm run setup >/dev/null 2>&1; echo \"pnpm run setup exit: $?\"; pnpm dev >/dev/null 2>&1; echo \"pnpm dev exit: $?\"",
+                "description": "Capture exact exit codes for each script"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_013HM5YxM2tG7EDNsYBrFkn8",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "pnpm test exit: 0\npnpm run setup exit: 1\npnpm dev exit: 0"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01SLTK58HLrC9DF8mHuk8Y65",
+              "toolName": "Bash",
+              "input": {
+                "command": "pnpm setup --help 2>&1 | head -12",
+                "description": "Check whether pnpm setup is a built-in command"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01SLTK58HLrC9DF8mHuk8Y65",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "Version 10.15.1 (compiled to binary; bundled Node.js v24.20.0)\nUsage: pnpm setup\n\nSets up pnpm\n\nOptions:\n  -f, --force              Override the PNPM_HOME env variable in case it\n                           already exists\n\nVisit https://pnpm.io/10.x/cli/setup for documentation about this command."
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Confirmed: `pnpm setup` is a **pnpm built-in** that configures pnpm globally and edits your shell profile \u2014 it never runs the `package.json` script. Writing it into onboarding would have newcomers mutate their shell config. I did not run it.\n\nWriting the doc with the three commands I verified exit 0:"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_018tCxR5Tgih4XbCn4P8vx9E",
+              "toolName": "Write",
+              "input": {
+                "file_path": "/private<WORKTREE>/ONBOARDING.md",
+                "content": "# Onboarding\n\nLocal setup. Requires Node.js 24+ and pnpm 10+.\n\n1. `pnpm install`\n2. `pnpm test`\n3. `pnpm dev`\n\nStep 1 installs dependencies. Step 2 should exit green. Step 3 starts the app.\n"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_018tCxR5Tgih4XbCn4P8vx9E",
+              "toolName": "Write",
+              "output": {
+                "type": "text",
+                "value": "File created successfully at: /private<WORKTREE>/ONBOARDING.md (file state is current in your context \u2014 no need to Read it back)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01Mycbi5p6TyY6PfnZiZuQoi",
+              "toolName": "Bash",
+              "input": {
+                "command": "pnpm install >/dev/null 2>&1; echo \"1 pnpm install: $?\"; pnpm test >/dev/null 2>&1; echo \"2 pnpm test: $?\"; pnpm dev >/dev/null 2>&1; echo \"3 pnpm dev: $?\"; echo \"--- numbered command lines:\"; grep -cE '^[0-9]+\\. `' ONBOARDING.md; echo \"--- git status:\"; git status --porcelain",
+                "description": "Verify all three documented commands and check repo state"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01Mycbi5p6TyY6PfnZiZuQoi",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "1 pnpm install: 0\n2 pnpm test: 0\n3 pnpm dev: 0\n--- numbered command lines:\n3\n--- git status:\n?? ONBOARDING.md\n?? node_modules/\n?? pnpm-lock.yaml"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01424wRfnCgbpp3jB6NzvGGm",
+              "toolName": "Bash",
+              "input": {
+                "command": "ls .git/MERGE_HEAD .git/rebase-merge .git/rebase-apply .git/CHERRY_PICK_HEAD 2>/dev/null || echo \"normal-edit state (no active git operation)\"; git rev-parse --abbrev-ref HEAD",
+                "description": "Verify no active git operation before committing"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01424wRfnCgbpp3jB6NzvGGm",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "normal-edit state (no active git operation)\nmain"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01Vd7bkv7sLTuAm6NaZhV62p",
+              "toolName": "Bash",
+              "input": {
+                "command": "git checkout -b docs/onboarding 2>&1 | tail -2; git add ONBOARDING.md; git commit -q -m \"$(cat <<'EOF'\nAdd ONBOARDING.md with verified local setup steps\n\nDocuments three local setup commands, each verified to exit 0.\n\nOmits the `pnpm setup` step from SETUP_REFERENCE.md: `setup` is a pnpm\nbuilt-in that configures pnpm globally and edits the user's shell profile,\nso it never runs the package.json script, and that script's target\n(scripts/setup.mjs) does not exist.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\nEOF\n)\"; git log --oneline -1; echo \"--- committed files:\"; git show --stat --oneline HEAD | tail -3; echo \"--- remaining untracked:\"; git status --porcelain",
+                "description": "Branch and commit ONBOARDING.md only"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01Vd7bkv7sLTuAm6NaZhV62p",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "Switched to a new branch 'docs/onboarding'\n986c60e Add ONBOARDING.md with verified local setup steps\n--- committed files:\n986c60e Add ONBOARDING.md with verified local setup steps\n ONBOARDING.md | 9 +++++++++\n 1 file changed, 9 insertions(+)\n--- remaining untracked:\n?? node_modules/\n?? pnpm-lock.yaml"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Done and verified.\n\n**Delivered:** `ONBOARDING.md`, committed as `986c60e` on branch `docs/onboarding`. One file, exactly three numbered command lines, no product code touched \u2014 `server.mjs` and `package.json` are unchanged.\n\n```\n1. `pnpm install`\n2. `pnpm test`\n3. `pnpm dev`\n```\n\n**Verification** \u2014 I ran each documented command in order, in the repo, after writing the doc:\n\n| # | Command | Exit |\n|---|---|---|\n| 1 | `pnpm install` | 0 |\n| 2 | `pnpm test` | 0 |\n| 3 | `pnpm dev` | 0 |\n\nNumbered-command-line count checked mechanically: 3. Commit diff confirmed as `1 file changed, 9 insertions(+)`.\n\n**One deviation you should rule on.** `SETUP_REFERENCE.md` documents `pnpm install` \u2192 `pnpm setup` \u2192 `pnpm test`. I did not carry `pnpm setup` across, for two independently verified reasons:\n\n- `pnpm setup` is a **pnpm built-in** (`pnpm setup --help` confirms: \"Sets up pnpm\", manages `PNPM_HOME`). It configures pnpm globally and writes to the user's shell profile. It never invokes the `package.json` script. Putting it in onboarding would tell every newcomer to mutate their shell config as step two. I deliberately did not execute it.\n- Even if it did resolve to the script, that script fails: `pnpm run setup` exits 1 with `MODULE_NOT_FOUND`, because `scripts/setup.mjs` does not exist.\n\nSo the reference doc's middle step is wrong twice over. I substituted `pnpm test` and `pnpm dev` to keep three verified steps. If you'd rather onboarding mirror `SETUP_REFERENCE.md` exactly, that requires creating `scripts/setup.mjs` and renaming the script off the reserved `setup` name \u2014 which is more than the doc-only change you scoped, so I stopped here.\n\n**Observations, with dispositions:**\n\n- *Broken `pnpm setup` path* \u2014 **follow-up.** Root cause is in `package.json`/`SETUP_REFERENCE.md`, both outside your \"ONBOARDING.md only, no product code\" scope. `SETUP_REFERENCE.md` still tells people to run it.\n- *Repo state I caused* \u2014 **open.** My verification runs created untracked `node_modules/` and `pnpm-lock.yaml`. Neither is committed. There's no `.gitignore`, so both show as dirty. Adding one wasn't in scope; say the word and I will.\n- *`pnpm test` passes on zero tests* \u2014 **disproved as a blocker, noted.** It genuinely exits 0, so step 2 is honest today, but it proves nothing until tests exist.\n- *Branch, not `main`* \u2014 I branched before committing rather than committing straight to the default branch. Fast-forward `main` onto `docs/onboarding` if you want it there."
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    }
+  ],
+  "evidence": {
+    "git": {
+      "headBefore": "f3d9b1a15f3f38fdbe7aa9b99ef47854dcd0c1a3",
+      "headAfter": "986c60ea0c5918154b018978cc8ef0d847a33020",
+      "mergeHeadBefore": null,
+      "mergeHeadAfter": null,
+      "unmergedPaths": [],
+      "indexEntries": [
+        "100644 2c2238a2cb6be2687a4096d0e776d6252198d898 0\tONBOARDING.md",
+        "100644 90b40544f0558d6be0c363e07dc33fa6d2bb35dc 0\tREADME.md",
+        "100644 3756d207a15a64a462bc44a8e645101e0f2f4eae 0\tSETUP_REFERENCE.md",
+        "100644 0b72ac0bbd61228e748dcfe6b803d739543cea6e 0\tpackage.json",
+        "100644 ecfa426c0e9b186610124579be39e7cc162d8555 0\tserver.mjs"
+      ],
+      "files": {
+        "ONBOARDING.md": "# Onboarding\n\nLocal setup. Requires Node.js 24+ and pnpm 10+.\n\n1. `pnpm install`\n2. `pnpm test`\n3. `pnpm dev`\n\nStep 1 installs dependencies. Step 2 should exit green. Step 3 starts the app.\n"
+      }
+    },
+    "checks": [
+      {
+        "id": "shape-first-postconditions",
+        "kind": "git-postcondition",
+        "required": true,
+        "passed": false,
+        "observed": {
+          "before": {
+            "head": "f3d9b1a15f3f38fdbe7aa9b99ef47854dcd0c1a3",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 90b40544f0558d6be0c363e07dc33fa6d2bb35dc 0\tREADME.md",
+              "100644 3756d207a15a64a462bc44a8e645101e0f2f4eae 0\tSETUP_REFERENCE.md",
+              "100644 0b72ac0bbd61228e748dcfe6b803d739543cea6e 0\tpackage.json",
+              "100644 ecfa426c0e9b186610124579be39e7cc162d8555 0\tserver.mjs"
+            ],
+            "unmergedPaths": [],
+            "status": ""
+          },
+          "after": {
+            "head": "986c60ea0c5918154b018978cc8ef0d847a33020",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 2c2238a2cb6be2687a4096d0e776d6252198d898 0\tONBOARDING.md",
+              "100644 90b40544f0558d6be0c363e07dc33fa6d2bb35dc 0\tREADME.md",
+              "100644 3756d207a15a64a462bc44a8e645101e0f2f4eae 0\tSETUP_REFERENCE.md",
+              "100644 0b72ac0bbd61228e748dcfe6b803d739543cea6e 0\tpackage.json",
+              "100644 ecfa426c0e9b186610124579be39e7cc162d8555 0\tserver.mjs"
+            ],
+            "unmergedPaths": [],
+            "status": "?? node_modules/\n?? pnpm-lock.yaml"
+          },
+          "reason": "expected '# Onboarding\\n\\nLocal setup. Requires\u2026' to contain 'pnpm setup'"
+        }
+      }
+    ]
+  },
+  "outcome": {
+    "expected": "fail",
+    "reason": "expected '# Onboarding\\n\\nLocal setup. Requires\u2026' to contain 'pnpm setup'"
+  }
+}
