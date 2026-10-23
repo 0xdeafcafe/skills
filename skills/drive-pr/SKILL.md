@@ -16,6 +16,17 @@ A PR is **done** when ALL of these are true at the same time:
 
 The skill keeps iterating until those conditions hold or the iteration cap (default 8) is reached.
 
+## Push budget — every push costs a CI run
+
+A push starts a full CI run, and CI minutes cost money. Treat pushes as the scarce resource, not iterations. The rules:
+
+- **Fix locally, push once.** Never push after each finding, each reviewer, or each fix. Collect every open item first (trusted comments, review findings, the failing CI log lines), fix all of them, then push one commit.
+- **Gate the push locally.** Before pushing, run locally what CI will run for the touched files: the tests, the lint, the format check, the generators' `--check` modes. Read the workflow files to find them. A push that CI will fail on is a wasted run.
+- **Review the local sha, not the pushed one.** When reviewers (agents or a `/review-*` pass) gate the PR, give them the local commit. Push only when every reviewer has passed that exact local sha. A reviewer that blocks means another local round, not a push.
+- **Don't push or re-run for a failure that isn't the PR's.** If a red check also fails on the base branch, the PR cannot fix it. Note it in the report and stop; do not push to "try again", and do not re-run the job. Check the base branch's latest run before acting on any red check.
+- **Don't re-run to wait.** Never re-run a job to get fresh results. Re-run only a job whose failure log shows an infrastructure flake (runner lost, network timeout, rate limit), and only once.
+- **Count pushes in the report.** If a PR needs more than 2 pushes, stop and tell the user why before the third.
+
 ## Phase 0 — Identify the PR and the repo
 
 Resolve the target PR first. The user invokes this skill in one of three ways:
@@ -211,7 +222,7 @@ Reply guidance:
 
 ### Single commit per loop iteration
 
-After Phase 3a–3c complete:
+After Phase 3a–3c complete, and only after the local gate in "Push budget" passes for every open item (not just the ones from this pass):
 
 ```bash
 git add -- <only files that fix-applier edited or you edited inline>
@@ -236,7 +247,7 @@ Pushing typically triggers:
 
 Loop back to Phase 2. Cap iterations at 8 by default. If you hit the cap, stop and explain what's still open.
 
-If between iterations no new trusted comments appear AND CI is still red, go to Phase 5b (CI fix) directly.
+If between iterations no new trusted comments appear AND CI is still red, go to Phase 5b (CI fix) directly. Wait for checks with a single blocking watch (e.g. `gh pr checks <pr> --watch`), never a polling loop.
 
 ## Phase 5 — Verify exit conditions
 
@@ -281,7 +292,7 @@ Three outcomes:
   gh run list --branch <headBranch> --limit 5 --json databaseId,name,conclusion,workflowName
   gh run view <run-id> --log-failed | tail -200
   ```
-  Apply the fix, commit, push, loop back to Phase 2.
+  First check the same job on the base branch's latest run: if it fails there too, the failure is not this PR's. Note it and do not push for it. Otherwise apply the fix, run the job's steps locally until they pass, and fold it into the next single push with any other open items. Then loop back to Phase 2.
 - **Some red, not required** (e.g., flaky integration tests): note in the final report. Don't block on these unless the user said to.
 
 Detecting "required": `gh api repos/<owner>/<repo>/branches/<baseBranch>/protection` returns the required status checks. If a check is in `required_status_checks.contexts` or `required_status_checks.checks[].context`, it blocks.
@@ -307,6 +318,7 @@ When the loop exits, print a short user-facing summary with this schema:
 
 ## Operating rules
 
+- **Never push per finding.** One push per iteration, after the local gate passes. See "Push budget".
 - **Never `git push --force`** unless the user explicitly asks. drive-pr never rewrites public history.
 - **Never `--no-verify`**. If a pre-commit hook fails, fix the underlying issue.
 - **Never `git rebase` or `git reset --hard`** mid-loop. New commits only.
