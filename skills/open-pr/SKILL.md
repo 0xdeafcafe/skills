@@ -1,6 +1,6 @@
 ---
 name: open-pr
-description: Prepare and open a GitHub pull request for the current branch with an accurate description and exact branch safety checks. Use when the user asks to create or publish a PR.
+description: Prepare and open a GitHub pull request for the current branch with an accurate description and exact branch safety checks. Use when the user asks to create or publish a PR, e.g. "open a PR", "make the PR", "draft a PR", or "create the PR".
 ---
 
 # Open a pull request
@@ -27,7 +27,7 @@ Read the actual diff, commits, linked spec/ADR/issue, repository PR template, an
 
 Write a title and body that describe the final behavior, why it changed, material implementation or migration details, and real validation. Remove stale claims. Preserve required template sections and mark genuinely inapplicable sections plainly rather than fabricating results.
 
-Maintain a work record of the intended files, base, local SHA, remote SHA, checks, and incidental observations. Reconcile each observation as resolved, relevant to the PR, an unrelated follow-up, or disproved with evidence.
+Maintain a work record of the intended files, base, local SHA, remote SHA, checks, and incidental observations. Reconcile each observation as `addressed`, `open-in-scope`, `follow-up`, or `disproved` with evidence.
 
 ## Open and verify
 

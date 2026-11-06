@@ -57,7 +57,7 @@
               "toolName": "Bash",
               "output": {
                 "type": "text",
-                "value": "/private<WORKTREE>\ntotal 16\ndrwx------@   5 lw  staff    160 Sep 11 23:12 .\ndrwx------@ 728 lw  staff  23296 Sep 11 23:12 ..\ndrwxr-xr-x@  12 lw  staff    384 Sep 11 23:12 .git\n-rw-r--r--@   1 lw  staff     21 Sep 11 23:12 README.md\n-rw-r--r--@   1 lw  staff    106 Sep 11 23:12 WORK.md"
+                "value": "<WORKTREE>\ntotal 16\ndrwx------@   5 lw  staff    160 Sep 11 23:12 .\ndrwx------@ 728 lw  staff  23296 Sep 11 23:12 ..\ndrwxr-xr-x@  12 lw  staff    384 Sep 11 23:12 .git\n-rw-r--r--@   1 lw  staff     21 Sep 11 23:12 README.md\n-rw-r--r--@   1 lw  staff    106 Sep 11 23:12 WORK.md"
               }
             }
           ]
@@ -105,7 +105,7 @@
               "toolCallId": "toolu_016vLgicspajKDPsnQGEc9eC",
               "toolName": "Read",
               "input": {
-                "file_path": "/private<WORKTREE>/WORK.md"
+                "file_path": "<WORKTREE>/WORK.md"
               }
             }
           ]
@@ -136,7 +136,7 @@
               "toolCallId": "toolu_01Knm4H9SkURjwfLZSQoJKPq",
               "toolName": "Read",
               "input": {
-                "file_path": "/private<WORKTREE>/README.md"
+                "file_path": "<WORKTREE>/README.md"
               }
             }
           ]
@@ -217,7 +217,7 @@
               "toolCallId": "toolu_01HsQVB8y2g5ep1GjAMvY8WJ",
               "toolName": "Write",
               "input": {
-                "file_path": "/private<WORKTREE>/result.txt",
+                "file_path": "<WORKTREE>/result.txt",
                 "content": "done\n"
               }
             }
@@ -232,7 +232,7 @@
               "toolName": "Write",
               "output": {
                 "type": "text",
-                "value": "File created successfully at: /private<WORKTREE>/result.txt (file state is current in your context — no need to Read it back)"
+                "value": "File created successfully at: <WORKTREE>/result.txt (file state is current in your context — no need to Read it back)"
               }
             }
           ]
@@ -300,7 +300,7 @@
               "toolName": "Edit",
               "input": {
                 "replace_all": false,
-                "file_path": "/private<WORKTREE>/WORK.md",
+                "file_path": "<WORKTREE>/WORK.md",
                 "old_string": "LangWatch setup: deferred by user for this effort.\nAcceptance: create result.txt containing done.\n",
                 "new_string": "LangWatch setup: deferred by user for this effort.\nAcceptance: create result.txt containing done.\n\n## Status: complete\n\n- `result.txt` created at repo root, contents `done`.\n- Verified: file exists; `grep -qx 'done' result.txt` matches.\n- Repository state: on `main`, no active Git operation. `result.txt` and this\n  update are left untracked/uncommitted — no commit was requested.\n- LangWatch remains deferred per the decision above; not re-raised, not installed,\n  no trace lookup performed.\n"
               }
@@ -316,7 +316,7 @@
               "toolName": "Edit",
               "output": {
                 "type": "text",
-                "value": "The file /private<WORKTREE>/WORK.md has been updated successfully. (file state is current in your context — no need to Read it back)"
+                "value": "The file <WORKTREE>/WORK.md has been updated successfully. (file state is current in your context — no need to Read it back)"
               }
             }
           ]

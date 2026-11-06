@@ -1,6 +1,6 @@
 ---
 name: plan-change
-description: Turn an intended product or engineering change into an actionable plan while preserving unresolved exploration. Use when decisions, acceptance, dependencies, or sequencing need preparation before implementation.
+description: Turn an intended product or engineering change into an actionable plan while preserving unresolved exploration. Use when decisions, acceptance, dependencies, or sequencing need preparation before implementation, e.g. "plan a change", "plan a feature", "let's design X", or "kick off feature Y".
 ---
 
 # Plan a change

@@ -25,7 +25,6 @@ pnpm fixtures:capture      # live calls; stage captures for review
 Review captured response changes before accepting them. Successful runs,
 incomplete work, denied actions and known harness mistakes are retained with
 provenance; replay results do not substitute for new live behavioral evaluation.
-See [the executed results](v2/integration-pass.md).
 
 ## Packaging checks
 
@@ -47,8 +46,7 @@ criteria out of its prompt. Use isolated temporary workspaces, no external
 mutations, and record the model, effort, input revision, observed actions, and
 limits. Evaluate resulting artifacts and decisions rather than exact wording.
 
-The [first-pass results](v2/first-pass.md) describe what was actually exercised;
-they are not a claim that every skill has been validated in every host.
+Passing cases are not a claim that every skill has been validated in every host.
 
 ## Operation regression checks
 

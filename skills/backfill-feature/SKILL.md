@@ -1,6 +1,6 @@
 ---
 name: backfill-feature
-description: Reconstruct the current intent, behavior, and constraints of an existing feature before changing it. Use when missing or stale documentation makes a planned modification unsafe or needlessly uncertain.
+description: Reconstruct the current intent, behavior, and constraints of an existing feature before changing it. Use when missing or stale documentation makes a planned modification unsafe or needlessly uncertain, or when the user says "backfill the ADR", "this feature has no ADR", or "I need to document what's already there before I change it".
 ---
 
 # Backfill a feature

@@ -133,7 +133,7 @@
               "toolName": "Bash",
               "output": {
                 "type": "text",
-                "value": "{\n  \"repo\": \"/private<WORKTREE>\",\n  \"head\": \"6c13843835242a69f6cb7db401960a05326c681a\",\n  \"branch\": \"main\",\n  \"operations\": [],\n  \"unmerged_paths\": [],\n  \"index_path\": \"/private<WORKTREE>/.git/index\",\n  \"git_dir\": \"/private<WORKTREE>/.git\",\n  \"ordinary_commit_candidate\": true\n}"
+                "value": "{\n  \"repo\": \"<WORKTREE>\",\n  \"head\": \"6c13843835242a69f6cb7db401960a05326c681a\",\n  \"branch\": \"main\",\n  \"operations\": [],\n  \"unmerged_paths\": [],\n  \"index_path\": \"<WORKTREE>/.git/index\",\n  \"git_dir\": \"<WORKTREE>/.git\",\n  \"ordinary_commit_candidate\": true\n}"
               }
             }
           ]

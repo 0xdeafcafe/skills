@@ -27,7 +27,7 @@ on:
   workflow_dispatch:
     inputs:
       scenario:
-        description: "Scenario file pattern (blank = all). e.g. plan-change"
+        description: "Scenario file pattern (blank = all). e.g. reading"
         required: false
         default: ""
 
@@ -147,8 +147,11 @@ jobs:
       # pinned install as tier-2 — bump deliberately when you want a
       # newer CLI. Without this the scenario adapter would fail at
       # `query()` time with ENOENT.
+      - name: Install sandbox dependencies
+        run: sudo apt-get update && sudo apt-get install -y bubblewrap socat
+
       - name: Install Claude Code CLI
-        run: npm install -g @anthropic-ai/claude-code@2.1.142
+        run: npm install -g @anthropic-ai/claude-code@2.1.223
 
       - name: Install the skill plugin under test
         run: |
@@ -184,7 +187,7 @@ jobs:
           # the PR. The job's exit code still comes from vitest itself.
           set -o pipefail
           if [ -n "$SCENARIO_FILTER" ]; then
-            pnpm scenarios:v2 -- "$SCENARIO_FILTER" 2>&1 | tee "$OUTPUT_FILE"
+            pnpm scenarios:v2 "$SCENARIO_FILTER" 2>&1 | tee "$OUTPUT_FILE"
           else
             pnpm scenarios:v2 2>&1 | tee "$OUTPUT_FILE"
           fi
@@ -209,7 +212,6 @@ jobs:
             echo
             echo '</details>'
             echo
-            echo "Full traces in the LangWatch dashboard."
           } > "$SUMMARY_FILE"
 
           cat "$SUMMARY_FILE" >> "$GITHUB_STEP_SUMMARY"

@@ -71,7 +71,7 @@
               "toolCallId": "toolu_01C3egRrrk7ty3PrjcGyR6QR",
               "toolName": "Write",
               "input": {
-                "file_path": "<HOME>/Source/github.com/0xdeafcafe/DRAFTS.md",
+                "file_path": "<HOME>/<PATH>",
                 "content": "## Slack\n\nQuick heads up on the search bug: if a request times out, we're currently wiping the query the user typed, so they have to re-type the whole thing to try again. Agreed fix is to keep the entered query in place after a timeout and let them retry it directly, no retyping. Not shipped yet, still in progress. Will update here when there's something concrete to test.\n\n## Twitter/X\n\nKnown issue we're fixing: right now, if search times out, it clears what you typed. The fix keeps your query in place so you can just retry it. Not live yet, no date to share.\n\n## WhatsApp\n\nHey Sam, quick one on the search timeout bug: agreed fix is to stop it wiping the query when it times out, so people can just hit retry instead of typing the whole thing again. Still building it, nothing shipped yet, no dates pinned down either. Will let you know when there's progress.\n\n## Blog\n\nIf you've searched on our site and hit a timeout, you'll know the annoying part isn't the wait, it's what happens after. The query you typed just disappears, and you're back to typing it out again before you can even try once more.\n\nWe've agreed a fix for this: on timeout, the entered query stays in place and you can retry the same search directly. It hasn't shipped yet, and we don't have a date to share, but the behaviour is settled and it's what we're building towards.\n\n## Code review\n\nBlocking: this doesn't preserve the entered query on timeout, it clears it, which means the user has to retype the whole search to try again. The agreed behaviour is that the query stays in the input after a timeout and the user can retry that same query directly (ideally without a full re-submit round trip if the current structure allows it). Please update this before merge so a timeout no longer discards what the user typed.\n"
               }
             }
@@ -86,7 +86,7 @@
               "toolName": "Write",
               "output": {
                 "type": "text",
-                "value": "File created successfully at: <HOME>/Source/github.com/0xdeafcafe/DRAFTS.md (file state is current in your context — no need to Read it back)"
+                "value": "File created successfully at: <HOME>/<PATH> (file state is current in your context — no need to Read it back)"
               }
             }
           ]

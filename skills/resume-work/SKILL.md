@@ -55,10 +55,4 @@ Before editing, be able to state:
 
 If evidence is insufficient, perform read-only reconstruction first. Do not manufacture certainty from an incomplete record.
 
-Prefer an available LangWatch plugin and CLI for targeted trace checks when
-repeated failures, unexpected latency, context pressure, or handoff rework leave
-a question that could change the next action. Use `assess-usage` when available;
-otherwise use the installed LangWatch guidance and bounded read-only queries.
-If missing, suggest setup once per effort and continue the task. Preserve any
-prior decline or deferral, and leave installation/sign-in/capture changes to
-user authorisation. Never make telemetry availability a completion requirement.
+When repeated failures, unexpected latency, context pressure, or handoff rework leave a question that could change the next action, use `assess-usage`.

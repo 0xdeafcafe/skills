@@ -1,6 +1,6 @@
 ---
 name: start-discussion
-description: Explore an idea, problem, or uncertain change until its intent and useful next step are clear. Use for open-ended product or engineering discussion; preserve exploration rather than forcing an implementation plan.
+description: Explore an idea, problem, or uncertain change until its intent and useful next step are clear. Use for open-ended product or engineering discussion, e.g. "let's discuss", "I have an idea", or "not sure what to do here"; preserve exploration rather than forcing an implementation plan.
 ---
 
 # Start a discussion

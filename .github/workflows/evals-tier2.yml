@@ -1,17 +1,6 @@
-# The historical v1 tier-2 pipeline runs against real fixtures via the
-# LangWatch gateway. It is retained for deliberate legacy comparisons.
-# EXPENSIVE — burns gateway / Anthropic credits. Gated three ways so it
-# never runs by accident:
-#
-#  1. PR label "run-tier2" — collaborator-only; the workflow only fires
-#     when a write-permission user attaches the label.
-#  2. Issue comment "/eval tier2" on a PR — quick repl-style trigger for
-#     collaborators while reviewing. Same write-perm check.
-#  3. workflow_dispatch — manual run from the Actions tab. Pre-release
-#     check or ad-hoc smoke.
-#
-# Public-repo forks never trigger this (label / comment gates check
-# repository permission level, not just who authored the comment).
+# The historical v1 tier-2 pipeline scores v1 output contracts, which the v2
+# skills no longer produce. Manual dispatch only, for deliberate legacy
+# comparisons. Burns gateway / Anthropic credits.
 name: evals · tier-2
 
 # The pipeline doesn't write to the repo; it reads, runs claude -p, and
@@ -21,10 +10,6 @@ permissions:
   contents: read
 
 on:
-  pull_request:
-    types: [labeled]
-  issue_comment:
-    types: [created]
   workflow_dispatch:
     inputs:
       fixture:

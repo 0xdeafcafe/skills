@@ -1,6 +1,6 @@
 ---
 name: start-feature
-description: Establish the intent and preparation needed to begin a feature, fix, refactor, or product change. Use when the work is known but its current state, uncertainty, or appropriate path still needs to be assessed.
+description: Establish the intent and preparation needed to begin a feature, fix, refactor, or product change. Use when the work is known but its current state, uncertainty, or appropriate path still needs to be assessed, e.g. "start a feature", "I want to add X", or "I need to fix bug Y".
 ---
 
 # Start a feature

@@ -85,7 +85,7 @@
               "toolName": "Bash",
               "output": {
                 "type": "text",
-                "value": "/private<WORKTREE>\n.\n..\n.git\nREADME.md\nSETUP_REFERENCE.md\npackage.json\nserver.mjs"
+                "value": "<WORKTREE>\n.\n..\n.git\nREADME.md\nSETUP_REFERENCE.md\npackage.json\nserver.mjs"
               }
             }
           ]
@@ -362,7 +362,7 @@
               "toolCallId": "toolu_018tCxR5Tgih4XbCn4P8vx9E",
               "toolName": "Write",
               "input": {
-                "file_path": "/private<WORKTREE>/ONBOARDING.md",
+                "file_path": "<WORKTREE>/ONBOARDING.md",
                 "content": "# Onboarding\n\nLocal setup. Requires Node.js 24+ and pnpm 10+.\n\n1. `pnpm install`\n2. `pnpm test`\n3. `pnpm dev`\n\nStep 1 installs dependencies. Step 2 should exit green. Step 3 starts the app.\n"
               }
             }
@@ -377,7 +377,7 @@
               "toolName": "Write",
               "output": {
                 "type": "text",
-                "value": "File created successfully at: /private<WORKTREE>/ONBOARDING.md (file state is current in your context \u2014 no need to Read it back)"
+                "value": "File created successfully at: <WORKTREE>/ONBOARDING.md (file state is current in your context \u2014 no need to Read it back)"
               }
             }
           ]

@@ -1,6 +1,6 @@
 ---
 name: implement-change
-description: Implement a prepared change from its intent, decisions, standards, and acceptance evidence. Use when enough context exists to build, whether that context is conversational or captured in a plan, ADR, spec, issue, or work record.
+description: Implement a prepared change from its intent, decisions, standards, and acceptance evidence. Use when enough context exists to build, whether conversational or captured in a plan, ADR, spec, issue, or work record, e.g. "implement this", "code this up", or "the ADR and spec are done, build it".
 ---
 
 # Implement a change
@@ -45,10 +45,4 @@ Report the implemented behavior, decisions interpreted or changed, validation ev
 
 Do not weaken an applicable standard, redefine acceptance, or mark a decision accepted merely to make the work pass. Record a proposed change to the agreement and resolve it through the appropriate owner; existing user authorisation still governs.
 
-Prefer an available LangWatch plugin and CLI for targeted trace checks when
-repeated failures, unexpected latency, context pressure, or handoff rework leave
-a question that could change the next action. Use `assess-usage` when available;
-otherwise use the installed LangWatch guidance and bounded read-only queries.
-If missing, suggest setup once per effort and continue the task. Preserve any
-prior decline or deferral, and leave installation/sign-in/capture changes to
-user authorisation. Never make telemetry availability a completion requirement.
+When repeated failures, unexpected latency, context pressure, or handoff rework leave a question that could change the next action, use `assess-usage`.

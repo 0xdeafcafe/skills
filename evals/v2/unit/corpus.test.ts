@@ -49,6 +49,14 @@ describe("recorded model corpus", () => {
     ).toBe(true);
   });
 
+  it("keeps local machine paths out of every recording", async () => {
+    const leaks =
+      /\/Users\/|\/home\/[a-z]|\/var\/folders\/\w{2}\/\w{20,}|\/tmp\/claude-\d|\/private<|-private-var-folders-/;
+    for (const fixture of await loadRecordedCorpus(CORPUS)) {
+      expect(JSON.stringify(fixture), fixture.id).not.toMatch(leaks);
+    }
+  });
+
   it("matches the official bashCommands helper for every recorded turn", async () => {
     for (const fixture of await loadRecordedCorpus(CORPUS)) {
       for (const turn of fixture.turns) {

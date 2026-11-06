@@ -1,6 +1,6 @@
 ---
 name: drive-change
-description: Implement, validate, and finish a clear change end to end. Use when the intent is actionable and the user wants execution without a separate planning deliverable.
+description: Implement, validate, and finish a clear change end to end. Use when the intent is actionable and the user wants execution without a separate planning deliverable, e.g. "drive the change", "make this change happen", "implement and review", or "ship this fix".
 ---
 
 # Drive a change
@@ -53,10 +53,4 @@ If work must stop before completion, leave the next action bounded and state whi
 
 Do not weaken an applicable standard, redefine acceptance, or mark a decision accepted merely to make the work pass. Record a proposed change to the agreement and resolve it through the appropriate owner; existing user authorisation still governs.
 
-Prefer an available LangWatch plugin and CLI for targeted trace checks when
-repeated failures, unexpected latency, context pressure, or handoff rework leave
-a question that could change the next action. Use `assess-usage` when available;
-otherwise use the installed LangWatch guidance and bounded read-only queries.
-If missing, suggest setup once per effort and continue the task. Preserve any
-prior decline or deferral, and leave installation/sign-in/capture changes to
-user authorisation. Never make telemetry availability a completion requirement.
+When repeated failures, unexpected latency, context pressure, or handoff rework leave a question that could change the next action, use `assess-usage`.

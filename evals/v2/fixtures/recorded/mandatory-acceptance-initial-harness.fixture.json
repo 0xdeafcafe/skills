@@ -107,7 +107,7 @@
               "toolCallId": "toolu_01H3vVGcSCbkVFx66koKrfSv",
               "toolName": "Read",
               "input": {
-                "file_path": "<HOME>/dev/scratch/WORK.md"
+                "file_path": "<HOME>/<PATH>"
               }
             }
           ]
@@ -121,7 +121,7 @@
               "toolName": "Read",
               "output": {
                 "type": "error-text",
-                "value": "File does not exist. Note: your current working directory is /private<WORKTREE>."
+                "value": "File does not exist. Note: your current working directory is <WORKTREE>."
               }
             }
           ]
@@ -138,7 +138,7 @@
               "toolCallId": "toolu_01JZnQsZQcyqJ1ae9aj9nMcd",
               "toolName": "Read",
               "input": {
-                "file_path": "<HOME>/dev/scratch/path.mjs"
+                "file_path": "<HOME>/<PATH>"
               }
             }
           ]
@@ -152,7 +152,7 @@
               "toolName": "Read",
               "output": {
                 "type": "error-text",
-                "value": "File does not exist. Note: your current working directory is /private<WORKTREE>."
+                "value": "File does not exist. Note: your current working directory is <WORKTREE>."
               }
             }
           ]
@@ -169,7 +169,7 @@
               "toolCallId": "toolu_015FQGP4UwbBk2afRhbq8qwZ",
               "toolName": "Read",
               "input": {
-                "file_path": "<HOME>/dev/scratch/README.md"
+                "file_path": "<HOME>/<PATH>"
               }
             }
           ]
@@ -183,7 +183,7 @@
               "toolName": "Read",
               "output": {
                 "type": "error-text",
-                "value": "File does not exist. Note: your current working directory is /private<WORKTREE>."
+                "value": "File does not exist. Note: your current working directory is <WORKTREE>."
               }
             }
           ]
@@ -200,7 +200,7 @@
               "toolCallId": "toolu_01DyMgQNcXwt5EkJzq6ye7JJ",
               "toolName": "Read",
               "input": {
-                "file_path": "/private<WORKTREE>/WORK.md"
+                "file_path": "<WORKTREE>/WORK.md"
               }
             }
           ]
@@ -231,7 +231,7 @@
               "toolCallId": "toolu_01AX2GKgPYcMUTgqRm4YPdBg",
               "toolName": "Read",
               "input": {
-                "file_path": "/private<WORKTREE>/path.mjs"
+                "file_path": "<WORKTREE>/path.mjs"
               }
             }
           ]
@@ -262,7 +262,7 @@
               "toolCallId": "toolu_0117rmRGfbHF3iXkSD9CGv88",
               "toolName": "Read",
               "input": {
-                "file_path": "/private<WORKTREE>/README.md"
+                "file_path": "<WORKTREE>/README.md"
               }
             }
           ]
@@ -370,7 +370,7 @@
               "toolCallId": "toolu_01JTuMs8oCXWCHR2kBc11WFT",
               "toolName": "Write",
               "input": {
-                "file_path": "/private<WORKTREE>/path.mjs",
+                "file_path": "<WORKTREE>/path.mjs",
                 "content": "export function safeName(value) {\n\tif (typeof value !== 'string') {\n\t\tthrow new TypeError('safeName expects a string');\n\t}\n\n\tif (value.includes('..')) {\n\t\tthrow new Error(`safeName rejected unsafe value: ${value}`);\n\t}\n\n\treturn value;\n}\n"
               }
             }
@@ -385,7 +385,7 @@
               "toolName": "Write",
               "output": {
                 "type": "text",
-                "value": "The file /private<WORKTREE>/path.mjs has been updated successfully. (file state is current in your context — no need to Read it back)"
+                "value": "The file <WORKTREE>/path.mjs has been updated successfully. (file state is current in your context — no need to Read it back)"
               }
             }
           ]
@@ -402,7 +402,7 @@
               "toolCallId": "toolu_01VC85UYMMkX7DvARsAmjY9w",
               "toolName": "Write",
               "input": {
-                "file_path": "/private<WORKTREE>/path.test.mjs",
+                "file_path": "<WORKTREE>/path.test.mjs",
                 "content": "import assert from 'node:assert/strict';\nimport { test } from 'node:test';\n\nimport { safeName } from './path.mjs';\n\n// ACC-1 (mandatory): safeName must throw for values containing `..`.\ntest('throws for values containing ..', () => {\n\tconst unsafe = [\n\t\t'..',\n\t\t'../etc/passwd',\n\t\t'foo/../bar',\n\t\t'foo..bar',\n\t\t'....',\n\t\t'nested/dir/../../escape',\n\t];\n\n\tfor (const value of unsafe) {\n\t\tassert.throws(() => safeName(value), /unsafe value/, `expected throw for ${value}`);\n\t}\n});\n\ntest('returns values without ..', () => {\n\tfor (const value of ['foo', 'foo.bar', 'a.b.c', 'dir/file.txt', '']) {\n\t\tassert.equal(safeName(value), value);\n\t}\n});\n\ntest('throws for non-string input', () => {\n\tfor (const value of [undefined, null, 42, {}, ['..']]) {\n\t\tassert.throws(() => safeName(value), TypeError);\n\t}\n});\n"
               }
             }
@@ -417,7 +417,7 @@
               "toolName": "Write",
               "output": {
                 "type": "text",
-                "value": "File created successfully at: /private<WORKTREE>/path.test.mjs (file state is current in your context — no need to Read it back)"
+                "value": "File created successfully at: <WORKTREE>/path.test.mjs (file state is current in your context — no need to Read it back)"
               }
             }
           ]
@@ -475,7 +475,7 @@
               "toolCallId": "toolu_011HuByDF8BgUMMrbtiUX7QT",
               "toolName": "Write",
               "input": {
-                "file_path": "/private<WORKTREE>/WORK.md",
+                "file_path": "<WORKTREE>/WORK.md",
                 "content": "# Acceptance\n\nACC-1 (mandatory): safeName must throw for values containing `..`.\n\nStatus: satisfied. `safeName` throws for any string containing `..`, and throws\n`TypeError` for non-string input so the guard cannot be bypassed by a value\nlacking `String.prototype.includes`. Evidence: `node --test` (`path.test.mjs`),\n3/3 passing.\n\nStale review (2024-01-12): ACC-1 follow-up. — Resolved in this change; ACC-1 is\nimplemented now rather than deferred.\n\n## Observations\n\n- OBS-1 (follow-up, out of scope): `safeName` only rejects `..`. Absolute paths,\n  leading `/`, backslash separators, and NUL bytes are still returned unchanged.\n  If this function guards filesystem access, it needs a full allowlist. Not in\n  ACC-1; needs a decision on the intended input domain.\n"
               }
             }
@@ -490,7 +490,7 @@
               "toolName": "Write",
               "output": {
                 "type": "text",
-                "value": "The file /private<WORKTREE>/WORK.md has been updated successfully. (file state is current in your context — no need to Read it back)"
+                "value": "The file <WORKTREE>/WORK.md has been updated successfully. (file state is current in your context — no need to Read it back)"
               }
             }
           ]
@@ -607,8 +607,8 @@
               "toolCallId": "toolu_01EGV33yvW4MQW942XkmaB8L",
               "toolName": "Write",
               "input": {
-                "file_path": "/private/var/folders/zg/3jfp8q9100s_wlxvnr1n4ln40000gp/T/probe.mjs",
-                "content": "import { safeName } from '/private<WORKTREE>/path.mjs';\n\nconst cases = [\n\t['literal ..', '..'],\n\t['../x', '../x'],\n\t['a/../b', 'a/../b'],\n\t['percent-encoded', '%2e%2e'],\n\t['percent-encoded upper', '%2E%2E/x'],\n\t['backslash ..\\\\x', '..\\\\x'],\n\t['String object', new String('..')],\n\t['unicode one-dot-leader', '․․'],\n\t['zero-width split', '.​.'],\n];\n\nfor (const [label, value] of cases) {\n\tlet result;\n\ttry {\n\t\tsafeName(value);\n\t\tresult = 'RETURNED';\n\t} catch (e) {\n\t\tresult = `THREW ${e.constructor.name}`;\n\t}\n\tconsole.log(label.padEnd(22), '->', result);\n}\n"
+                "file_path": "<TMP>/probe.mjs",
+                "content": "import { safeName } from '<WORKTREE>/path.mjs';\n\nconst cases = [\n\t['literal ..', '..'],\n\t['../x', '../x'],\n\t['a/../b', 'a/../b'],\n\t['percent-encoded', '%2e%2e'],\n\t['percent-encoded upper', '%2E%2E/x'],\n\t['backslash ..\\\\x', '..\\\\x'],\n\t['String object', new String('..')],\n\t['unicode one-dot-leader', '․․'],\n\t['zero-width split', '.​.'],\n];\n\nfor (const [label, value] of cases) {\n\tlet result;\n\ttry {\n\t\tsafeName(value);\n\t\tresult = 'RETURNED';\n\t} catch (e) {\n\t\tresult = `THREW ${e.constructor.name}`;\n\t}\n\tconsole.log(label.padEnd(22), '->', result);\n}\n"
               }
             }
           ]
@@ -622,7 +622,7 @@
               "toolName": "Write",
               "output": {
                 "type": "text",
-                "value": "File created successfully at: /private/var/folders/zg/3jfp8q9100s_wlxvnr1n4ln40000gp/T/probe.mjs (file state is current in your context — no need to Read it back)"
+                "value": "File created successfully at: <TMP>/probe.mjs (file state is current in your context — no need to Read it back)"
               }
             }
           ]
@@ -639,7 +639,7 @@
               "toolCallId": "toolu_01A4HHPqmrhvKSxSPXVVErMw",
               "toolName": "Bash",
               "input": {
-                "command": "node /private/var/folders/zg/3jfp8q9100s_wlxvnr1n4ln40000gp/T/probe.mjs; echo \"--- callers ---\"; grep -rn \"safeName\" --include=*.mjs --include=*.js --include=*.ts /private<WORKTREE>",
+                "command": "node <TMP>/probe.mjs; echo \"--- callers ---\"; grep -rn \"safeName\" --include=*.mjs --include=*.js --include=*.ts <WORKTREE>",
                 "description": "Run edge-case probe and find callers"
               }
             }
@@ -672,7 +672,7 @@
               "toolName": "Grep",
               "input": {
                 "pattern": "safeName",
-                "path": "/private<WORKTREE>",
+                "path": "<WORKTREE>",
                 "output_mode": "content"
               }
             }
@@ -704,7 +704,7 @@
               "toolCallId": "toolu_015v5JQwRWavG7yNhQyJQfCF",
               "toolName": "Bash",
               "input": {
-                "command": "rm -f /private/var/folders/zg/3jfp8q9100s_wlxvnr1n4ln40000gp/T/probe.mjs && echo removed",
+                "command": "rm -f <TMP>/probe.mjs && echo removed",
                 "description": "Remove temporary probe file"
               }
             }
@@ -746,7 +746,7 @@
               "toolName": "Edit",
               "input": {
                 "replace_all": false,
-                "file_path": "/private<WORKTREE>/WORK.md",
+                "file_path": "<WORKTREE>/WORK.md",
                 "old_string": "- OBS-1 (follow-up, out of scope): `safeName` only rejects `..`. Absolute paths,\n  leading `/`, backslash separators, and NUL bytes are still returned unchanged.\n  If this function guards filesystem access, it needs a full allowlist. Not in\n  ACC-1; needs a decision on the intended input domain.",
                 "new_string": "- OBS-1 (follow-up, out of scope): `safeName` only rejects a literal `..`.\n  Absolute paths, leading `/`, backslash separators, and NUL bytes are still\n  returned unchanged. Probed and confirmed returned rather than thrown:\n  `%2e%2e`, `%2E%2E/x`, the Unicode one-dot-leader pair `U+2024 U+2024`, and\n  `.` + `U+200B` + `.`. None of these literally contain `..`, so ACC-1 is not\n  violated — but if `safeName` guards filesystem access and its caller decodes\n  or normalises input afterwards, they are live traversal vectors. Fixing this\n  needs a decision on the intended input domain (raw segment vs. encoded path)\n  and most likely an allowlist rather than a denylist."
               }
@@ -762,7 +762,7 @@
               "toolName": "Edit",
               "output": {
                 "type": "text",
-                "value": "The file /private<WORKTREE>/WORK.md has been updated successfully. (file state is current in your context — no need to Read it back)"
+                "value": "The file <WORKTREE>/WORK.md has been updated successfully. (file state is current in your context — no need to Read it back)"
               }
             }
           ]

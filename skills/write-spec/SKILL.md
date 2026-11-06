@@ -1,6 +1,6 @@
 ---
 name: write-spec
-description: Write a concrete behavioral specification in the repository's existing format, including observable success, boundaries, and failure cases. Use for Gherkin or other acceptance specs.
+description: Write a concrete behavioral specification in the repository's existing format, including observable success, boundaries, and failure cases. Use for Gherkin or other acceptance specs, e.g. "write a spec", "add a feature file", or "specs for this feature".
 ---
 
 # Write a behavioral specification
@@ -28,7 +28,7 @@ For Gherkin:
 
 Link related decisions and plans when local conventions allow. The idea → plan → spec → implementation chain is useful context, not a forced sequence.
 
-Compare the draft with known implementation and existing agreements. Record incidental observations and reconcile each as reflected in the spec, relevant for review, unrelated follow-up, or disproved with evidence. Surface implementation drift without editing code unless asked.
+Compare the draft with known implementation and existing agreements. Record incidental observations and reconcile each as `addressed` in the spec, `open-in-scope` for review, `follow-up`, or `disproved` with evidence. Surface implementation drift without editing code unless asked.
 
 ## Write and verify
 

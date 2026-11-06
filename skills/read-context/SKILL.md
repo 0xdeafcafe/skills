@@ -25,13 +25,13 @@ Do not delegate when coordination costs more than direct reading.
 
 ## Route models deliberately
 
-Honor the user's stated model choice. Otherwise, when the host provides them:
+Honor the user's stated model choice and any model routing the host has configured. Otherwise, when the host provides them:
 
 - prefer **Haiku** for bounded extraction, indexing, classification, and straightforward source summaries;
 - prefer **Sonnet** for cross-source synthesis, ambiguity, contradictions, and nuanced interpretation;
 - keep consequential decisions and final coverage validation with the coordinator.
 
-This task-specific preference supersedes a generic default to inherit the coordinator's model. It does not override an explicit user choice or host restriction. If Haiku or Sonnet is unavailable, use an allowed equivalent and state the actual model or capability used rather than silently substituting it. If the host prohibits delegation, perform the work directly and keep the same manifest and ledger.
+This is a default for reading work, not a requirement, and it never overrides an explicit user choice, configured routing, or host restriction. If Haiku or Sonnet is unavailable, use an allowed equivalent and state the actual model or capability used rather than silently substituting it. If the host prohibits delegation, perform the work directly and keep the same manifest and ledger.
 
 Give workers only the relevant source paths or content, question, range, output shape, and limits. Respect supplied token, time, and output budgets. Do not duplicate the whole context into every assignment.
 

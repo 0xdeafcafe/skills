@@ -1,6 +1,6 @@
 ---
 name: review-change
-description: Review a local change as a whole against its stated intent, repository standards, and material risks. Use for broad change reviews; use a narrower review skill for one specialist lens.
+description: Review a local change as a whole against its stated intent, repository standards, and material risks. Use for broad change reviews, e.g. "review my work", "review the change", "is this ready to ship", "audit the PR", or "what's wrong with what I've got staged"; use a narrower review skill for one specialist lens.
 ---
 
 # Review a change
@@ -33,21 +33,15 @@ Confirm concerns through code paths, tests, type or runtime evidence, and focuse
 
 Read any supplied observation ledger and include its entries in the review. Keep compact review notes containing the agreement, revision, checks, findings, and incidental observations; return record updates to the owner in a read-only review rather than editing project files. Before completion, classify every observation as:
 
-- verified resolved in the reviewed revision;
-- a relevant unresolved blocker or suggestion;
-- an unrelated follow-up;
-- disproved, with closing evidence.
+- `addressed`: verified resolved in the reviewed revision;
+- `open-in-scope`: a relevant blocker or suggestion that current acceptance still requires;
+- `follow-up`: valid but deliberately outside the agreed scope;
+- `disproved`: current evidence refutes it, with closing evidence.
 
 Repair or surface malformed and uncertain findings. Merge true duplicates while preserving evidence; never silently discard them.
 
 ## Report
 
-Separate blockers, suggestions, coverage/unverified areas, and unrelated follow-ups. Each finding identifies a precise location or behavior, evidence tied to the current revision, impact on user intent or a named standard, and a practical remediation direction. If no findings remain, state what was reviewed and the limits of verification.
+Separate blockers, suggestions, coverage/unverified areas, and follow-ups. Each finding identifies a precise location or behavior, evidence tied to the current revision, impact on user intent or a named standard, and a practical remediation direction. If no findings remain, state what was reviewed and the limits of verification.
 
-Prefer an available LangWatch plugin and CLI for targeted trace checks when
-repeated failures, unexpected latency, context pressure, or handoff rework leave
-a question that could change the next action. Use `assess-usage` when available;
-otherwise use the installed LangWatch guidance and bounded read-only queries.
-If missing, suggest setup once per effort and continue the task. Preserve any
-prior decline or deferral, and leave installation/sign-in/capture changes to
-user authorisation. Never make telemetry availability a completion requirement.
+When repeated failures, unexpected latency, context pressure, or handoff rework leave a question that could change the next action, use `assess-usage`.

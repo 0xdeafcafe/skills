@@ -56,7 +56,7 @@
               "toolName": "Bash",
               "output": {
                 "type": "text",
-                "value": "/private<WORKTREE>\ntotal 32\ndrwx------@   7 lw  staff    224 Sep 11 23:10 .\ndrwx------@ 729 lw  staff  23328 Sep 11 23:10 ..\ndrwxr-xr-x@  12 lw  staff    384 Sep 11 23:10 .git\n-rw-r--r--@   1 lw  staff     21 Sep 11 23:10 README.md\n-rw-r--r--@   1 lw  staff     43 Sep 11 23:10 WORK.md\n-rw-r--r--@   1 lw  staff     36 Sep 11 23:10 app.mjs\n-rw-r--r--@   1 lw  staff     18 Sep 11 23:10 page.html"
+                "value": "<WORKTREE>\ntotal 32\ndrwx------@   7 lw  staff    224 Sep 11 23:10 .\ndrwx------@ 729 lw  staff  23328 Sep 11 23:10 ..\ndrwxr-xr-x@  12 lw  staff    384 Sep 11 23:10 .git\n-rw-r--r--@   1 lw  staff     21 Sep 11 23:10 README.md\n-rw-r--r--@   1 lw  staff     43 Sep 11 23:10 WORK.md\n-rw-r--r--@   1 lw  staff     36 Sep 11 23:10 app.mjs\n-rw-r--r--@   1 lw  staff     18 Sep 11 23:10 page.html"
               }
             }
           ]
@@ -104,7 +104,7 @@
               "toolCallId": "toolu_01ENPA1RKyp8cmqndVz8U7bo",
               "toolName": "Read",
               "input": {
-                "file_path": "/private<WORKTREE>/app.mjs"
+                "file_path": "<WORKTREE>/app.mjs"
               }
             }
           ]
@@ -135,7 +135,7 @@
               "toolCallId": "toolu_01WNeNmn4sEfVLVTcLfWb6fa",
               "toolName": "Read",
               "input": {
-                "file_path": "/private<WORKTREE>/WORK.md"
+                "file_path": "<WORKTREE>/WORK.md"
               }
             }
           ]
@@ -166,7 +166,7 @@
               "toolCallId": "toolu_01KNgPdsUt7owQyZhwyEkHe6",
               "toolName": "Read",
               "input": {
-                "file_path": "/private<WORKTREE>/page.html"
+                "file_path": "<WORKTREE>/page.html"
               }
             }
           ]
@@ -197,7 +197,7 @@
               "toolCallId": "toolu_01WCGc6C69yNAjENX5HCSSvb",
               "toolName": "Read",
               "input": {
-                "file_path": "/private<WORKTREE>/README.md"
+                "file_path": "<WORKTREE>/README.md"
               }
             }
           ]
@@ -317,7 +317,7 @@
               "toolName": "Edit",
               "input": {
                 "replace_all": false,
-                "file_path": "/private<WORKTREE>/app.mjs",
+                "file_path": "<WORKTREE>/app.mjs",
                 "old_string": "export const status = () => 'down';",
                 "new_string": "export const status = () => 'ok';"
               }
@@ -333,7 +333,7 @@
               "toolName": "Edit",
               "output": {
                 "type": "text",
-                "value": "The file /private<WORKTREE>/app.mjs has been updated successfully. (file state is current in your context \u2014 no need to Read it back)"
+                "value": "The file <WORKTREE>/app.mjs has been updated successfully. (file state is current in your context \u2014 no need to Read it back)"
               }
             }
           ]
@@ -424,7 +424,7 @@
               "toolName": "Edit",
               "input": {
                 "replace_all": false,
-                "file_path": "/private<WORKTREE>/WORK.md",
+                "file_path": "<WORKTREE>/WORK.md",
                 "old_string": "# Work\n\nAcceptance: status() returns 'ok'.",
                 "new_string": "# Work\n\nAcceptance: status() returns 'ok'.\n\nScope: `app.mjs` status value only. Non-goal: `page.html` markup and UX.\n\n## Observations\n\n- ID: OBS-1\n  Observation: The button in `page.html` has no label \u2014 no text content, no `aria-label`/`aria-labelledby`, and no `title`. Screen readers announce it only as \"button\", and it renders with near-zero hit area.\n  Evidence: `page.html:1` \u2014 `<button></button>`. Whole file is that single element.\n  Confidence: high\n  Impact: No effect on this change's acceptance (`status()` return value in `app.mjs`); `page.html` is untouched. Accessibility defect for anyone reaching the page: the control is unusable via assistive tech and hard to target by pointer.\n  Disposition: follow-up (provisional \u2014 to reconcile at review)\n  Owner/next step: Give the button an accessible name and a purpose once its intended action is known; the current markup does not say what it should do."
               }
@@ -440,7 +440,7 @@
               "toolName": "Edit",
               "output": {
                 "type": "text",
-                "value": "The file /private<WORKTREE>/WORK.md has been updated successfully. (file state is current in your context \u2014 no need to Read it back)"
+                "value": "The file <WORKTREE>/WORK.md has been updated successfully. (file state is current in your context \u2014 no need to Read it back)"
               }
             }
           ]
@@ -607,7 +607,7 @@
               "toolName": "Edit",
               "input": {
                 "replace_all": false,
-                "file_path": "/private<WORKTREE>/WORK.md",
+                "file_path": "<WORKTREE>/WORK.md",
                 "old_string": "  Disposition: follow-up (provisional \u2014 to reconcile at review)\n  Owner/next step: Give the button an accessible name and a purpose once its intended action is known; the current markup does not say what it should do.",
                 "new_string": "  Disposition: follow-up (confirmed at review)\n  Rationale: The finding is real and reproducible, but it is not required by this change's agreement. Acceptance is limited to the `status()` return value in `app.mjs`; `page.html` is verified unchanged (`git diff --exit-code -- page.html`), so nothing in this change caused or worsened the defect, and fixing it would not be evidence for any acceptance criterion. It is deferred rather than hidden: a correct fix needs a product decision this change does not own \u2014 what the button does determines its accessible name, and an invented label would encode a guess into markup. Not a blocker, and it is not work that acceptance silently depends on.\n  Owner/next step: Raise with the owner of `page.html`; once the button's intended action is decided, give it a visible text label (or `aria-label` if it must stay icon-only) and confirm with an accessibility check that it is announced by name."
               }
@@ -623,7 +623,7 @@
               "toolName": "Edit",
               "output": {
                 "type": "text",
-                "value": "The file /private<WORKTREE>/WORK.md has been updated successfully. (file state is current in your context \u2014 no need to Read it back)"
+                "value": "The file <WORKTREE>/WORK.md has been updated successfully. (file state is current in your context \u2014 no need to Read it back)"
               }
             }
           ]

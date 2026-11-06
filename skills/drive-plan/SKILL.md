@@ -1,6 +1,6 @@
 ---
 name: drive-plan
-description: Drive a substantial change from intent through preparation, implementation, and final review. Use when the user wants the planned work carried through rather than receiving a plan alone.
+description: Drive a substantial change from intent through preparation, implementation, and final review. Use when the user wants the planned work carried through rather than receiving a plan alone, e.g. "drive a plan", "let's build feature X properly", or "drive this feature end-to-end with planning".
 ---
 
 # Drive a plan
@@ -53,10 +53,4 @@ Finish with implemented behavior, artifacts and decisions, validation evidence, 
 
 Do not weaken an applicable standard, redefine acceptance, or mark a decision accepted merely to make the work pass. Record a proposed change to the agreement and resolve it through the appropriate owner; existing user authorisation still governs.
 
-Prefer an available LangWatch plugin and CLI for targeted trace checks when
-repeated failures, unexpected latency, context pressure, or handoff rework leave
-a question that could change the next action. Use `assess-usage` when available;
-otherwise use the installed LangWatch guidance and bounded read-only queries.
-If missing, suggest setup once per effort and continue the task. Preserve any
-prior decline or deferral, and leave installation/sign-in/capture changes to
-user authorisation. Never make telemetry availability a completion requirement.
+When repeated failures, unexpected latency, context pressure, or handoff rework leave a question that could change the next action, use `assess-usage`.

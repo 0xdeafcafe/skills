@@ -57,7 +57,7 @@
               "toolName": "Bash",
               "output": {
                 "type": "text",
-                "value": "/private<WORKTREE>\nOn branch main\nYou have unmerged paths.\n  (fix conflicts and run \"git commit\")\n  (use \"git merge --abort\" to abort the merge)\n\nUnmerged paths:\n  (use \"git add <file>...\" to mark resolution)\n\tboth modified:   owned.txt\n\nno changes added to commit (use \"git add\" and/or \"git commit -a\")\n--- HEAD ---\n7faf309 main\ne49b786 base\n8dbd71a initial fixture"
+                "value": "<WORKTREE>\nOn branch main\nYou have unmerged paths.\n  (fix conflicts and run \"git commit\")\n  (use \"git merge --abort\" to abort the merge)\n\nUnmerged paths:\n  (use \"git add <file>...\" to mark resolution)\n\tboth modified:   owned.txt\n\nno changes added to commit (use \"git add\" and/or \"git commit -a\")\n--- HEAD ---\n7faf309 main\ne49b786 base\n8dbd71a initial fixture"
               }
             }
           ]
@@ -134,7 +134,7 @@
               "toolName": "Bash",
               "output": {
                 "type": "text",
-                "value": "{\n  \"repo\": \"/private<WORKTREE>\",\n  \"head\": \"7faf3094d44eedb63bc1bbac52f47ac3417aba1d\",\n  \"branch\": \"main\",\n  \"operations\": [\n    \"merge\"\n  ],\n  \"unmerged_paths\": [\n    \"owned.txt\"\n  ],\n  \"index_path\": \"/private<WORKTREE>/.git/index\",\n  \"git_dir\": \"/private<WORKTREE>/.git\",\n  \"ordinary_commit_candidate\": false\n}"
+                "value": "{\n  \"repo\": \"<WORKTREE>\",\n  \"head\": \"7faf3094d44eedb63bc1bbac52f47ac3417aba1d\",\n  \"branch\": \"main\",\n  \"operations\": [\n    \"merge\"\n  ],\n  \"unmerged_paths\": [\n    \"owned.txt\"\n  ],\n  \"index_path\": \"<WORKTREE>/.git/index\",\n  \"git_dir\": \"<WORKTREE>/.git\",\n  \"ordinary_commit_candidate\": false\n}"
               }
             }
           ]

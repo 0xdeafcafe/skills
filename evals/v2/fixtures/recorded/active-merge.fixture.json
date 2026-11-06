@@ -57,7 +57,7 @@
               "toolName": "Bash",
               "output": {
                 "type": "text",
-                "value": "/private<WORKTREE>\ntotal 48\ndrwx------@   9 lw  staff    288 Sep 11 23:08 .\ndrwx------@ 726 lw  staff  23232 Sep 11 23:08 ..\ndrwxr-xr-x@  17 lw  staff    544 Sep 11 23:08 .git\n-rw-r--r--@   1 lw  staff     68 Sep 11 23:08 OLD-HANDOFF.md\n-rw-r--r--@   1 lw  staff     15 Sep 11 23:08 README.md\n-rw-r--r--@   1 lw  staff     13 Sep 11 23:08 local-note.txt\n-rw-r--r--@   1 lw  staff     48 Sep 11 23:08 other.txt\n-rw-r--r--@   1 lw  staff     15 Sep 11 23:08 owned.txt\n-rw-r--r--@   1 lw  staff     25 Sep 11 23:08 unrelated.txt"
+                "value": "<WORKTREE>\ntotal 48\ndrwx------@   9 lw  staff    288 Sep 11 23:08 .\ndrwx------@ 726 lw  staff  23232 Sep 11 23:08 ..\ndrwxr-xr-x@  17 lw  staff    544 Sep 11 23:08 .git\n-rw-r--r--@   1 lw  staff     68 Sep 11 23:08 OLD-HANDOFF.md\n-rw-r--r--@   1 lw  staff     15 Sep 11 23:08 README.md\n-rw-r--r--@   1 lw  staff     13 Sep 11 23:08 local-note.txt\n-rw-r--r--@   1 lw  staff     48 Sep 11 23:08 other.txt\n-rw-r--r--@   1 lw  staff     15 Sep 11 23:08 owned.txt\n-rw-r--r--@   1 lw  staff     25 Sep 11 23:08 unrelated.txt"
               }
             }
           ]
@@ -197,7 +197,7 @@
               "toolName": "Bash",
               "output": {
                 "type": "text",
-                "value": "{\n  \"repo\": \"/private<WORKTREE>\",\n  \"head\": \"12a98c5dcb8401f6ba61c5ba320b7ff870646b9f\",\n  \"branch\": \"main\",\n  \"operations\": [\n    \"merge\"\n  ],\n  \"unmerged_paths\": [\n    \"other.txt\",\n    \"owned.txt\"\n  ],\n  \"index_path\": \"/private<WORKTREE>/.git/index\",\n  \"git_dir\": \"/private<WORKTREE>/.git\",\n  \"ordinary_commit_candidate\": false\n}"
+                "value": "{\n  \"repo\": \"<WORKTREE>\",\n  \"head\": \"12a98c5dcb8401f6ba61c5ba320b7ff870646b9f\",\n  \"branch\": \"main\",\n  \"operations\": [\n    \"merge\"\n  ],\n  \"unmerged_paths\": [\n    \"other.txt\",\n    \"owned.txt\"\n  ],\n  \"index_path\": \"<WORKTREE>/.git/index\",\n  \"git_dir\": \"<WORKTREE>/.git\",\n  \"ordinary_commit_candidate\": false\n}"
               }
             }
           ]

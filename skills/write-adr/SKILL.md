@@ -1,6 +1,6 @@
 ---
 name: write-adr
-description: Capture a durable architecture or engineering decision, its context, alternatives, and consequences in the repository's ADR format. Use when a decision has been made or needs a concrete reviewable proposal.
+description: Capture a durable architecture or engineering decision, its context, alternatives, and consequences in the repository's ADR format. Use when a decision has been made or needs a concrete reviewable proposal, e.g. "write an ADR", "let's document this decision", or "add an architecture decision record".
 ---
 
 # Write an architecture decision record
@@ -26,7 +26,7 @@ Describe:
 
 Match local length and tone. Do not manufacture alternatives, consensus, dates, owners, benchmarks, or approval. Mark unknowns honestly. Preserve the idea → plan → spec → implementation relationship through links when those artifacts exist, without requiring every artifact or stage.
 
-Compare the draft with actual repository constraints and any implemented behavior in scope. Record incidental observations and reconcile them before completion as resolved in the ADR, relevant items for review, unrelated follow-ups, or disproved with evidence.
+Compare the draft with actual repository constraints and any implemented behavior in scope. Record incidental observations and reconcile each before completion as `addressed` in the ADR, `open-in-scope` for review, `follow-up`, or `disproved` with evidence.
 
 ## Write and verify
 
