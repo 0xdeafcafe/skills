@@ -1,6 +1,6 @@
 {
   "name": "skills",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0",
   "description": "Intent-led software work: 28 reusable skills and four agents for shaping, coordinating, building, and reviewing.",
   "author": {
     "name": "Alexander Forbes-Reed",

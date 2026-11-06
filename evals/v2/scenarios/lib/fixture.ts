@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { cp, mkdir, mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
@@ -30,6 +30,13 @@ export type GitSnapshot = {
 
 /** A disposable project and plugin copy, cleaned up even when test setup fails. */
 export async function makeFixture(id: string): Promise<Fixture> {
+  const base = await realpath(tmpdir());
+  const home = await realpath(homedir());
+  if (base === home || base.startsWith(`${home}/`)) {
+    throw new Error(
+      `tmpdir() resolves inside $HOME (${base}); the sandbox denies home reads. Point TMPDIR at a system temp directory.`,
+    );
+  }
   const parent = await realpath(await mkdtemp(join(tmpdir(), `skills-v2-${id}-`)));
   onTestFinished(() => rm(parent, { recursive: true, force: true }));
 

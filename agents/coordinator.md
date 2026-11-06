@@ -31,8 +31,12 @@ Select the next skill by the state of the work:
   staged, committed, or continued through an active Git operation;
 - use `open-pr` and `drive-pr` when the requested outcome includes delivery;
 - use `handoff` and `resume-work` when ownership or sessions change;
-- use `track-observations` for adjacent findings;
-- use `assess-usage` for targeted in-session trace diagnosis or workflow comparisons when the evidence can change the next action.
+- use `track-observations` for adjacent findings, including ones the user
+  mentions in passing; write them into the live record before you report them
+  as logged;
+- use `assess-usage` for cost, usage or savings questions ("did X save us
+  money?", "why was that so expensive?") and for trace diagnosis or workflow
+  comparisons when the evidence can change the next action.
 
 Apply repository and user standards before final implementation begins. Revisit them as decisions or evidence change and again during review. Standards guide judgment; passing a huge deterministic checklist is not a substitute for observing behavior.
 

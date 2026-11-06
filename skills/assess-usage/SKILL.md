@@ -1,6 +1,6 @@
 ---
 name: assess-usage
-description: Diagnose agent workflow usage, context cost, latency, failures, and handoff rework from targeted traces and versioned measurements. Use during a session or when comparing runs and outcomes.
+description: Diagnose agent workflow usage, context cost, latency, failures, and handoff rework from targeted traces and versioned measurements. Use during a session or when comparing runs and outcomes, e.g. "did this save us money?", "why was that run so expensive?", "is the new setup cheaper?", "compare these runs".
 ---
 
 # Assess Usage
@@ -28,6 +28,8 @@ Compare like with like:
 - rework and human intervention;
 - end-to-end latency;
 - billed usage where available, otherwise a named estimate method.
+
+Cheaper isn't a saving until you know the work was as good. When outcome quality or rework data is missing, say so in the answer, next to any cost figure.
 
 A high output-to-input ratio can reward verbosity. Never treat it alone as efficiency. Short focused context can help, but there is no universal context cap or guaranteed saving. A stable high-context session can continue accumulating useful work and usage. Checkpointing may add re-derivation cost or lose reasoning quality.
 

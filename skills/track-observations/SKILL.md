@@ -1,6 +1,6 @@
 ---
 name: track-observations
-description: Record, triage, and disposition findings noticed during focused work without derailing the active assignment. Use for adjacent defects, risks, opportunities, and review findings that need accountable follow-through.
+description: Record, triage, and disposition findings noticed during focused work without derailing the active assignment. Use for adjacent defects, risks, opportunities, and review findings that need accountable follow-through, including things the user mentions in passing ("noticed X while I was in there", "also, Y looks broken").
 ---
 
 # Track Observations
@@ -9,7 +9,7 @@ Keep useful findings from being lost while protecting the reasoning and momentum
 
 ## Record an observation
 
-Capture observations in the effort’s live work record when authorised to update it, otherwise return compact entries to its owner. Never put project state in a bundled template. Reuse existing observation IDs and merge true duplicates without losing their evidence. Each entry should contain:
+Capture observations in the effort’s live work record. When you've been asked to work from an existing record (a `WORK.md`, plan, or effort file), recording observations there is part of that work and needs no separate permission. Only when there's no record, or you've been told not to edit it, return compact entries to its owner instead. Never put project state in a bundled template. Reuse existing observation IDs and merge true duplicates without losing their evidence. Each entry should contain:
 
 ```markdown
 - ID: OBS-<stable-id>

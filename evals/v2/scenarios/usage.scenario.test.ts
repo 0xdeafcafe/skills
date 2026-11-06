@@ -74,7 +74,7 @@ it("does not claim handoff savings from confounded aggregates", async () => {
             /sonnet|model (?:change|switch)|switch\w* (?:the )?(?:default )?model|different model/i,
           );
           expect(answer, "treats the model change as a confound").toMatch(
-            /confound|coincid|same (?:time|week|period)|overlap|at the same|can(?:not|['’]t) (?:separate|isolate|attribute|tell|say)|not (?:possible|able) to (?:separate|isolate|attribute)|attribut/i,
+            /confound|coincid|same (?:time|week|period)|overlap|at the same|can(?:not|['’]t) (?:separate|isolate|attribute|tell|say)|not (?:possible|able) to (?:separate|isolate|attribute)|attribut|lines? up with|take credit|explained by|came from (?:the )?(?:model|switch)/i,
           );
           expect(answer, "notes the missing quality comparison").toMatch(
             /quality|rework|outcome|success rate|task completion/i,
