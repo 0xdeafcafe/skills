@@ -3,26 +3,37 @@
   "notGrouped": "bottom",
   "groupings": [
     {
-      "title": "Entry",
-      "description": "Front doors. Pick start-feature when you know what you're doing; start-discussion when you're still working it out.",
+      "title": "Explore",
+      "description": "Understand the problem and choose the next useful action.",
       "skills": [
+        "start-discussion",
         "start-feature",
-        "start-discussion"
+        "backfill-feature",
+        "read-context"
       ]
     },
     {
-      "title": "Planning",
-      "description": "Discussion-driven skills that produce ADRs, Gherkin specs, and (when the existing code lacks them) characterization tests, before code starts.",
+      "title": "Decide",
+      "description": "Prepare the work and preserve consequential decisions and behaviour.",
       "skills": [
         "plan-change",
-        "backfill-feature",
         "write-adr",
         "write-spec"
       ]
     },
     {
-      "title": "Reviewing",
-      "description": "Read-only audit suite. review-change / review-pr are aggregators that drive the diff through the agent pipeline (slice → fan-out → merge → verify) and emit findings without writing. The specialists (review-hygiene, review-code, review-feature, review-test, review-security, review-ux) emit findings the orchestrators aggregate; callable directly when only one slice of audit signal is wanted. review-hygiene handles deterministic linter / formatter / LSP-diagnostic output (one aggregate finding per tool with auto: fix); review-code handles design/shape judgment a tool can't make. review-spec is a corpus-checker for new specs/ADRs against the existing set. All emit findings in finding-format.md schema; never edit files.",
+      "title": "Drive",
+      "description": "Carry an agreed outcome through implementation, integration, and assessment.",
+      "skills": [
+        "drive-plan",
+        "drive-change",
+        "implement-change",
+        "integrate-work"
+      ]
+    },
+    {
+      "title": "Assess",
+      "description": "Review the relevant behaviour and risks against intent and standards.",
       "skills": [
         "review-change",
         "review-pr",
@@ -36,27 +47,29 @@
       ]
     },
     {
-      "title": "Driving",
-      "description": "Orchestrators that drive state forward. drive-plan composes planning + implementation + review for substantial changes; drive-change implements + reviews from conversation intent for quick changes; implement-change writes code from a formal spec.",
-      "skills": [
-        "drive-plan",
-        "drive-change",
-        "implement-change"
-      ]
-    },
-    {
-      "title": "Shipping",
-      "description": "Open the PR, iterate it to merge-ready.",
+      "title": "Deliver",
+      "description": "Package the change and follow through on CI and review.",
       "skills": [
         "open-pr",
         "drive-pr"
       ]
     },
     {
-      "title": "Cross-cutting",
-      "description": "Ghost-write in Alex's voice for anything published under his name, including Claude's own conversational output.",
+      "title": "Continue",
+      "description": "Preserve intent and verified state, reconcile observations, and assess usage.",
       "skills": [
-        "tone-of-voice"
+        "handoff",
+        "resume-work",
+        "track-observations",
+        "assess-usage"
+      ]
+    },
+    {
+      "title": "Voice",
+      "description": "Write clearly or draft in Alex\u2019s voice for the intended channel.",
+      "skills": [
+        "tone-of-voice",
+        "alex-tone-of-voice"
       ]
     }
   ]

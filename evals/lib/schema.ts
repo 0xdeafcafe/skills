@@ -17,10 +17,7 @@ import addFormats from "ajv-formats";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export const SCHEMA_PATH = resolve(
-  __dirname,
-  "../../references/finding-format.schema.json",
-);
+export const SCHEMA_PATH = resolve(__dirname, "../legacy/references/finding-format.schema.json");
 
 export type FindingSeverity = "P0" | "P1" | "P2" | "P3";
 
@@ -79,9 +76,7 @@ function getValidator(): ReturnType<Ajv2020["compile"]> {
   return cachedValidator;
 }
 
-export function validateFinding(
-  candidate: unknown,
-): ValidationError[] {
+export function validateFinding(candidate: unknown): ValidationError[] {
   const validate = getValidator();
   const ok = validate(candidate);
   if (ok) return [];

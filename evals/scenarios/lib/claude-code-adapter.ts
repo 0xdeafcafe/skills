@@ -60,8 +60,9 @@ const extractText = (content: unknown): string => {
   if (typeof content === "string") return content;
   if (Array.isArray(content)) {
     return content
-      .filter((p): p is { type: "text"; text: string } =>
-        typeof p === "object" && p !== null && "type" in p && p.type === "text",
+      .filter(
+        (p): p is { type: "text"; text: string } =>
+          typeof p === "object" && p !== null && "type" in p && p.type === "text",
       )
       .map((p) => p.text)
       .join("\n");
@@ -87,10 +88,7 @@ export class ClaudeCodeAdapter extends AgentAdapter {
     if (!lastUser) return null;
 
     const userText = extractText(lastUser.content);
-    const prompt =
-      this.sessionId === null
-        ? `${this.opts.slashCommand}\n\n${userText}`
-        : userText;
+    const prompt = this.sessionId === null ? `${this.opts.slashCommand}\n\n${userText}` : userText;
 
     const env = buildSubprocessEnv();
     const abortController = new AbortController();
@@ -133,9 +131,7 @@ export class ClaudeCodeAdapter extends AgentAdapter {
     this.sessionId = result.session_id;
 
     if (result.subtype !== "success") {
-      throw new Error(
-        `claude session ended in ${result.subtype}: ${result.errors.join("; ")}`,
-      );
+      throw new Error(`claude session ended in ${result.subtype}: ${result.errors.join("; ")}`);
     }
 
     return result.result;

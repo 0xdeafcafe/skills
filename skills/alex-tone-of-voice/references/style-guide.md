@@ -1,7 +1,11 @@
-# Long-form style guide - before / after
+# Style guide - before / after
 
 Load this when you've drafted something and need to audit it, or when
 the rules in SKILL.md feel abstract and you want worked examples.
+
+Everything here is a pattern to reach for, not a slot to fill. Where an
+example below conflicts with [what Alex has corrected](#what-alex-has-corrected),
+the correction wins.
 
 The before-and-after pairs below take a generic LLM-default draft and
 show what it looks like rewritten in Alex's voice. The point isn't
@@ -92,11 +96,11 @@ study.
 > We did swap out the database, moving from ElasticSearch to
 > ClickHouse, which turned out to be an almost suspiciously good fit
 > for event sourcing. Append-only writes, columnar storage, absurdly
-> fast aggregations. But the real difference wasn't the database, but
-> rather the architecture on top of it.
+> fast aggregations. Most of the speed-up came from the architecture
+> we built on top of it, though.
 
 Same content, half the length, and the reader is now curious about
-"the architecture on top of it" (which is the next paragraph).
+the architecture (which is the next paragraph).
 
 The moves:
 
@@ -106,8 +110,10 @@ The moves:
   honest about the surprise.
 - **Three nouns in a row** ("Append-only writes, columnar storage,
   absurdly fast aggregations.") instead of a single ponderous clause.
-- **Pivot at the end** ("But the real difference wasn't the database
-  ...") that sets up the next section.
+- **A plain hand-off** to the next section. The original used "the real
+  difference wasn't the database, but rather the architecture" here;
+  that's the not-X-but-Y pivot Alex has since rejected, so say where the
+  win came from directly.
 
 ## Customer email - apologising for an outage
 
@@ -284,8 +290,8 @@ Same four ideas. Five sentences down to two. Connective tissue cut.
 
 ## Three-word punches
 
-Used for emphasis after a longer sentence. Don't over-use them, but
-one or two per piece adds bite.
+Used for emphasis after a longer sentence. One in a piece adds bite.
+One per paragraph is the caricature Alex has rejected.
 
 > Same servers, same team.
 
@@ -365,25 +371,18 @@ Too jokey for a security disclosure to a customer.
 Direct, specific, sober. Still no em-dashes, still British, still
 plain. The voice hasn't gone; it's just dressed appropriately.
 
-## Long-form pieces - the rhythm
+## Long-form pieces
 
-For anything longer than ~500 words, the rhythm matters as much as
-any individual sentence. Aim for:
+There's no template. Alex's blog posts tend to open on the point or a
+concrete image, get to what changed quickly, say why the reader should
+care, own the painful bits, and finish on what's next or a direct ask.
+That's a description of posts he's written, not an outline to fill in.
 
-1. **Hook paragraph**: lead with the point, set the metaphor.
-2. **First body section**: the "what changed" - concrete, specific.
-3. **Second body section**: the "why it matters" - usually the
-   reader-facing payoff. This is where you can earn the brag.
-4. **Mid-piece detour**: a story, a specific example, a number. Keeps
-   the piece from reading like a press release.
-5. **Practical section**: what the reader can do with it now.
-   ("Already live", "Send us everything".)
-6. **Signing off**: gestures forward (what's next) or asks (what they
-   want).
+When he gives you the story, tell that story in his order. Headers should
+help the reader find their way through it (and can have some personality),
+not chop a personal account into a tutorial.
 
-Each section header has personality (see SKILL.md for examples).
-
-## Full banned vocabulary
+## Banned words
 
 The unambiguous tells. Any of these in a draft means the draft needs
 another pass. The point isn't to ban the underlying *idea* - it's that
@@ -412,6 +411,11 @@ these specific words are how AI-generated text identifies itself.
 | `seamlessly integrates` | Cut. |
 | `comprehensive solution` | Cut. |
 | `cutting-edge`, `state-of-the-art`, `best-in-class` | Usually marketing slop. If you have a specific claim, make it specific. |
+| `utilise`, `empower`, `streamline`, `landscape` | Corporate filler. "Use", "lets you", "simplify", or cut. |
+| `X isn't the interesting bit. The interesting bit is Y` | Alex flagged this by name as the thing that makes a draft sound generated. Say Y. |
+| `this isn't about X, it's about Y` | Same pivot. Say Y. |
+| `Furthermore,` / `Moreover,` / `Additionally,` / `It's worth noting` | Connective filler. A full stop. |
+| `I hope this finds you well` / `Thanks in advance` / `Hope this helps!` | Ceremony. Cut. |
 
 ## The voice - patterns Alex actually uses, with examples
 
@@ -585,36 +589,34 @@ sprinkled for decoration. Each one carries a meaning.
 Default: no emoji. Add them only when they're the punctuation, not the
 garnish.
 
-## The shape of an Alex paragraph
+## What Alex has corrected
 
-Most paragraphs follow a beat like this:
+These come from Alex rejecting earlier drafts. They outrank every pattern
+above.
 
-1. A flat declarative claim.
-2. A qualifier, a stat, or a contrast.
-3. The aside (often in parens, occasionally as a hyphen-bracketed
-   clause).
-4. The next claim or the next paragraph.
-
-Example, broken down:
-
-> The new platform has been running for about a month now, and has
-> already processed 100 million events and counting, and with that
-> we've seen peak throughput north of 6,000 events per second already.
-> Same servers, same team. We did swap out the database, moving from
-> ElasticSearch to ClickHouse, which turned out to be an almost
-> suspiciously good fit for event sourcing. Append-only writes,
-> columnar storage, absurdly fast aggregations. But the real
-> difference wasn't the database, but rather the architecture on top
-> of it.
-
-Notice:
-
-- Numbers first, not a setup sentence.
-- "Same servers, same team." - three-word punch.
-- "almost suspiciously good fit" - the dry humour, no commentary on
-  the joke.
-- "But the real difference wasn't the database, but rather the
-  architecture on top of it." - the pivot that earns the next section.
+- **Manufactured contrasts.** "X is not the interesting bit. The
+  interesting bit is Y" and "this is not about X; it is about Y" read as
+  AI-generated. Changing a few words doesn't fix it; drop the X.
+- **Staged asides, tidy conclusions, tutorial sections.** A later draft
+  with an aside in every paragraph, a lesson sentence after every example
+  and a personal story split into how-to headings was rejected even
+  though it had no banned words. Fix the structure, not just the
+  vocabulary.
+- **Keep his argument.** For the skills-from-traces post, Alex gave the
+  sequence: an expensive refactor, reading Claude's traces in LangWatch,
+  changing the skills and agents, checking fresh traces, then capturing
+  it as Scenario tests. A draft that swapped that for a catalogue of
+  interesting findings lost the point of the post. A finding can be a
+  paragraph without becoming the thesis.
+- **Caveats once, beside the claim.** A model-price estimate isn't a
+  bill, and comparing different tasks doesn't prove a percentage saving.
+  Say so next to the number, once. Don't turn the piece into an audit.
+- **Let sentences be as long as the thought.** Splitting a connected
+  sentence into setup, punchline and maxim distorts the voice. Short is
+  fine when there's little to say.
+- **Don't add personality he didn't supply.** No humour, profanity,
+  colloquialisms, references or self-deprecation bolted on to make it
+  "sound like him". Keep the ones he gave you when they fit.
 
 ## Sanity check before sending
 
@@ -626,15 +628,17 @@ Read the draft once with these questions:
    `harness`, `seamless`, `groundbreaking`, `revolutionary`,
    `paradigm`, `synergy`, `tapestry`. If any hit, rewrite.
 3. **Did I start any paragraph with "Furthermore" / "Moreover" /
-   "Additionally"?** Cut.
-4. **Is there a parenthetical aside somewhere?** If the piece is
-   longer than a few paragraphs and has zero asides, it probably
-   reads flat. Add one if there's a natural place. Don't force.
+   "Additionally"?** Cut. Any "not X, but Y" pivots? Say Y.
+   Any American spellings (`behavior`, `optimize`, `color`)? Fix.
+4. **Did I add any aside, joke or reference he didn't give me?**
+   Keep it only if it carries real information or honesty. Never add
+   one to hit a quota.
 5. **Is there a concrete number in the body?** Even a small one
    ("about a month", "three commits") beats the abstract version.
 6. **Does the closing earn its place?** Or could it be cut without
    losing anything?
-7. **Read it aloud.** Anywhere your voice does something unnatural is
+7. **Can I trace every fact to the brief?** If not, ask or cut.
+8. **Read it aloud.** Anywhere your voice does something unnatural is
    somewhere the writing does too. Rewrite that sentence.
 
 When in doubt, [`samples.md`](samples.md) has Alex's own writing for

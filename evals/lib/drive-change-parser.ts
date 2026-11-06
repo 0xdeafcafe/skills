@@ -46,8 +46,7 @@ const SPECIALISTS_PATTERN = /^\s*Specialists:\s+(.+?)\s*$/i;
 const FINDING_PATTERN =
   /^\s*(?<severity>P[0-3])\s+(?<summary>.+?)\s+(?<file>\S+):(?<line>\d+)\s+\((?<reviewer>[a-z-]+)\)\s*$/;
 
-const isLikelyFindingHeader = (line: string): boolean =>
-  /^\s*findings\b/i.test(line);
+const isLikelyFindingHeader = (line: string): boolean => /^\s*findings\b/i.test(line);
 
 export const parseDriveChangeReport = (report: string): DriveChangeReport => {
   const lines = report.split(/\r?\n/);

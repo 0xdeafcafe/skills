@@ -1,0 +1,890 @@
+{
+  "schemaVersion": 1,
+  "id": "shape-first-sonnet",
+  "provenance": {
+    "kind": "recorded-model",
+    "capturedAt": "2026-09-11T23:58:46.946Z",
+    "cliVersion": "2.1.223 (Claude Code)",
+    "model": "claude-sonnet-5",
+    "sessionId": "0f72a26b-145a-408e-b63d-8fc435b65de4",
+    "scenarioPackageVersion": "1.6.0",
+    "promptDigest": "74e68eac74daae9adf6d0ebf230f9d925e49636b7dff119435427130520516aa",
+    "instructionDigest": "eb55255971caf6599c52d3c3d0124f2b11ff75ab970052717fbbbd1872e92c08",
+    "normalizations": [
+      "Known worktree, plugin and home paths replaced with <WORKTREE>, <PLUGIN_ROOT> and <HOME>.",
+      "Thinking excluded by the official adapter; tool results use its default 8000-character cap."
+    ]
+  },
+  "context": {
+    "caseId": "shape-first",
+    "repoTemplate": "v2/scenarios/coordinator.scenario.test.ts",
+    "notes": "Reviewed capture from the shared runner after the readability pass. Preserves the original Opus case as a separate recording. First turn asks consequential questions; second creates and verifies the requested onboarding commands. The broad five-question opening is retained as observed behavior, not endorsed as an ideal writing sample. Per-turn CLI cost values are recorded without an invoice or cumulative-cost interpretation."
+  },
+  "turns": [
+    {
+      "prompt": "Make onboarding better. Start by understanding the outcome; don't guess what to build.",
+      "model": "claude-sonnet-5",
+      "reportedCostUsd": 0.20595500000000003,
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01RBRwNj3DokMEqrBFoKFXWq",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:start-discussion",
+                "args": "Topic: \"Make onboarding better.\" Need to understand desired outcome before scoping any build. Unknowns: which product/surface \"onboarding\" refers to, who the users are, what's wrong with it today, what \"better\" means (activation, time-to-value, drop-off, support load, NPS, etc.), and any constraints (platform, timeline, team). Do not propose solutions until intent, non-goals, and success criteria are established."
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01RBRwNj3DokMEqrBFoKFXWq",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:start-discussion"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>/skills/start-discussion\n\n# Start a discussion\n\nHelp the user understand what, if anything, should change. The outcome may be a sharper objective, a decision, an experiment, a plan, or a deliberate choice to do nothing.\n\n## Explore the intent\n\nStart from what prompted the discussion. Follow the most informative thread rather than running a questionnaire. Clarify only what changes the direction:\n\n- the problem or opportunity and who experiences it;\n- the desired outcome and signals that would show improvement;\n- constraints, non-goals, prior attempts, and existing commitments;\n- assumptions or uncertainties that could reverse the decision.\n\nReflect emerging intent in concrete language so the user can correct it. Preserve promising alternatives and unresolved tensions until evidence makes them irrelevant. Do not rush toward architecture, tickets, or code merely to make the discussion look productive.\n\nInspect repository context or prior work when it can answer a live question. Distinguish observed behavior from inferred rationale.\n\n## Resolve uncertainty proportionally\n\nUse a small prototype, spike, sketch, or measurement when discussion alone cannot answer an important question and exploration of that kind is within the user’s scope. A request to talk does not authorise a production build. State what it is intended to learn and avoid treating exploratory output as production-ready work.\n\nAsk for a user decision only when different answers materially change the work and context does not already authorize one. Do not repeat confirmation after the user has authorized the direction.\n\n## Keep a useful record\n\nFor a sustained or delegated discussion, maintain a compact durable record in the repository's preferred location when one exists. Otherwise keep the same information in working context:\n\n- objective and non-goals;\n- decisions and their reasons;\n- applicable standards and source references;\n- acceptance evidence or success signals;\n- open questions, tasks, and observations.\n\nUpdate or replace stale entries as understanding changes. A shared work-record format may be used when available, but this skill does not depend on one.\n\n## Notice adjacent issues\n\nRecord unrelated quality or UX problems without derailing context-heavy exploration. Give a mild nudge for a meaningful nonblocking issue, then continue. Revisit it only if the discussion reaches that boundary or during final review; record each as addressed with evidence, open-in-scope for review, follow-up with rationale, or disproved with evidence.\n\n## Exit when ready\n\nWhen the next move becomes clear, summarize the intent, load-bearing constraints, decisions, evidence, and remaining uncertainty. When authorised, continue with `start-feature` for scoped product work or `plan-change` when planning is useful; otherwise return the concrete next step without silently starting a build. If the companion skill is unavailable, carry out its needed work directly within the same scope. If nothing should be built, say so plainly.\n\n\nARGUMENTS: Topic: \"Make onboarding better.\" Need to understand desired outcome before scoping any build. Unknowns: which product/surface \"onboarding\" refers to, who the users are, what's wrong with it today, what \"better\" means (activation, time-to-value, drop-off, support load, NPS, etc.), and any constraints (platform, timeline, team). Do not propose solutions until intent, non-goals, and success criteria are established."
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "I've loaded the discussion approach. Before I explore further, I need to check something first — this looks like a fresh conversation with no repo context yet. Let me check what we're working with."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01H3YQA3xvKjvhEhDKcpFebf",
+              "toolName": "Bash",
+              "input": {
+                "command": "pwd && git rev-parse --show-toplevel 2>/dev/null && git remote -v 2>/dev/null",
+                "description": "Check current directory and git repo context"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01H3YQA3xvKjvhEhDKcpFebf",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "<WORKTREE>\n<WORKTREE>"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01KL6aMfDZDomH9zY4AkfyYp",
+              "toolName": "Bash",
+              "input": {
+                "command": "ls -la && echo \"---\" && find . -maxdepth 2 -not -path './.git*' | head -50",
+                "description": "List project contents to understand what exists"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01KL6aMfDZDomH9zY4AkfyYp",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "total 40\ndrwxr-xr-x@ 10 lw  staff  320 Sep 12 00:56 .\ndrwx------@  4 lw  staff  128 Sep 12 00:56 ..\ndrwxr-xr-x@  3 lw  staff   96 Sep 12 00:56 .claude\ndrwxr-xr-x@ 12 lw  staff  384 Sep 12 00:56 .git\n-rw-r--r--@  1 lw  staff  427 Sep 12 00:56 CLAUDE.md\n-rw-r--r--@  1 lw  staff   14 Sep 12 00:56 README.md\n-rw-r--r--@  1 lw  staff   69 Sep 12 00:56 SETUP_REFERENCE.md\n-rw-r--r--@  1 lw  staff  177 Sep 12 00:56 package.json\ndrwxr-xr-x@  3 lw  staff   96 Sep 12 00:56 scripts\n-rw-r--r--@  1 lw  staff   36 Sep 12 00:56 server.mjs\n---\n.\n./.claude\n./.claude/.cc-writes\n./README.md\n./package.json\n./scripts\n./scripts/setup.mjs\n./SETUP_REFERENCE.md\n./server.mjs\n./CLAUDE.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01LZ8mSVMoHEyEBNLFmw72Ff",
+              "toolName": "Read",
+              "input": {
+                "file_path": "<WORKTREE>/CLAUDE.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01LZ8mSVMoHEyEBNLFmw72Ff",
+              "toolName": "Read",
+              "output": {
+                "type": "text",
+                "value": "1\t# Project boundary\n2\t\n3\tThe project for this request is exactly <WORKTREE>.\n4\tThis temporary Git repository is intentional and complete for the task.\n5\tSave requested artifacts here. The sibling plugin contains read-only instructions.\n6\tDo not inspect home directories or shell history, look for another project,\n7\tor modify files outside this repository.\n8\t"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01YW7nb28eCfyvRYpBJmbHqP",
+              "toolName": "Read",
+              "input": {
+                "file_path": "<WORKTREE>/README.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01YW7nb28eCfyvRYpBJmbHqP",
+              "toolName": "Read",
+              "output": {
+                "type": "text",
+                "value": "1\t# shape-first\n2\t"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01FxcZ9SVWApem2J1SHZwikf",
+              "toolName": "Read",
+              "input": {
+                "file_path": "<WORKTREE>/SETUP_REFERENCE.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01FxcZ9SVWApem2J1SHZwikf",
+              "toolName": "Read",
+              "output": {
+                "type": "text",
+                "value": "1\tLocal setup uses `pnpm install`, `pnpm run setup`, then `pnpm test`.\n2\t"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01PAVSkNv1xZ9edKakgmieRK",
+              "toolName": "Read",
+              "input": {
+                "file_path": "<WORKTREE>/package.json"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01PAVSkNv1xZ9edKakgmieRK",
+              "toolName": "Read",
+              "output": {
+                "type": "text",
+                "value": "1\t{\n2\t  \"engines\": {\n3\t    \"node\": \">=24\",\n4\t    \"pnpm\": \">=10\"\n5\t  },\n6\t  \"scripts\": {\n7\t    \"setup\": \"node scripts/setup.mjs\",\n8\t    \"dev\": \"node server.mjs\",\n9\t    \"test\": \"node --test\"\n10\t  }\n11\t}\n12\t"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01GJ4msPs2oaKMNohxxf1aTx",
+              "toolName": "Read",
+              "input": {
+                "file_path": "<WORKTREE>/server.mjs"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01GJ4msPs2oaKMNohxxf1aTx",
+              "toolName": "Read",
+              "output": {
+                "type": "text",
+                "value": "1\texport const product = 'unchanged';\n2\t"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_012NaWSZSVx5HtKwJ3SjHKdj",
+              "toolName": "Read",
+              "input": {
+                "file_path": "<WORKTREE>/scripts/setup.mjs"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_012NaWSZSVx5HtKwJ3SjHKdj",
+              "toolName": "Read",
+              "output": {
+                "type": "text",
+                "value": "1\tconsole.log('Local setup ready');\n2\t"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01CJMLBitAytSF2odR2mHQdt",
+              "toolName": "Bash",
+              "input": {
+                "command": "git log --oneline -20 2>/dev/null; echo \"---branches---\"; git branch -a 2>/dev/null; echo \"---status---\"; git status",
+                "description": "Check git history and branches for prior onboarding-related work"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01CJMLBitAytSF2odR2mHQdt",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "5342721 scenario baseline\n0d7d45b initial fixture\n---branches---\n* main\n---status---\nwarning: unable to access '<HOME>/.config/git/ignore': Operation not permitted\nwarning: unable to access '<HOME>/.config/git/ignore': Operation not permitted\nOn branch main\nnothing to commit, working tree clean"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "I checked the repository for existing context before asking anything — here's what's actually here, so you can correct me if I'm missing something:\n\n- This repo (`shape-first`) is a minimal scaffold: a `README`, a `setup.mjs` script that just logs \"Local setup ready\", a one-line `server.mjs`, and a test runner. Two commits total (`initial fixture`, `scenario baseline`). No product code, no existing onboarding flow, no users, no docs describing a product.\n- Nothing here tells me what \"onboarding\" refers to — it's not a term used anywhere in the codebase.\n\nSo rather than guess a target (developer setup? a SaaS signup flow? new-hire onboarding? something in a different repo entirely?), I need you to fill in the actual situation. A few questions that would materially change what \"better\" means and where the work happens:\n\n1. **What is being onboarded, and who?** e.g., new users of a product, new customers in a B2B flow, new engineers joining a codebase, new employees at a company — these are different problems with different owners.\n2. **Where does it live today?** Is the current onboarding experience in this repository, in a different codebase/product, or is it a process (docs, emails, a human-led flow) that isn't code at all?\n3. **What prompted \"make it better\" right now?** A specific complaint, drop-off data, support ticket volume, a launch deadline, personal frustration going through it yourself — the trigger usually points at the real problem.\n4. **What does \"better\" mean as a signal you'd actually check afterward?** e.g., higher activation/completion rate, shorter time-to-first-value, fewer support tickets, less hand-holding needed, better NPS — pick the one(s) that matter, not all of them.\n5. **Any constraints or non-goals?** Timeline, team/who can do the work, platforms in scope, things that must *not* change (e.g., \"don't touch the payment step\"), and anything already tried that didn't work.\n\nOnce I know what \"onboarding\" actually refers to and what success looks like, I can either dig into the real repo/product with you or scope a concrete piece of work — rather than building something against this placeholder."
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    },
+    {
+      "prompt": "The target is a checked-in ONBOARDING.md with exactly three numbered command lines for local setup; no product code changes. Please implement and verify it now.",
+      "model": "claude-sonnet-5",
+      "reportedCostUsd": 0.24423,
+      "messages": [
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01HuNRixjzcXnTtWdXUX9BKy",
+              "toolName": "Skill",
+              "input": {
+                "skill": "skills:implement-change",
+                "args": "Intent: Add a checked-in ONBOARDING.md at the repo root containing exactly three numbered command lines documenting local setup. No product code changes.\n\nContext already gathered from repo:\n- SETUP_REFERENCE.md states: \"Local setup uses `pnpm install`, `pnpm run setup`, then `pnpm test`.\"\n- package.json scripts: setup -> node scripts/setup.mjs, dev -> node server.mjs, test -> node --test\n- engines: node >=24, pnpm >=10\n\nAcceptance criteria:\n- New file ONBOARDING.md checked in (tracked in git).\n- Contains exactly three numbered lines, each a single local-setup command, matching the documented setup sequence (pnpm install; pnpm run setup; pnpm test).\n- No other files changed (no product code changes).\n- Verify by actually running the three commands in order in the repo and confirming they succeed."
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01HuNRixjzcXnTtWdXUX9BKy",
+              "toolName": "Skill",
+              "output": {
+                "type": "text",
+                "value": "Launching skill: skills:implement-change"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "Base directory for this skill: <PLUGIN_ROOT>/skills/implement-change\n\n# Implement a change\n\nTranslate the current contract into working code and evidence. No particular artifact is mandatory; the implementation must remain traceable to intent and applicable standards.\n\n## Recover the contract\n\nRead the user request and relevant repository sources. Extract:\n\n- objective and non-goals;\n- decided behavior and architectural constraints;\n- applicable repository and domain standards;\n- acceptance evidence, edge cases, and compatibility expectations;\n- open questions that could materially change the build.\n\nSources may include a work record, plan, ADR, behavioral spec, issue, prototype results, tests, or conversation. Resolve conflicts by checking recency and authority; do not silently choose whichever source is easiest to implement.\n\nIf essential intent is missing, do the smallest useful investigation or ask for the material decision. Do not demand a spec or ADR solely because none exists.\n\n## Map and build\n\nInspect the affected code, callers, tests, and local conventions. Form a file or interface-level implementation approach proportional to the change. Share it when it exposes a consequential interpretation; routine implementation details do not need another approval after the user authorized the work.\n\nRead each changed code unit as a whole before finalizing it, not only the edited hunks. Make the unit a coherent, clean functional design for its purpose, with clear names, direct control flow, and spacing that exposes structure. Comments should explain non-obvious intent, constraints, or tradeoffs rather than narrate the code. Use the design that fits the problem and local conventions; do not add patterns or abstractions merely to satisfy a style ideal.\n\nImplement coherent slices and validate each risky boundary as it lands. Keep production behavior, tests, documentation, migrations, and observability aligned where relevant. Treat prototypes as evidence; harden or replace them before including them in the final build.\n\nFor sustained work, maintain the repository's preferred work record or an equivalent concise state with objective, non-goals, decisions, standards references, acceptance evidence, open questions, tasks, and observations. Update decisions and tasks when implementation reveals new facts.\n\nAgents may handle bounded independent slices when the host supports them. Provide minimal relevant context, explicit ownership, expected evidence, and a stop condition. Do not require agents, prescribe models, or delegate integration-sensitive contracts without coordination.\n\n## Handle findings\n\nFix scope-relevant defects and required-standard violations discovered during implementation. Record unrelated UX, quality, or maintenance issues; briefly flag meaningful nonblocking observations and continue. Revisit them when touching their boundary or during final review, then mark a disposition rather than assuming every observation needs a fix.\n\n## Validate and hand off\n\nRun the focused checks that demonstrate acceptance and the repository checks appropriate to the touched surface. Passing tests are necessary evidence where applicable, but they do not establish design quality, clarity, or complete behavior by themselves. Re-read the resulting units and inspect their behavior as part of validation. Manual evidence is valid where automation is impractical, but identify it clearly. Do not claim completion while a scope-relevant blocker, failed acceptance case, or required standard remains unresolved.\n\nReport the implemented behavior, decisions interpreted or changed, validation evidence, touched surface, observations, and any remaining question. If broader integration review is authorized, continue with `drive-change` or `drive-plan`; if companion skills are unavailable, perform or describe the same handoff directly.\n\nDo not weaken an applicable standard, redefine acceptance, or mark a decision accepted merely to make the work pass. Record a proposed change to the agreement and resolve it through the appropriate owner; existing user authorisation still governs.\n\nPrefer an available LangWatch plugin and CLI for targeted trace checks when\nrepeated failures, unexpected latency, context pressure, or handoff rework leave\na question that could change the next action. Use `assess-usage` when available;\notherwise use the installed LangWatch guidance and bounded read-only queries.\nIf missing, suggest setup once per effort and continue the task. Preserve any\nprior decline or deferral, and leave installation/sign-in/capture changes to\nuser authorisation. Never make telemetry availability a completion requirement.\n\n\nARGUMENTS: Intent: Add a checked-in ONBOARDING.md at the repo root containing exactly three numbered command lines documenting local setup. No product code changes.\n\nContext already gathered from repo:\n- SETUP_REFERENCE.md states: \"Local setup uses `pnpm install`, `pnpm run setup`, then `pnpm test`.\"\n- package.json scripts: setup -> node scripts/setup.mjs, dev -> node server.mjs, test -> node --test\n- engines: node >=24, pnpm >=10\n\nAcceptance criteria:\n- New file ONBOARDING.md checked in (tracked in git).\n- Contains exactly three numbered lines, each a single local-setup command, matching the documented setup sequence (pnpm install; pnpm run setup; pnpm test).\n- No other files changed (no product code changes).\n- Verify by actually running the three commands in order in the repo and confirming they succeed."
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01JJdisWKcuYWWo5NPUn277V",
+              "toolName": "Bash",
+              "input": {
+                "command": "which pnpm && node --version && pnpm --version",
+                "description": "Check pnpm and node availability/versions"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01JJdisWKcuYWWo5NPUn277V",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "/opt/homebrew/bin/pnpm\nv24.20.0\n10.15.1"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Good, engines requirements are satisfied. Now creating the file:"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01Vi8RPz1EPQAqUTEduWw9LB",
+              "toolName": "Write",
+              "input": {
+                "file_path": "<WORKTREE>/ONBOARDING.md",
+                "content": "# Onboarding\n\nLocal setup:\n\n1. `pnpm install`\n2. `pnpm run setup`\n3. `pnpm test`\n"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01Vi8RPz1EPQAqUTEduWw9LB",
+              "toolName": "Write",
+              "output": {
+                "type": "text",
+                "value": "File created successfully at: <WORKTREE>/ONBOARDING.md (file state is current in your context — no need to Read it back)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Now verifying by actually running the three commands in order:"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01K2NJUqoo4tkqZRkPVx7TxC",
+              "toolName": "Bash",
+              "input": {
+                "command": "pnpm install",
+                "description": "Run step 1: pnpm install"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01K2NJUqoo4tkqZRkPVx7TxC",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "Already up to date\n\nDone in 242ms using pnpm v10.15.1"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01TUEA2ok1fwaWBTXKp9xmZH",
+              "toolName": "Bash",
+              "input": {
+                "command": "pnpm run setup",
+                "description": "Run step 2: pnpm run setup"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01TUEA2ok1fwaWBTXKp9xmZH",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "> @ setup <WORKTREE>\n> node scripts/setup.mjs\n\nLocal setup ready"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01QeNKRNK76EyweaPmsarsqx",
+              "toolName": "Bash",
+              "input": {
+                "command": "pnpm test",
+                "description": "Run step 3: pnpm test"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01QeNKRNK76EyweaPmsarsqx",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "> @ test <WORKTREE>\n> node --test\n\nℹ tests 0\nℹ suites 0\nℹ pass 0\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 8.606375"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "All three commands succeeded in order. Now confirming scope (no product code changes) and checking the file in:"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_012Z1BtXZWRXpYBbS5SPvGch",
+              "toolName": "Bash",
+              "input": {
+                "command": "git status --porcelain && echo \"---diff summary---\" && git diff --stat",
+                "description": "Check what changed before staging"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_012Z1BtXZWRXpYBbS5SPvGch",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "warning: unable to access '<HOME>/.config/git/ignore': Operation not permitted\nwarning: unable to access '<HOME>/.config/git/ignore': Operation not permitted\n?? ONBOARDING.md\n?? node_modules/\n?? pnpm-lock.yaml\n---diff summary---"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_013apPwU5a5qKbmykFoa3ywD",
+              "toolName": "Bash",
+              "input": {
+                "command": "cat .gitignore 2>/dev/null || echo \"NO .gitignore\"; echo \"---\"; cat package.json",
+                "description": "Check for .gitignore and package.json contents"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_013apPwU5a5qKbmykFoa3ywD",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "NO .gitignore\n---\n{\n  \"engines\": {\n    \"node\": \">=24\",\n    \"pnpm\": \">=10\"\n  },\n  \"scripts\": {\n    \"setup\": \"node scripts/setup.mjs\",\n    \"dev\": \"node server.mjs\",\n    \"test\": \"node --test\"\n  }\n}"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01WfsMedQoZXNT7MSKCuMZMC",
+              "toolName": "Bash",
+              "input": {
+                "command": "ls -la node_modules 2>/dev/null; echo \"---lockfile---\"; wc -l pnpm-lock.yaml 2>/dev/null",
+                "description": "Inspect artifacts created by pnpm install"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01WfsMedQoZXNT7MSKCuMZMC",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "total 8\ndrwxr-xr-x@  3 lw  staff   96 Sep 12 00:58 .\ndrwxr-xr-x@ 14 lw  staff  448 Sep 12 00:58 ..\n-rw-r--r--@  1 lw  staff  607 Sep 12 00:58 .pnpm-workspace-state-v1.json\n---lockfile---\n       9 pnpm-lock.yaml"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "These are expected local-setup byproducts (no dependencies declared, so `node_modules` is just pnpm's state file, and `pnpm-lock.yaml` is the lockfile every `pnpm install` would generate). I'll leave them untracked and commit only the requested file, keeping scope exactly to `ONBOARDING.md`."
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01AXTSKxkfLrNMboLmLTF1Ez",
+              "toolName": "Bash",
+              "input": {
+                "command": "git add ONBOARDING.md && git status --porcelain",
+                "description": "Stage only ONBOARDING.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01AXTSKxkfLrNMboLmLTF1Ez",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "warning: unable to access '<HOME>/.config/git/ignore': Operation not permitted\nwarning: unable to access '<HOME>/.config/git/ignore': Operation not permitted\nwarning: unable to access '<HOME>/.config/git/ignore': Operation not permitted\nA  ONBOARDING.md\n?? node_modules/\n?? pnpm-lock.yaml"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Only `ONBOARDING.md` is staged. Now committing, since \"checked-in\" was the explicit target:"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01F5zK4kDoPhEknMroF5UBVL",
+              "toolName": "Bash",
+              "input": {
+                "command": "git commit -m \"$(cat <<'EOF'\nAdd ONBOARDING.md with local setup steps\n\nDocuments the three-step local setup sequence (install, setup, test) so new contributors don't need to find SETUP_REFERENCE.md.\n\nCo-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>\nEOF\n)\"",
+                "description": "Commit ONBOARDING.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01F5zK4kDoPhEknMroF5UBVL",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "warning: unable to access '<HOME>/.config/git/ignore': Operation not permitted\n[main f625fc3] Add ONBOARDING.md with local setup steps\n 1 file changed, 7 insertions(+)\n create mode 100644 ONBOARDING.md"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": ""
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "toolu_01JNqLq1dZU9P1gM38HRCNXF",
+              "toolName": "Bash",
+              "input": {
+                "command": "git status --porcelain && echo \"---show---\" && git show --stat HEAD",
+                "description": "Confirm commit and working tree state"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "toolu_01JNqLq1dZU9P1gM38HRCNXF",
+              "toolName": "Bash",
+              "output": {
+                "type": "text",
+                "value": "warning: unable to access '<HOME>/.config/git/ignore': Operation not permitted\nwarning: unable to access '<HOME>/.config/git/ignore': Operation not permitted\n?? node_modules/\n?? pnpm-lock.yaml\n---show---\ncommit f625fc3109ea6c370646b1bc807e6f92001e81a8\nAuthor: Skills Eval <skills-eval@example.invalid>\nDate:   Sat Sep 12 00:58:36 2026 +0100\n\n    Add ONBOARDING.md with local setup steps\n    \n    Documents the three-step local setup sequence (install, setup, test) so new contributors don't need to find SETUP_REFERENCE.md.\n    \n    Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>\n\n ONBOARDING.md | 7 +++++++\n 1 file changed, 7 insertions(+)"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Done.\n\n**What's checked in:** `ONBOARDING.md` at the repo root (commit `f625fc3`), containing exactly three numbered command lines:\n\n```\n1. `pnpm install`\n2. `pnpm run setup`\n3. `pnpm test`\n```\n\n**Verification:** ran all three commands in this repo, in order — each succeeded:\n- `pnpm install` → \"Already up to date\"\n- `pnpm run setup` → \"Local setup ready\"\n- `pnpm test` → 0 tests, 0 failures (clean pass)\n\n**Scope:** only `ONBOARDING.md` was added/committed. No product code touched. `pnpm install` incidentally created `node_modules/` (just pnpm's workspace state file, no deps declared) and `pnpm-lock.yaml` — normal byproducts of running the documented setup, left untracked and not committed, so they don't affect this change's scope.\n\nNote: `SETUP_REFERENCE.md` now duplicates the same three commands as `ONBOARDING.md`. I left it as-is since you scoped this to adding the new file with no other changes — flagging it in case you want it superseded or removed later."
+            }
+          ]
+        }
+      ],
+      "terminal": {
+        "subtype": "success",
+        "isError": false
+      }
+    }
+  ],
+  "evidence": {
+    "git": {
+      "headBefore": "5342721277691a7aac8daf273bbf7d353c67f2aa",
+      "headAfter": "f625fc3109ea6c370646b1bc807e6f92001e81a8",
+      "mergeHeadBefore": null,
+      "mergeHeadAfter": null,
+      "unmergedPaths": [],
+      "indexEntries": [
+        "100644 937c26fdfb3976c9fb9b80befc68e62328e95359 0\tCLAUDE.md",
+        "100644 61a0077e9a3b6b0b5458491f75fd9002fe5982b5 0\tONBOARDING.md",
+        "100644 90b40544f0558d6be0c363e07dc33fa6d2bb35dc 0\tREADME.md",
+        "100644 6f25f98f14e783d6dc071b6ef91197de5c8f78ee 0\tSETUP_REFERENCE.md",
+        "100644 0ec8f2f260801436959b94baeec63feeb3bfcfe5 0\tpackage.json",
+        "100644 07a72233321cf023e450e6d7dd0c284b9f400bc2 0\tscripts/setup.mjs",
+        "100644 ecfa426c0e9b186610124579be39e7cc162d8555 0\tserver.mjs"
+      ],
+      "files": {
+        "server.mjs": "export const product = 'unchanged';\n",
+        "ONBOARDING.md": "# Onboarding\n\nLocal setup:\n\n1. `pnpm install`\n2. `pnpm run setup`\n3. `pnpm test`\n"
+      }
+    },
+    "checks": [
+      {
+        "id": "shape-first-postconditions",
+        "kind": "file-content",
+        "required": true,
+        "passed": true,
+        "observed": {
+          "before": {
+            "head": "5342721277691a7aac8daf273bbf7d353c67f2aa",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 937c26fdfb3976c9fb9b80befc68e62328e95359 0\tCLAUDE.md",
+              "100644 90b40544f0558d6be0c363e07dc33fa6d2bb35dc 0\tREADME.md",
+              "100644 6f25f98f14e783d6dc071b6ef91197de5c8f78ee 0\tSETUP_REFERENCE.md",
+              "100644 0ec8f2f260801436959b94baeec63feeb3bfcfe5 0\tpackage.json",
+              "100644 07a72233321cf023e450e6d7dd0c284b9f400bc2 0\tscripts/setup.mjs",
+              "100644 ecfa426c0e9b186610124579be39e7cc162d8555 0\tserver.mjs"
+            ],
+            "unmergedPaths": [],
+            "status": ""
+          },
+          "after": {
+            "head": "f625fc3109ea6c370646b1bc807e6f92001e81a8",
+            "mergeHead": null,
+            "indexEntries": [
+              "100644 937c26fdfb3976c9fb9b80befc68e62328e95359 0\tCLAUDE.md",
+              "100644 61a0077e9a3b6b0b5458491f75fd9002fe5982b5 0\tONBOARDING.md",
+              "100644 90b40544f0558d6be0c363e07dc33fa6d2bb35dc 0\tREADME.md",
+              "100644 6f25f98f14e783d6dc071b6ef91197de5c8f78ee 0\tSETUP_REFERENCE.md",
+              "100644 0ec8f2f260801436959b94baeec63feeb3bfcfe5 0\tpackage.json",
+              "100644 07a72233321cf023e450e6d7dd0c284b9f400bc2 0\tscripts/setup.mjs",
+              "100644 ecfa426c0e9b186610124579be39e7cc162d8555 0\tserver.mjs"
+            ],
+            "unmergedPaths": [],
+            "status": "?? node_modules/\n?? pnpm-lock.yaml"
+          },
+          "reason": "Scenario assertions passed"
+        }
+      }
+    ]
+  },
+  "outcome": {
+    "expected": "pass"
+  }
+}

@@ -48,7 +48,8 @@ export const greedyMatchSpecs = <TSpec extends { readonly $match: string }, TAct
   const per_spec: SpecMatch[] = [];
 
   for (const spec of specs) {
-    let best: { index: number; checks: Readonly<Record<string, boolean>>; passed: number } | null = null;
+    let best: { index: number; checks: Readonly<Record<string, boolean>>; passed: number } | null =
+      null;
 
     for (let i = 0; i < actuals.length; i++) {
       if (used.has(i)) continue;
@@ -71,8 +72,7 @@ export const greedyMatchSpecs = <TSpec extends { readonly $match: string }, TAct
       $match: spec.$match,
       matched_index: best.index,
       checks: best.checks,
-      all_passed:
-        Object.keys(best.checks).length > 0 && Object.values(best.checks).every(Boolean),
+      all_passed: Object.keys(best.checks).length > 0 && Object.values(best.checks).every(Boolean),
     });
   }
 

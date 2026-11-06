@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  type Finding,
-  assertFinding,
-  validateFinding,
-} from "../schema.ts";
+import { type Finding, assertFinding, validateFinding } from "../schema.ts";
 
 const baseSecurityFinding: Finding = {
   severity: "P0",

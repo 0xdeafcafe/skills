@@ -70,10 +70,7 @@ const checkSpec = (spec: FindingSpec, reviewer: string): readonly Check[] => {
   const schemaCheck: Check = {
     name: `[${name}] schema-valid`,
     ok: errors.length === 0,
-    detail:
-      errors.length === 0
-        ? "ok"
-        : errors.map((e) => `${e.path}: ${e.message}`).join("; "),
+    detail: errors.length === 0 ? "ok" : errors.map((e) => `${e.path}: ${e.message}`).join("; "),
   };
 
   const gateResult = gate({
@@ -105,7 +102,13 @@ const runFixture = async (fixture: string): Promise<FixtureResult> => {
   if (!expected.by_reviewer || typeof expected.by_reviewer !== "object") {
     return {
       fixture,
-      checks: [{ name: "expected.findings.json has by_reviewer", ok: false, detail: "missing or wrong shape" }],
+      checks: [
+        {
+          name: "expected.findings.json has by_reviewer",
+          ok: false,
+          detail: "missing or wrong shape",
+        },
+      ],
     };
   }
 

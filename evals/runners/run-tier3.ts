@@ -25,10 +25,7 @@ import { setupObservability } from "langwatch/observability/node";
 import { invokeClaude } from "../lib/claude-invoke.ts";
 import { flagPresent, flagValue, numericFlag } from "../lib/cli-args.ts";
 import { parseDriveChangeReport } from "../lib/drive-change-parser.ts";
-import {
-  type ExpectedDriveChange,
-  scoreDriveChange,
-} from "../lib/drive-change-scoring.ts";
+import { type ExpectedDriveChange, scoreDriveChange } from "../lib/drive-change-scoring.ts";
 
 const SERVICE_NAME = "skills-evals";
 const EXPERIMENT_NAME = "skills-drive-change-eval";
@@ -74,10 +71,7 @@ const setupRepo = async (
 };
 
 const loadExpected = async (fixture: string): Promise<ExpectedDriveChange> => {
-  const raw = await readFile(
-    join(FIXTURES_DIR, fixture, "expected.drive_change.json"),
-    "utf8",
-  );
+  const raw = await readFile(join(FIXTURES_DIR, fixture, "expected.drive_change.json"), "utf8");
   return JSON.parse(raw) as ExpectedDriveChange;
 };
 
@@ -238,7 +232,9 @@ const reportOutcome = (o: RunOutcome): void => {
   console.log(`  ${tick(o.mode_match)} mode_match`);
   console.log(`  ${tick(o.specialists_match)} specialists_match`);
   console.log(`  ${tick(o.count_in_range)} count_in_range  (findings=${o.findings_count})`);
-  console.log(`  ${tick(o.expected_findings_matched === 1)} all expected findings matched (${(o.expected_findings_matched * 100).toFixed(0)}%)`);
+  console.log(
+    `  ${tick(o.expected_findings_matched === 1)} all expected findings matched (${(o.expected_findings_matched * 100).toFixed(0)}%)`,
+  );
   console.log(`  ◦ extra findings: ${o.extra_findings_count}`);
   console.log(`  ◦ missing specs:  ${o.missing_specs_count}`);
   console.log(`  ◦ unparsed lines: ${o.unparsed_lines_count}`);

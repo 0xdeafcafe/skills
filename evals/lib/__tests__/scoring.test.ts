@@ -58,11 +58,9 @@ const tinyTokenLeakExpected: ExpectedFindings = {
 
 describe("scoreFixture — happy path", () => {
   it("returns overall_pass when both expected specs match perfectly", () => {
-    const result = scoreFixture(
-      [securityActual, hygieneActual],
-      tinyTokenLeakExpected,
-      { all_valid: true },
-    );
+    const result = scoreFixture([securityActual, hygieneActual], tinyTokenLeakExpected, {
+      all_valid: true,
+    });
 
     expect(result.overall_pass).toBe(true);
     expect(result.expected_findings_matched).toBe(1);
@@ -75,11 +73,9 @@ describe("scoreFixture — happy path", () => {
   });
 
   it("includes every check key in the per-spec breakdown", () => {
-    const result = scoreFixture(
-      [securityActual, hygieneActual],
-      tinyTokenLeakExpected,
-      { all_valid: true },
-    );
+    const result = scoreFixture([securityActual, hygieneActual], tinyTokenLeakExpected, {
+      all_valid: true,
+    });
 
     const securityChecks = result.per_spec[0]?.checks ?? {};
     expect(securityChecks).toHaveProperty("severity_match", true);
@@ -98,11 +94,9 @@ describe("scoreFixture — happy path", () => {
 
   it("counts extra actuals when there are more than expected", () => {
     const extra: Finding = { ...hygieneActual, line: 99, summary: "extra" };
-    const result = scoreFixture(
-      [securityActual, hygieneActual, extra],
-      tinyTokenLeakExpected,
-      { all_valid: true },
-    );
+    const result = scoreFixture([securityActual, hygieneActual, extra], tinyTokenLeakExpected, {
+      all_valid: true,
+    });
 
     expect(result.extra_findings_count).toBe(1);
     expect(result.count_in_range).toBe(true); // 3 is within [2, 4]
@@ -144,22 +138,18 @@ describe("scoreFixture — failure modes", () => {
   });
 
   it("flags overall_pass=false when schema validity fails", () => {
-    const result = scoreFixture(
-      [securityActual, hygieneActual],
-      tinyTokenLeakExpected,
-      { all_valid: false },
-    );
+    const result = scoreFixture([securityActual, hygieneActual], tinyTokenLeakExpected, {
+      all_valid: false,
+    });
     expect(result.all_findings_schema_valid).toBe(false);
     expect(result.overall_pass).toBe(false);
   });
 
   it("rejects wrong severity even when other fields match", () => {
     const wrongSeverity: Finding = { ...securityActual, severity: "P3" };
-    const result = scoreFixture(
-      [wrongSeverity, hygieneActual],
-      tinyTokenLeakExpected,
-      { all_valid: true },
-    );
+    const result = scoreFixture([wrongSeverity, hygieneActual], tinyTokenLeakExpected, {
+      all_valid: true,
+    });
     expect(result.per_spec[0]?.checks.severity_match).toBe(false);
     expect(result.per_spec[0]?.all_passed).toBe(false);
     expect(result.overall_pass).toBe(false);
@@ -182,11 +172,9 @@ describe("scoreFixture — failure modes", () => {
       ...securityActual,
       summary: "configuration file modified",
     };
-    const result = scoreFixture(
-      [wrongSummary, hygieneActual],
-      tinyTokenLeakExpected,
-      { all_valid: true },
-    );
+    const result = scoreFixture([wrongSummary, hygieneActual], tinyTokenLeakExpected, {
+      all_valid: true,
+    });
     expect(result.per_spec[0]?.checks.summary_pattern_match).toBe(false);
   });
 });

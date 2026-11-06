@@ -82,7 +82,8 @@ const checkSpecAgainstActual = (
   }
   if (spec.files_affected_min !== undefined) {
     checks.files_affected_count_above_min =
-      (actual.files_affected_count ?? actual.files_affected?.length ?? 0) >= spec.files_affected_min;
+      (actual.files_affected_count ?? actual.files_affected?.length ?? 0) >=
+      spec.files_affected_min;
   }
 
   return checks;
@@ -93,11 +94,7 @@ export const scoreFixture = (
   expected: ExpectedFindings,
   schemaValidity: { readonly all_valid: boolean },
 ): FixtureScore => {
-  const { per_spec, used } = greedyMatchSpecs(
-    expected.findings,
-    actuals,
-    checkSpecAgainstActual,
-  );
+  const { per_spec, used } = greedyMatchSpecs(expected.findings, actuals, checkSpecAgainstActual);
 
   const count_in_range =
     (expected.count_min === undefined || actuals.length >= expected.count_min) &&
@@ -114,9 +111,6 @@ export const scoreFixture = (
     expected_findings_matched,
     extra_findings_count: actuals.length - used.size,
     missing_specs_count: per_spec.filter((s) => s.matched_index === null).length,
-    overall_pass:
-      count_in_range &&
-      schemaValidity.all_valid &&
-      expected_findings_matched === 1,
+    overall_pass: count_in_range && schemaValidity.all_valid && expected_findings_matched === 1,
   };
 };

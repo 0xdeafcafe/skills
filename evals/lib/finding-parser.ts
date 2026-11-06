@@ -26,15 +26,7 @@ const HEAD = new RegExp(
     String.raw`[—-]\s+(?<summary>.+?)\s*$`,
 );
 
-const STRING_KEYS = new Set([
-  "why",
-  "fix",
-  "tool",
-  "evidence",
-  "kind",
-  "slice",
-  "reviewer",
-]);
+const STRING_KEYS = new Set(["why", "fix", "tool", "evidence", "kind", "slice", "reviewer"]);
 const INT_KEYS = new Set(["files_affected_count", "violations_count"]);
 const ARRAY_KEYS = new Set(["files_affected", "originating_reviewers"]);
 

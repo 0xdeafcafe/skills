@@ -5,7 +5,9 @@
 .idea/
 .vscode/
 node_modules/
+__pycache__/
 evals/.trigger-log.jsonl
+evals/.captures/
 dist/
 build/
 *.log
