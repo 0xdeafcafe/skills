@@ -3,7 +3,7 @@ import { makeFixture } from "./lib/fixture.ts";
 import { runScenario } from "./lib/run-scenario.ts";
 
 const PROMPT =
-  "Read through all twelve files in sources/ and summarise the owners and retention policy. Use bounded Haiku or Sonnet reading workers for this pass. Save READING.md with a source-by-source coverage ledger and citations for the important findings. Identify any conflict between sources without selecting a policy on my behalf. Preserve the sources and repository history.";
+  "Read through everything in sources/ and write up who owns each region and what the retention policy is in READING.md, with citations. Fan the reading out to workers.";
 
 function buildSources(): Record<string, string> {
   const sources: Record<string, string> = {};

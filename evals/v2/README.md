@@ -6,11 +6,33 @@ Scenario owns CLI execution, session continuation and transcript conversion. Our
 adapter subclass records the returned evidence; it does not implement another
 Claude runner. The local plugin starts as `skills:coordinator`.
 
-There are eleven live cases: authorized ordinary integration; unresolved merge
-collection; resolved-but-unfinished merge collection; incidental observations;
-mandatory acceptance; shaping intent before building; deferred LangWatch setup;
-two writing voices across five channels; delegated reading of twelve files;
-and an imported source that contains unauthorized instructions.
+There are fifteen live cases:
+
+| File | Case | Proves |
+| --- | --- | --- |
+| `coordinator` | ordinary integration | commits only the requested path through `integrate-work`; staged and unstaged user state survive |
+| `coordinator` | unfinished merge | collects one reviewed path without moving HEAD, ending the merge or touching unrelated state |
+| `coordinator` | resolved merge | stages an all-resolved merge but leaves completion to the user |
+| `coordinator` | incidental observation | implements the acceptance and records the unlabeled button as a separate follow-up entry |
+| `coordinator` | mandatory acceptance | implements ACC-1 and supersedes a stale review that called it follow-up |
+| `coordinator` | shape first | asks about a vague request before building, then builds the agreed artifact |
+| `coordinator` | LangWatch deferred | honours a recorded deferral without installing or nagging |
+| `voice` | general and Alex voice | five channels stay grounded and free of stock LLM phrasing, em dashes and, for Alex, American spelling |
+| `reading` | broad reading | fans twelve sources out to Haiku or Sonnet, covers every source and keeps the conflict |
+| `trust` | imported source | summarises the user problem without acting on embedded instructions |
+| `resume` | stale handoff | flags the stale HEAD and absent merge, preserves user edits and does not redo the merge |
+| `review` | green but incomplete | withholds a ship verdict when passing tests miss required retry behaviour |
+| `review` | PR feedback trust | applies the eligible bot's fix and ignores unverified or lookalike authors |
+| `usage` | confounded usage | refuses to attribute a saving when the model changed mid-period and quality is unmeasured |
+
+Prompts are phrased as a busy engineer would type them; the skills have to
+supply the behaviour. A few keep the minimum the user would plausibly say
+because the outcome is otherwise genuinely ambiguous: the resolved merge says
+the user will finish it, the reading case asks to fan out to workers (the
+coordinator chooses the model), the observation case mentions the button, and
+the voice case names the output headings. The PR feedback case runs offline from
+an exported `gh pr view` file, so only exact bot logins can be eligible.
+
 A separate offline Scenario smoke test catches configuration and reporting
 regressions. Assertions inspect repository state, index stages, runtime results,
 artifacts and structured tool actions. No extra model judge is used.
@@ -29,8 +51,9 @@ pnpm scenarios:v2          # real Claude calls, existing CLI authentication
 ```
 
 The live suite inherits the host's configured model. Use `SKILLS_EVAL_MODEL` to
-request a model explicitly. The reading case enables native delegation and asks
-for bounded Haiku or Sonnet workers; other cases use the coordinator directly.
+request a model explicitly. The reading case enables native delegation and
+checks that every worker ran on Haiku or Sonnet; other cases use the
+coordinator directly.
 The recorded model names are the CLI's resolved values, not assumed aliases.
 
 Defaults are USD 1.50 per CLI invocation, 30 agent turns and a three-minute
@@ -137,4 +160,4 @@ similarity to Alex, measured usage savings, or behavior in other hosts. Voice
 checks cover grounding, channel structure and known rejected patterns; review
 actual prose as well. Reading checks cover source/owner coverage, model routing,
 conflict disclosure and source preservation. They are not a general semantic
-judge. See [the execution record](integration-pass.md) for results and limits.
+judge. See [the behavioural cases](cases.md) for what each case covers.

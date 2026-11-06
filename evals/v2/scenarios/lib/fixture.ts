@@ -74,6 +74,19 @@ export async function makeFixture(id: string): Promise<Fixture> {
   return fixture;
 }
 
+export async function commitFiles(
+  fixture: Fixture,
+  files: Record<string, string>,
+  message = "scenario baseline",
+): Promise<string> {
+  for (const [path, contents] of Object.entries(files)) {
+    await fixture.write(path, contents);
+  }
+  await fixture.git("add", "--", ...Object.keys(files));
+  await fixture.git("commit", "-qm", message);
+  return fixture.git("rev-parse", "HEAD");
+}
+
 export async function snapshot(fixture: Fixture): Promise<GitSnapshot> {
   const [head, mergeHead, index, unmerged, status] = await Promise.all([
     fixture.git("rev-parse", "HEAD"),

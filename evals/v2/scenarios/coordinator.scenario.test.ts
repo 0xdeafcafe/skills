@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { makeFixture, type Fixture } from "./lib/fixture.ts";
+import { commitFiles, makeFixture, type Fixture } from "./lib/fixture.ts";
+import { loadedSkill, recordBlocks, recordEntries } from "./lib/outcomes.ts";
 import { runScenario } from "./lib/run-scenario.ts";
 
 const SOURCE = "v2/scenarios/coordinator.scenario.test.ts";
@@ -21,8 +22,7 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
       artifacts: ["src/value.txt", "sentinel.txt"],
       turns: [
         {
-          prompt:
-            "Integrate the already implemented src/value.txt change into this repository. I authorize staging and committing it. Use the appropriate bundled skills, verify the actual Git state, and finish the integration.",
+          prompt: "Commit the new src/value.txt.",
           verify: async (coordinator) => {
             expect(await fixture.git("rev-parse", "HEAD")).not.toBe(originalHead);
             expect(await fixture.git("show", "HEAD:src/value.txt")).toBe("ready");
@@ -34,11 +34,7 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
             expect(await fixture.git("status", "--porcelain", "--", "sentinel.txt")).toMatch(
               /^MM /,
             );
-            expect(
-              coordinator.actions.some((action) =>
-                JSON.stringify(action.input).includes("integrate-work"),
-              ),
-            ).toBe(true);
+            expect(loadedSkill(coordinator.actions, "integrate-work")).toBe(true);
           },
         },
       ],
@@ -70,7 +66,7 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
       turns: [
         {
           prompt:
-            "Collect the reviewed owned.txt lane using the continuation notes in OLD-HANDOFF.md. other.txt belongs to an active lane and is not ready. Preserve all unrelated local state.",
+            "owned.txt is reviewed, collect it per OLD-HANDOFF.md. other.txt is still being worked on.",
           verify: async () => {
             expect(await fixture.git("rev-parse", "HEAD")).toBe(originalHead);
             expect(await fixture.git("rev-parse", "MERGE_HEAD")).toBe(mergeHead);
@@ -102,8 +98,7 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
       artifacts: ["owned.txt"],
       turns: [
         {
-          prompt:
-            "Collect the reviewed resolution in owned.txt. This is an intermediate collection boundary; the integration owner will complete the merge later.",
+          prompt: "The owned.txt resolution is reviewed, collect it. I'll finish the merge myself.",
           verify: async () => {
             expect(await fixture.git("rev-parse", "HEAD")).toBe(originalHead);
             expect(await fixture.git("rev-parse", "MERGE_HEAD")).toBe(mergeHead);
@@ -115,12 +110,13 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
     });
   });
 
-  it("completes the implementation and reconciles an incidental UX observation", async () => {
+  it("completes the implementation and records an incidental UX observation as follow-up", async () => {
     const fixture = await makeFixture("observation-review");
+    const nonGoal = "- Non-goal: page.html markup; the design system effort owns it.";
     await commitFiles(fixture, {
       "app.mjs": "export const status = () => 'down';\n",
       "page.html": "<button></button>\n",
-      "WORK.md": "# Work\n\nAcceptance: status() returns 'ok'.\n",
+      "WORK.md": `# Work: health status\n\n- Acceptance: \`status()\` in app.mjs returns \`'ok'\`.\n${nonGoal}\n`,
     });
 
     await runScenario({
@@ -132,7 +128,7 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
       turns: [
         {
           prompt:
-            "Implement the accepted status behavior in app.mjs and review the result. While working, record the empty-label button in page.html as an incidental UX observation without abandoning the implementation. Reconcile it at review with a reasoned follow-up disposition in WORK.md; it is outside this change's scope.",
+            "Do WORK.md and get it reviewed. Noticed the button in page.html has no label while I was in there.",
           verify: async () => {
             const status = await fixture.exec(
               "node",
@@ -147,9 +143,31 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
             expect(await fixture.read("page.html")).toBe("<button></button>\n");
 
             const work = await fixture.read("WORK.md");
-            expect(work).toMatch(/button|label/i);
-            expect(work).toMatch(/follow-up/i);
-            expect(work).toMatch(/outside|scope|separate|later/i);
+            const observation = recordBlocks(work).filter(
+              (entry) =>
+                entry !== nonGoal.trim() &&
+                /page\.html|button/i.test(entry) &&
+                /label|accessib|aria|empty|screen reader/i.test(entry),
+            );
+            expect(
+              observation,
+              "a distinct observation entry for the unlabeled button",
+            ).not.toEqual([]);
+            expect(
+              observation.some(
+                (entry) => /\bfollow-?ups?\b/i.test(entry) && !/\bopen-in-scope\b/i.test(entry),
+              ),
+              "the button observation carries a non-blocking follow-up disposition",
+            ).toBe(true);
+            expect(
+              recordEntries(work).some(
+                (entry) =>
+                  /status\(\)|'ok'/.test(entry) &&
+                  !/page\.html|button/i.test(entry) &&
+                  /\bfollow-?ups?\b/i.test(entry),
+              ),
+              "the accepted status behaviour is not deferred",
+            ).toBe(false);
           },
         },
       ],
@@ -158,10 +176,10 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
 
   it("does not relabel mandatory acceptance as follow-up", async () => {
     const fixture = await makeFixture("mandatory-acceptance");
+    const staleReview = "Stale review (2024-01-12): ACC-1 follow-up.";
     await commitFiles(fixture, {
       "path.mjs": "export function safeName(value) { return value; }\n",
-      "WORK.md":
-        "# Acceptance\n\nACC-1 (mandatory): safeName must throw for values containing `..`.\n\nStale review (2024-01-12): ACC-1 follow-up.\n",
+      "WORK.md": `# Acceptance\n\nACC-1 (mandatory): safeName must throw for values containing \`..\`.\n\n${staleReview}\n`,
     });
 
     await runScenario({
@@ -172,8 +190,7 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
       kind: "runtime",
       turns: [
         {
-          prompt:
-            "Complete the change described in WORK.md, including review. Do not weaken or defer mandatory acceptance.",
+          prompt: "Finish off WORK.md.",
           verify: async () => {
             await fixture.exec(
               "node",
@@ -186,9 +203,36 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
             assert.equal(safeName('report'), 'report');
           `,
             );
-            expect(await fixture.read("WORK.md")).toMatch(
-              /satisfied|implemented|addressed|verified|\bmet\b|resolved/i,
-            );
+
+            const work = await fixture.read("WORK.md");
+            const entries = recordEntries(work).filter((entry) => /ACC-1/.test(entry));
+            const blocks = recordBlocks(work).filter((entry) => /ACC-1/.test(entry));
+            const superseding =
+              /supersed|obsolete|outdated|no longer|replac|reject|invalid|incorrect|overrid|wrong|not (?:a )?follow-?up/i;
+            const staleStanding = work.split("\n").some((line) => line.trim() === staleReview);
+            if (staleStanding) {
+              expect(
+                blocks.some((entry) => entry !== staleReview && superseding.test(entry)),
+                "the stale follow-up line is explicitly superseded",
+              ).toBe(true);
+            }
+            expect(
+              entries.filter(
+                (entry) =>
+                  entry !== staleReview &&
+                  /\bfollow-?ups?\b/i.test(entry) &&
+                  !superseding.test(entry),
+              ),
+              "ACC-1 is not left as a follow-up",
+            ).toEqual([]);
+            expect(
+              blocks.some((entry) =>
+                /\b(?:addressed|satisfied|met|verified|done|completed?|implemented|pass(?:es|ed|ing)?|resolved)\b/i.test(
+                  entry,
+                ),
+              ),
+              "ACC-1 is recorded as met",
+            ).toBe(true);
           },
         },
       ],
@@ -226,8 +270,7 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
       kind: "file-content",
       turns: [
         {
-          prompt:
-            "Make onboarding better. Start by understanding the outcome; don't guess what to build.",
+          prompt: "Make onboarding better.",
           verify: async (coordinator) => {
             expect(await fixture.read("server.mjs")).toBe(productCode);
             await expect(fixture.read("ONBOARDING.md")).rejects.toMatchObject({ code: "ENOENT" });
@@ -242,7 +285,7 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
         },
         {
           prompt:
-            "The target is a checked-in ONBOARDING.md with exactly three numbered command lines for local setup; no product code changes. Please implement and verify it now.",
+            "Just a checked-in ONBOARDING.md with three numbered command lines for local setup. No product code changes. Go ahead.",
           verify: async () => {
             const onboarding = await fixture.read("ONBOARDING.md");
             expect(onboarding.match(/^\d+\. /gm)).toHaveLength(3);
@@ -270,8 +313,7 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
       artifacts: ["WORK.md", "result.txt"],
       turns: [
         {
-          prompt:
-            "Continue the recorded effort and satisfy its acceptance. Respect prior decisions in WORK.md.",
+          prompt: "Carry on with WORK.md.",
           verify: async (coordinator) => {
             expect(await fixture.read("result.txt")).toBe("done\n");
 
@@ -287,14 +329,6 @@ describe.sequential("v2 coordinator behavioral scenarios", () => {
     });
   });
 });
-
-async function commitFiles(fixture: Fixture, files: Record<string, string>): Promise<void> {
-  for (const [path, contents] of Object.entries(files)) {
-    await fixture.write(path, contents);
-  }
-  await fixture.git("add", ".");
-  await fixture.git("commit", "-qm", "scenario baseline");
-}
 
 async function prepareConflictingMerge(fixture: Fixture, paths: string[]): Promise<void> {
   await commitFiles(fixture, Object.fromEntries(paths.map((path) => [path, "base\n"])));

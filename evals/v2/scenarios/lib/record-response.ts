@@ -1,10 +1,12 @@
 import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
-import { homedir } from "node:os";
+import { realpathSync } from "node:fs";
+import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SCENARIO_SDK_VERSION } from "@langwatch/scenario";
 import type { BehaviorFixture, OutcomeCheck } from "../../fixtures/format.ts";
+import { redactLocalPaths } from "../../fixtures/redact.ts";
 import { validateFixture, writeFixture } from "../../fixtures/io.ts";
 import type { ClaudeCoordinator } from "./claude-coordinator.ts";
 import { snapshot, type Fixture, type GitSnapshot } from "./fixture.ts";
@@ -126,10 +128,30 @@ async function readArtifacts(
 }
 
 function normalizePaths(value: string, fixture: Fixture): string {
-  return value
-    .replaceAll(fixture.path, "<WORKTREE>")
-    .replaceAll(fixture.pluginDir, "<PLUGIN_ROOT>")
-    .replaceAll(homedir(), "<HOME>");
+  const replacements: [string, string][] = [];
+  for (const [path, label] of [
+    [fixture.path, "<WORKTREE>"],
+    [fixture.pluginDir, "<PLUGIN_ROOT>"],
+    [tmpdir(), "<TMP>"],
+    [homedir(), "<HOME>"],
+  ] as const) {
+    for (const variant of new Set([realpath(path), path, `/private${path}`])) {
+      replacements.push([variant, label]);
+    }
+  }
+  replacements.sort(([a], [b]) => b.length - a.length);
+
+  let normalized = value;
+  for (const [path, label] of replacements) normalized = normalized.replaceAll(path, label);
+  return redactLocalPaths(normalized);
+}
+
+function realpath(path: string): string {
+  try {
+    return realpathSync(path);
+  } catch {
+    return path;
+  }
 }
 
 function sha256(value: string): string {
