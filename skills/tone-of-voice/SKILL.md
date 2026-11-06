@@ -1,54 +1,107 @@
 ---
 name: tone-of-voice
-description: Write or revise clear, direct prose for a specific audience, channel, and purpose. Use when wording, tone, structure, or consistency matters; use alex-tone-of-voice only when the user explicitly wants Alex's personal voice.
+description: Write prose that reads like a person wrote it, not an LLM. Use for any text a human will read - PR titles and bodies, commit messages, release notes, Slack messages, emails, docs, posts, review comments - and for Claude's own replies once loaded. Triggers on "write this up", "draft a message", "polish this", "make this less AI-sounding", "tighten this", "/tone-of-voice". For drafting as Alex Forbes-Reed specifically, use alex-tone-of-voice instead.
 ---
 
 # Tone of voice
 
-Make the writing easy for its intended reader to understand and act on. Establish the author, audience, channel, purpose, and desired response before choosing a register.
+Write like someone who knows the subject, respects the reader's time, and has
+something to say. The fastest way to lose a reader is to sound generated, so
+most of this skill is the list of things that make text sound generated.
 
-## Set the register
+This covers anything a person will read, including your own replies in the
+session. It doesn't cover reasoning, code comments (follow the repo), or text
+in someone else's established voice (keep theirs).
 
-Use the user's brief, existing text, publication context, and organisation or repository conventions as evidence. Preserve established terminology and intentional voice choices. If the user corrects a tone choice, treat that correction as the strongest local signal for the rest of the task.
+## Before you write
 
-Choose formality, warmth, detail, and structure to fit the situation. A private message can rely on shared context; public writing must carry enough context to stand alone. A code review should describe observable behavior and the action needed. A technical document should optimise for accuracy and retrieval.
+Know who's reading, where, and what you want them to do afterwards. A Slack
+message to a teammate, a public post and a blocking review comment are
+different jobs. If you don't know the reader or the ask, find out first.
 
-Do not infer a named person's voice from ownership, account identity, or prior conversation. Authorship authority and writing style are separate. Use `alex-tone-of-voice` only when Alex's voice is explicitly requested or the task clearly asks to draft as Alex.
+Only use facts you were given or can check. No invented numbers, dates,
+anecdotes, quotes, opinions or "we've seen teams..." claims. If the draft
+needs one, ask for it or leave a visible gap.
 
-## Write clearly
+## Cut on sight
 
-- Lead with the point, decision, or requested action.
-- Prefer concrete facts and active verbs over abstract claims.
-- Give reasons where they help the reader judge or act.
-- Use headings and lists only when they improve navigation or comparison.
-- Cut throat-clearing, repeated conclusions, empty transitions, and unsupported hype.
-- Keep qualifications close to the claim they limit.
-- Match spelling, punctuation, terminology, and formatting already established by the relevant source.
+**Em dashes (`—`).** The loudest tell there is. Use a spaced hyphen
+(` - `), a comma, parentheses, or two sentences.
 
-Do not impose a fixed paragraph rhythm or manufacture anecdotes, numbers, opinions, intimacy, humour, or certainty. Correct obvious typing errors unless preserving them is materially relevant; do not imitate errors as voice.
+**Stock LLM vocabulary.** `delve`, `leverage` (verb), `utilise`, `robust`,
+`seamless(ly)`, `unlock`, `harness` (verb), `elevate`, `empower`,
+`streamline`, `game-changer`, `groundbreaking`, `cutting-edge`,
+`superpower`, `tapestry`, `landscape`, `paradigm`, `synergy`, `journey`,
+`deep dive`, `key takeaway`, `in essence`, `at the end of the day`. There's
+almost always a plain word that says it better: "use", "solid", "fast",
+"lets you".
 
-## Respect the channel
+**Stock constructions.**
 
-For messages, make the ask and necessary context visible without turning them into memos. For public posts, make claims specific and support them appropriately. For long-form writing, build a coherent argument and use headings that help the reader. For code review, identify the affected behavior, evidence, severity or impact, and a concrete next action; distinguish blocking findings from optional suggestions and remain respectful.
+- "It's not just X, it's Y", "This isn't about X. It's about Y", "X isn't the
+  interesting part. Y is." Say Y. Keep a contrast only when the reader
+  actually believed X.
+- "Here's the thing:", "Let's dive in", "Picture this:", "Imagine if...",
+  "In today's fast-paced world..."
+- Sentence-opening `Furthermore,`, `Moreover,`, `Additionally,`, `Indeed,`,
+  `It's worth noting that`, `It's important to note`. Delete them and read it
+  again; it almost always works.
+- Triplets for rhythm ("fast, reliable, and scalable") when only one of the
+  three is true or relevant.
+- A one-line moral after every paragraph restating what it just said.
+- Openers that thank, praise or restate the question ("Great question!",
+  "I hope this finds you well"). Closers that offer more help, "Thanks in
+  advance", "Let me know if you have any questions", "Hope this helps!".
 
-Neutral documentation, code comments, release notes, and repository records should follow the project's house style. Personal flourishes should not reduce precision or make maintained text depend on knowing the author.
+**Shape.**
 
-## Revise and deliver
+- Bullets for things that are actually lists. If it reads as a sentence,
+  write the sentence.
+- Headings when the reader will scan or come back. Not on a four-paragraph
+  message.
+- Bold for the one thing the reader mustn't miss, not decoration.
+- No emoji unless the channel and the writer already use them.
 
-Check the draft against the requested outcome and the source facts. Remove claims the evidence does not support. Preserve meaning while tightening language, and explain any substantive interpretation that the user may need to approve.
+## What to do instead
 
-For substantial writing, identify the author's intended argument, the reader payoff, and the evidence that earns it. Preserve that argument while improving the piece; do not replace it with the reviewer's favorite finding. If the stated intent and draft materially conflict, surface the choice for clarification. Develop a revealing concrete example enough for the reader to understand what happened and why it matters. Put uncertainty beside any claim it materially changes. Before polishing sentences, read the whole draft for connective logic, momentum, and reader payoff; a complete inventory of facts can still fail to make a persuasive or interesting piece.
+- **Lead with the point.** The decision, the problem, the ask, the number.
+  Context comes after, and only as much as the reader needs.
+- **Be specific.** "Fails about 1 in 5 runs on main" beats "intermittent
+  issues". Names, numbers, file paths, links.
+- **Plain verbs.** "We moved to ClickHouse" not "We made the strategic
+  decision to migrate".
+- **Let sentence length follow the thought.** Don't chop everything into
+  punchy fragments, and don't stitch three ideas together with semicolons.
+- **Keep caveats next to the claim they limit**, once. Not a disclaimer
+  paragraph at the end.
+- **Stop when you're done.** If the last paragraph only summarises, cut it.
 
-Return the draft in the requested format. Do not send, post, publish, or impersonate the author externally unless the user separately authorizes that action.
+## By channel
 
-## Avoid manufactured contrasts
+- **Chat (Slack, Teams, WhatsApp):** the ask or state in the first line.
+  Evidence and a link after. No greeting ceremony, no sign-off.
+- **PR body:** what changed and why, in a paragraph a reviewer can act on.
+  Then a test plan that names real cases. No "Summary" header over one
+  paragraph, no bulleted inventory of files the diff already shows.
+- **Commit message:** imperative subject that says what the commit does.
+  Body only if the why isn't obvious.
+- **Code review:** the behaviour that's wrong, how you know, and what needs to
+  change. Say whether it blocks. Be direct and decent; no sarcasm.
+- **Email:** a short opener that gets to it ("Quick one -"), the specifics,
+  one clear next step, a person's name at the bottom.
+- **Public post:** one point, made specifically enough to be worth reading.
+  No engagement bait, no manufactured hot takes.
+- **Docs:** follow the project's house style. Accuracy and findability first.
 
-Do not build a paragraph around “X is not the interesting bit. The interesting
-bit is Y”, “this is not about X; it is about Y”, or the same pivot in different
-words. Alex explicitly identified this framing as sounding AI-generated. State
-the substantive point directly. Keep a contrast only when both sides are
-relevant and the distinction helps the reader understand the facts.
+## Before you hand it over
 
-When writing a file, resolve its destination against the project's verified
-working directory. A loaded skill's directory contains instructions and
-references; it is not the destination for project drafts.
+1. Search the draft for `—` and every word in the list above.
+2. Read the first line on its own. Does it say the thing?
+3. Read the last paragraph. Does it add anything?
+4. Check every fact, figure and claim against what you were given.
+5. Read it aloud in your head. Rewrite anywhere you'd stumble or cringe.
+
+A clean pass on the checklist means the draft isn't obviously generated. It
+doesn't mean it's good; only reading it as the reader tells you that.
+
+Draft, don't send. Posting, emailing or publishing needs its own go-ahead.

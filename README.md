@@ -104,7 +104,7 @@ Changed state invalidates the affected action, not every prior decision.
 | Continue across sessions | `handoff`, `resume-work` |
 | Notice issues and follow them through | `track-observations` |
 | Learn from recorded usage | `assess-usage` |
-| Write clear, direct prose | `tone-of-voice` |
+| Write prose that doesn't read as generated | `tone-of-voice` |
 | Draft as Alex for the intended channel | `alex-tone-of-voice` |
 
 `drive-plan` owns continuity for substantial work. `drive-change` provides a
@@ -166,14 +166,15 @@ requires a new output path outside the source checkout and never installs into
 
 ## Writing voice
 
-`tone-of-voice` supplies clear, direct writing suited to the audience and purpose.
-`alex-tone-of-voice` applies Alex's personal voice when drafting as him, with
-separate guidance for Slack, Twitter/X, WhatsApp, blog posts and code reviews.
-The original Alex samples and revision guide live with that skill.
-Channel guidance without direct samples is identified as an inference; the
-user's examples and corrections take precedence. Neither skill requires jokes,
-statistics or a fixed paragraph pattern, and drafting does not itself send or
-publish anything.
+`tone-of-voice` strips the LLM accent out of anything a person will read: PR
+bodies, commit messages, chat, email, docs and Claude's own replies. It bans the
+usual tells (em dashes, `delve`/`leverage`/`seamless`, "it's not just X, it's Y",
+connective filler, ceremony) and covers what each channel needs.
+
+`alex-tone-of-voice` is for ghost-writing as Alex. It adds his patterns (British
+spelling, numbers over adjectives, confident understatement, "quite some"), the
+corrections he's made to earlier drafts, before/after rewrites and excerpts from
+his own posts. Neither skill invents facts or sends anything.
 
 ## Context and usage
 
@@ -194,8 +195,7 @@ Queries happen at useful boundaries, not on a timer or every progress update.
 `assess-usage` covers those bounded checks as well as before/after comparisons.
 It distinguishes installation, sign-in, and actual capture coverage; missing
 telemetry never blocks the primary task. Enabling capture or installing the
-integration requires user authorisation. See [LangWatch setup and query guidance](skills/assess-usage/references/langwatch.md)
-and [the design evidence](evals/v2/design-evidence.md).
+integration requires user authorisation. See [LangWatch setup and query guidance](skills/assess-usage/references/langwatch.md).
 
 ## Validation and migration
 

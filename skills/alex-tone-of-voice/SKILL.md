@@ -1,64 +1,115 @@
 ---
 name: alex-tone-of-voice
-description: Draft or revise text in Alex Forbes-Reed's personal voice for an identified audience, channel, and purpose. Use for authorized ghostwriting as Alex; do not apply it automatically to assistant replies or neutral project writing.
+description: Ghost-write as Alex Forbes-Reed - blog posts, launch announcements, release notes, PR titles and bodies, commit messages, Slack and WhatsApp messages, customer emails, X/LinkedIn posts, talk abstracts, anything going out under Alex's name. Triggers on "in my voice", "write this as me", "make this sound like me", "draft this for me", "ghost-write", "/alex-tone-of-voice". Not for Claude's own replies or neutral repo docs; use tone-of-voice for those.
 ---
 
-# Alex tone of voice
+# Alex's voice
 
-Write as Alex only when the user asks for Alex's voice or clearly authorizes ghostwriting under his identity. Establish the audience, channel, purpose, factual inputs, and desired response first. Authority to draft does not authorize sending or publishing.
+Alex writes like an engineer telling you what happened over a pint: direct,
+British, specific, a bit dry, honest about the parts that hurt. The claim
+comes first, the numbers do the bragging, and the jokes are in passing rather
+than on stage.
 
-Alex's voice is direct, British, specific, and conversational. It often uses dry understatement, an honest admission, or a precise detail where generic copy would use praise. These are tendencies, not slots every paragraph must fill.
+You're drafting under his name, so two rules sit above everything else:
 
-## Use the evidence selectively
+- **Only his facts.** No invented numbers, dates, customers, anecdotes,
+  opinions, in-jokes or "we learned the hard way" stories. If a draft needs
+  one, ask for it or leave a `[gap: ...]` he can fill.
+- **Draft, don't send.** Nothing gets posted, sent, published or signed
+  without a separate go-ahead.
 
-For a substantial blog, announcement, or voice-matching revision, read [the source samples](references/samples.md). They preserve excerpts and attribution to Alex's event-sourcing announcement, Snapchat API interview, and LangWatch welcome post.
+## Never
 
-Read [the revision guide](references/style-guide.md) when auditing a long-form draft or when a voice choice remains unclear. It includes Alex's corrections to previous drafts. Do not load both references for a short message when the guidance below is enough.
+- **Em dashes (`—`).** Spaced hyphen (` - `), commas, parentheses, or a new
+  sentence. One em dash and it doesn't sound like Alex.
+- **LLM vocabulary:** `delve`, `leverage` (verb), `utilise`, `robust`,
+  `seamless`, `unlock`, `harness` (verb), `elevate`, `empower`,
+  `game-changer`, `groundbreaking`, `revolutionary`, `cutting-edge`,
+  `superpower` (explicitly banned), `tapestry`, `landscape`, `paradigm`,
+  `synergy`, `journey`, `key takeaway`, `in essence`. Full list with
+  replacements in [the style guide](references/style-guide.md#banned-words).
+- **Manufactured contrasts.** "X isn't the interesting bit. The interesting
+  bit is Y." "This isn't about X, it's about Y." "It's not just X, it's Y."
+  Alex has called these out by name as the thing that makes a draft sound
+  generated. Say Y.
+- **Connective filler:** `Furthermore`, `Moreover`, `Additionally`,
+  `Indeed`, `It's worth noting`. A full stop does the job.
+- **Ceremony:** "I hope this finds you well", "Thanks in advance", "Let us
+  know what you think!", "Best, Alex". Closers land or get cut.
+- **American spelling.** `behaviour`, `optimise`, `colour`, `realise`,
+  `analyse`, `centre`, `judgement`. Everywhere, including code review and PR
+  text.
 
-The samples are strongest for blog and conversational technical prose. Guidance for channels without direct samples is an inference from the demonstrated voice and the channel's constraints; label that inference if it affects a consequential choice. A correction from the user overrides these defaults.
+## What he actually does
 
-## Preserve the voice without performing it
+None of these is a quota. Pick the ones the piece earns.
 
-- Lead with the concrete point. Prefer facts, numbers, and named effects over promotional adjectives.
-- Use British spelling and natural contractions.
-- Allow a dry aside, understatement, colloquialism, reference, or emoji only when the subject and audience earn it.
-- Use spaced hyphens, parentheses, commas, or sentence breaks instead of em dashes.
-- Cut stock AI phrasing, corporate throat-clearing, empty enthusiasm, and vague calls to action.
-- Never invent statistics, experiences, opinions, relationships, jokes, or self-deprecation.
-- Correct typing errors. Do not reproduce mistakes merely to imitate Alex.
+- **Opens with the point.** The claim, the number or the problem, in the
+  first sentence. "CI flaking on main, anyone seen this before?" not "Hello
+  team, I'm currently encountering..."
+- **Numbers over adjectives.** "10-20 events per second" then "north of
+  6,000". Hyperbole only works next to something precise.
+- **Confident understatement.** "Pretty sure", "turned out to be an almost
+  suspiciously good fit", "Hardly punishment at all." Never "we're thrilled
+  to announce".
+- **Honest about the pain.** Sweaty migrations, late nights, regrets, the
+  bug that was embarrassing. It's what makes the win believable.
+- **Asides in parentheses or spaced hyphens.** The main sentence carries the
+  claim; the aside carries the honest qualifier or the joke ("perhaps during
+  a foul lapse in judgement").
+- **"Quite some"** for "a lot of" ("quite some late nights"). A deliberate,
+  slightly-off Dutch-ism from living in the Netherlands. Leave it in where it
+  reads naturally; don't translate it out, and don't invent other
+  Dutch-isms.
+- **Plain, colloquial verbs.** "We did swap out the database", "knocked
+  traces offline", "I'll keep poking". British colloquialisms (`mate`,
+  `tldr`, `proper`, `ghastly`) when the register is casual, not as garnish.
+- **References and emoji, lightly.** A Daft Punk line to close a paragraph
+  about replays, one 🚀 at the end of a high-energy opener. Default is none.
 
-Avoid rigid paragraph recipes. The source material contains recurring rhythms, but forcing an aside, joke, statistic, or three-word closer into every passage creates a caricature.
+What he's rejected: drafts where every paragraph gets an aside, a stat and a
+three-word punchline; tidy "lesson" sentences after each example; a personal
+story chopped into tutorial sections; and swapping his argument for a more
+"interesting" finding. Follow his story in his order, let sentence length
+follow the thought, and stop when there's nothing left to say.
 
-## Fit the channel
+## By channel
 
-- **Slack:** concise and collaborative. Lead with the state, evidence, or request; include a link or next step when useful. Show ownership without turning the message into a memo.
-- **Twitter/X:** tight, opinionated, and specific. Make one defensible point per post or give a thread a clear progression. Do not manufacture controversy, certainty, or engagement bait.
-- **WhatsApp:** use the actual recipient and shared context. Keep it natural and proportionate to a private message, without assuming intimacy, slang, profanity, or emotional familiarity not established by the user.
-- **Blog:** build an evidence-led narrative. Use concrete examples, honest tradeoffs, and headings that advance the story. Humour and references remain optional; factual support carries the piece.
-- **Code review:** describe the concrete behavior, impact or severity, evidence, and action. State clearly whether a finding blocks the change or is optional. Keep the tone respectful and avoid using humour where it could blur technical judgment.
+- **Slack:** the state or the ask in the first line, evidence or a link
+  next, what you're doing about it. "I'll keep poking but a second pair of
+  eyes would help." No greeting, no thanks-in-advance.
+- **WhatsApp:** how he'd text a colleague. Short, lowercase-ish is fine,
+  shared context assumed. Don't invent familiarity he hasn't shown with
+  that person.
+- **X / LinkedIn:** one specific point that's worth a stranger's attention.
+  A number or a concrete detail, not a vibe. No engagement bait.
+- **Blog:** opens on the point or a concrete image ("shovelling coal in the
+  engine room"), then what changed, why it matters to the reader, the
+  honest bits, and what's next. Headers with some personality ("Already
+  live", "Signing off") rather than "Introduction".
+- **PR body:** a paragraph that says what changed, the scope boundary, and
+  the one reason a reviewer needs. A test plan with real edge cases. Links at
+  the bottom. No "Summary" header, no file inventory.
+- **Code review:** what the behaviour is, what it must be, how you know, and
+  whether it blocks. Direct, no jokes that blur the call.
+- **Customer email:** "Quick note -", what happened in plain words, what
+  was fixed specifically, how to follow up, signed "Alex".
+- **Formal (security disclosure, legal, talk abstract):** same bans and
+  spelling, asides and jokes dialled down to zero. Specific and sober.
 
-PR descriptions, customer email, and other formats should follow their practical conventions first, then apply the demonstrated voice at an appropriate intensity. Security, legal, incident, and sensitive interpersonal writing should be sober and precise.
+## Process
 
-## Keep maintained writing appropriate
+1. Pin down the reader, channel, ask, and the facts you've been given.
+2. For anything longer than a message, read [the samples](references/samples.md)
+   closest to the job, and [the style guide](references/style-guide.md) for
+   before/after rewrites.
+3. Draft.
+4. Audit: `—`, the banned list, American spellings, connective filler,
+   manufactured contrasts, any fact you can't trace to the brief.
+5. Read it as the reader. Cut the throat-clearing at the top and the
+   summary at the bottom.
+6. Show Alex. He'll usually want one more pass, and his corrections beat
+   anything written here.
 
-Neutral technical documentation and code comments should follow repository style unless Alex's authorship is itself relevant. Commit messages and review comments should remain useful to future readers; voice must not obscure behavior, scope, or evidence.
-
-## Deliver safely
-
-Verify claims and preserve supplied links, names, constraints, and attribution. If a draft depends on an unsupported personal opinion or anecdote, ask for it or remove it. Return the draft in the requested format and offer alternatives only when they clarify a real tone choice.
-
-For substantial writing, establish Alex's intended argument, what the reader gains from it, and which evidence carries the claim. Preserve that intent while editing; do not substitute the reviewer's preferred finding. When the draft points elsewhere in a material way, ask which argument should govern. Develop a concrete failure, decision, or example rather than flattening every finding into equal-weight analysis. Keep consequential uncertainty visible near the headline claim. Read the full draft for connective logic and interest before polishing voice; structural completeness and existing tests do not establish argument quality.
-
-Do not post, send, publish, or sign as Alex without separate explicit authorization for that external action.
-
-## Avoid manufactured contrasts
-
-Do not build a paragraph around “X is not the interesting bit. The interesting
-bit is Y”, “this is not about X; it is about Y”, or the same pivot in different
-words. Alex explicitly identified this framing as sounding AI-generated. State
-the substantive point directly. Keep a contrast only when both sides are
-relevant and the distinction helps the reader understand the facts.
-
-When writing a file, resolve its destination against the project's verified
-working directory. A loaded skill's directory contains instructions and
-references; it is not the destination for project drafts.
+Passing the audit means it doesn't sound generated. Whether it sounds like
+Alex is his call, not the checklist's.
